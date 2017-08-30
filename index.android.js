@@ -12,42 +12,22 @@ import {
   View
 } from 'react-native';
 
-export default class PracticeDemo extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-    );
-  }
-}
+import { StackNavigator } from 'react-navigation';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+import PieCharts from './src/pieCharts';
+
+import mainDemo from './demo';
+
+
+Array.prototype.sum = function () {
+  return this.reduce(function (partial, value) {
+    return partial + value;
+  })
+};
+
+const App = StackNavigator({
+  Home: { screen: mainDemo },
+  PieChart: { screen: PieCharts },
 });
 
-AppRegistry.registerComponent('PracticeDemo', () => PracticeDemo);
+AppRegistry.registerComponent('PracticeDemo', () => App);
