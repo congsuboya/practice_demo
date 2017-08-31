@@ -13,6 +13,10 @@ import { Pie } from '../lib';
 
 export default class PieCharts extends React.Component {
 
+    static navigationOptions = {
+        title: '饼图',
+    };
+
     constructor(props) {
         super(props);
         this.state = {
@@ -85,7 +89,7 @@ export default class PieCharts extends React.Component {
                         onPress={() => {
                             this.setState({
                                 data: [10, 30, 70],
-                                pieR:100
+                                pieR: 100
                             })
                         }}
                         title="重置"

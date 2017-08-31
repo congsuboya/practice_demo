@@ -15,8 +15,9 @@ import {
 import { StackNavigator } from 'react-navigation';
 
 import PieCharts from './src/pieCharts';
-
 import mainDemo from './demo';
+import Main from './main';
+import WebDemo from './webDemo';
 
 
 Array.prototype.sum = function () {
@@ -26,8 +27,10 @@ Array.prototype.sum = function () {
 };
 
 const App = StackNavigator({
-  Home: { screen: mainDemo },
+  Main: { screen: Main },
+  Demo: { screen: mainDemo },
   PieChart: { screen: PieCharts },
+  WebDemo: { screen: WebDemo }
 });
 
 AppRegistry.registerComponent('PracticeDemo', () => App);
