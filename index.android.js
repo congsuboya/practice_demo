@@ -18,6 +18,8 @@ import PieCharts from './src/pieCharts';
 import mainDemo from './demo';
 import Main from './main';
 import WebDemo from './webDemo';
+import BarCharts from './src/barCharts';
+
 
 
 Array.prototype.sum = function () {
@@ -30,7 +32,10 @@ const App = StackNavigator({
   Main: { screen: Main },
   Demo: { screen: mainDemo },
   PieChart: { screen: PieCharts },
+  BarChart: { screen: BarCharts },
   WebDemo: { screen: WebDemo }
 });
 
-AppRegistry.registerComponent('PracticeDemo', () => App);
+import ViewDemo from './src/viewDemo';
+
+AppRegistry.registerComponent('PracticeDemo', () => ViewDemo);

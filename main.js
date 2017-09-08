@@ -22,7 +22,8 @@ export default class Main extends React.Component {
             Data: [
                 { name: 'Demo', id: 1 },
                 { name: '饼图', id: 2 },
-                { name: 'webView图', id: 3 },
+                { name: '柱状图', id: 3 },
+                { name: 'webView图', id: 100 },
             ]
         }
         this.renderItem = this.renderItem.bind(this);
@@ -40,6 +41,9 @@ export default class Main extends React.Component {
                 navigate('PieChart')
                 return;
             case 3:
+                navigate('BarChart')
+                return;
+            case 100:
                 navigate('WebDemo')
                 return;
         }
