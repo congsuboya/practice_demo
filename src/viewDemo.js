@@ -14,16 +14,58 @@ const { width, height } = Dimensions.get('window');
 
 import BaseView from '../base/baseView';
 
+import { DrawView } from './utils';
+
 
 export default class ViewDemo extends Component {
     //构造器
     constructor(props) {
         //加载父类方法,不可省略
         super(props);
+        this.consoleAlert = this.consoleAlert.bind(this);
         //设置初始的状态
         this.state = {
             top: 0,
             left: 0,
+            viewTree: {
+                type: 'XsyView',
+                children: [
+                    {
+                        type: 'XsyView',
+                        style: {
+                            width: 100,
+                            height: 100,
+                            backgroundColor: 'red'
+                        },
+                        children: [
+                            {
+                                type: 'XsyView',
+                                style: {
+                                    width: 50,
+                                    height: 50,
+                                    backgroundColor: 'yellow'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        type: 'XsyView',
+                        style: {
+                            width: 80,
+                            height: 100,
+                            backgroundColor: 'green'
+                        }
+                    }
+                ],
+                style: {
+                    width: width,
+                    height: height,
+                    top: 0,
+                    left: 0,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                }
+            }
         };
     }
 
@@ -56,38 +98,38 @@ export default class ViewDemo extends Component {
             }
         })
     }
+    consoleAlert() {
+        this.myref.props.children.push(
+            <BaseView viewStyle={{ backgroundColor: 'yellow', height: 50, width: 100 }} />
+        )
+        this.myref.measure((e) => {
+            console.log('2213sdf', e);
+        });
+    }
 
     render() {
         let baseViewProps = {
-            children: <BaseView viewStyle={{ backgroundColor: 'blue', height: 50 ,width:100}} />
+            children: new Array()
         }
+        baseViewProps.children.push(<BaseView viewStyle={{ backgroundColor: 'blue', height: 50, width: 100 }} />)
+        baseViewProps.children.push(<BaseView viewStyle={{ backgroundColor: 'yellow', height: 50, width: 100 }} />)
+
         return (
-            <View style={{ flex: 1 }}>
+            <View
+                ref={(ref) => this.myref = ref}
+                style={{ flex: 1 }}>
                 <View style={{ width: width, height: 40, backgroundColor: 'gray', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     <Button
                         style={{ marginRright: 5 }}
                         title='添加View'
-                        onPress={() => alert('你好')}
+                        onPress={() => this.consoleAlert()}
                     />
                     <Button
                         title='添加Text'
                         onPress={() => alert('你好')}
                     />
-
                 </View>
-                <View
-                    style={{ height: 150, width: 150, backgroundColor: 'green' }}
-                />
-                <BaseView
-                    {...baseViewProps}
-                />
-                <View
-                    {...this._panResponder.panHandlers}
-                    style={[styles.rect, {
-                        "top": this.state.top,
-                        "left": this.state.left,
-                    }]}>
-                </View>
+                {DrawView(this.state.viewTree)}
             </View>
         );
     }
