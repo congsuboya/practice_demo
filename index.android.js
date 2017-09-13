@@ -19,6 +19,8 @@ import mainDemo from './demo';
 import Main from './main';
 import WebDemo from './webDemo';
 import BarCharts from './src/barCharts';
+import DoughnutCharts from './src/doughnutCharts';
+
 
 
 
@@ -33,9 +35,12 @@ const App = StackNavigator({
   Demo: { screen: mainDemo },
   PieChart: { screen: PieCharts },
   BarChart: { screen: BarCharts },
+  DoughnutCharts: { screen: DoughnutCharts },  
   WebDemo: { screen: WebDemo }
 });
 
 import ViewDemo from './src/viewDemo';
 
-AppRegistry.registerComponent('PracticeDemo', () => ViewDemo);
+import doughnut from './lib/elements/doughnut';
+
+AppRegistry.registerComponent('PracticeDemo', () => App);

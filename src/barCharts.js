@@ -42,7 +42,7 @@ export default class BarCharts extends React.Component {
         let { data, yMax } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bar Data={data} style={{ height: 300 }} yMax={yMax} animateRow={true} />
+                <Bar Data={data} style={{ height: 300}} yMax={200} animateRow={true} />
                 <View style={{ width: 100 }}>
                     <Button
                         style={{ width: 100 }}

@@ -72,6 +72,8 @@ export default class AwesomeProject extends Component {
                 0
             ]
         });
+
+        console.log('iuwoeorwior', this.dasharray[0]);
     }
     componentDidMount() {
         this.startAnimation();
@@ -105,6 +107,8 @@ export default class AwesomeProject extends Component {
          C 160 10 180 10 180 10
     `;
 
+        let asdf = `M 155.1894665284709 21.649343703000284 A 215 215 0 0 1 224.9998352830555 10.000000000063096 L 224.9998764622916 63.75000000004732 A 161.25 161.25 0 0 0 172.64209989635316 72.48700777725023 Z`;
+
 
         let startAngle = 0;
         let cx = 100;
@@ -134,8 +138,8 @@ export default class AwesomeProject extends Component {
             <ScrollView>
                 <View style={styles.container}>
                     <Svg
-                        height="100"
-                        width="100">
+                        height="150"
+                        width="150">
                         <Circle
                             cx="50"
                             cy="50"
@@ -149,11 +153,11 @@ export default class AwesomeProject extends Component {
                             cy="50"
                             r="42"
                             origin="50,50"
-                            rotate="-90"
+                            rotate="-190"
                             stroke="#00e0ff"
                             strokeWidth="8"
-                            strokeLinecap="round"
-                            fill="transparent"
+                            strokeLinecap="square"
+                            fill="green"
                             strokeDasharray={this.dasharray}
                             strokeDashoffset={this.circleAnimation}
                         />
@@ -232,9 +236,7 @@ export default class AwesomeProject extends Component {
                             <Use x="0" y="0" width="200" height="200" href="#a2Shape" />
                         </ClipPath>
 
-                        <Path id="test1" fill="#fe0" d={pathData1} />
-                        <Path id="test2" fill="#0a0" d={pathData2} />
-                        <Path id="test3" fill="#e00" d={pathData3} />
+                        <Path id="test1" fill="#fe0" d={asdf} />
                     </Svg>
                 </View>
             </ScrollView>
