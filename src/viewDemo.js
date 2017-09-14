@@ -18,6 +18,12 @@ import { DrawView } from './utils';
 
 
 export default class ViewDemo extends Component {
+
+    static navigationOptions = {
+        title: '基础类'
+    };
+
+
     //构造器
     constructor(props) {
         //加载父类方法,不可省略

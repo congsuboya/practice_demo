@@ -21,6 +21,7 @@ import WebDemo from './webDemo';
 import BarCharts from './src/barCharts';
 import DoughnutCharts from './src/doughnutCharts';
 
+import ViewDemo from './src/viewDemo';
 
 
 
@@ -36,10 +37,11 @@ const App = StackNavigator({
   PieChart: { screen: PieCharts },
   BarChart: { screen: BarCharts },
   DoughnutCharts: { screen: DoughnutCharts },  
+  ViewDemo: { screen: ViewDemo },    
   WebDemo: { screen: WebDemo }
 });
 
-import ViewDemo from './src/viewDemo';
+
 
 import doughnut from './lib/elements/doughnut';
 

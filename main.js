@@ -24,6 +24,7 @@ export default class Main extends React.Component {
                 { name: '饼图', id: 2 },
                 { name: '柱状图', id: 3 },
                 { name: '环形图', id: 4 },
+                { name: '基础类', id: 5 },
                 { name: 'webView图', id: 100 },
             ]
         }
@@ -46,6 +47,9 @@ export default class Main extends React.Component {
                 return;
             case 4:
                 navigate('DoughnutCharts')
+                return;
+            case 5:
+                navigate('ViewDemo')
                 return;
             case 100:
                 navigate('WebDemo')
