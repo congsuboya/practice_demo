@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import {
     View,
-    PanResponder
+    PanResponder,
+    TouchableOpacity
 } from 'react-native';
 
 export default class BaseView extends React.Component {

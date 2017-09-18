@@ -45,4 +45,6 @@ const App = StackNavigator({
 
 import doughnut from './lib/elements/doughnut';
 
-AppRegistry.registerComponent('PracticeDemo', () => App);
+import Demo from './base/demo';
+
+AppRegistry.registerComponent('PracticeDemo', () => Demo);
