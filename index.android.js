@@ -47,6 +47,6 @@ import doughnut from './lib/elements/doughnut';
 
 import Demo from './base/demo';
 
-import SagaDemo from './sagaDemo';
+import SagaDemo from './sagaDemoTwo';
 
 AppRegistry.registerComponent('PracticeDemo', () => SagaDemo);
