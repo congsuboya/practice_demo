@@ -36,8 +36,8 @@ const App = StackNavigator({
   Demo: { screen: mainDemo },
   PieChart: { screen: PieCharts },
   BarChart: { screen: BarCharts },
-  DoughnutCharts: { screen: DoughnutCharts },  
-  ViewDemo: { screen: ViewDemo },    
+  DoughnutCharts: { screen: DoughnutCharts },
+  ViewDemo: { screen: ViewDemo },
   WebDemo: { screen: WebDemo }
 });
 
@@ -47,6 +47,18 @@ import doughnut from './lib/elements/doughnut';
 
 import Demo from './base/demo';
 
-import SagaDemo from './sagaDemoTwo';
+import SagaDemo from './sagaStandModal';
 
-AppRegistry.registerComponent('PracticeDemo', () => SagaDemo);
+
+class DemoYYY extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+        <SagaDemo componentID={11} />
+        <SagaDemo componentID={12} />
+      </View>
+    )
+  }
+}
+
+AppRegistry.registerComponent('PracticeDemo', () => DemoYYY);

@@ -1,4 +1,7 @@
-import { combineReducers } from 'redux';
+// import { combineReducers } from 'redux';
+import { combineReducers } from 'redux-immutable';
+
+import { fromJS } from 'immutable';
 
 export const types = {
     START: 'START',
