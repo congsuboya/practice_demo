@@ -47,4 +47,4 @@ import doughnut from './lib/elements/doughnut';
 
 import Demo from './base/demo';
 
-AppRegistry.registerComponent('PracticeDemo', () => Demo);
+AppRegistry.registerComponent('PracticeDemo', () => App);
