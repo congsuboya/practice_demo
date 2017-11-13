@@ -31,6 +31,11 @@ export default class Main extends React.Component {
         this.renderItem = this.renderItem.bind(this);
         this.clickItem = this.clickItem.bind(this);
 
+        // let num = 188990;
+        // let num22 = Math.pow(10, num.toString().length - 1);
+        // Math.ceil(num / num22)
+        // // Math.pow(10, num.toString().length)
+        // alert(Math.ceil(num / num22));
     }
 
     clickItem(Id) {
