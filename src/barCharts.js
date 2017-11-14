@@ -9,7 +9,7 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import { Bar } from '../lib';
+import Bar from '../lib/elements/commonBar';
 
 export default class BarCharts extends React.Component {
 
