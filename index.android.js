@@ -20,6 +20,8 @@ import Main from './main';
 import WebDemo from './webDemo';
 import BarCharts from './src/barCharts';
 import DoughnutCharts from './src/doughnutCharts';
+import LineChart from './src/lineCharts';
+
 
 import ViewDemo from './src/viewDemo';
 
@@ -36,8 +38,9 @@ const App = StackNavigator({
   Demo: { screen: mainDemo },
   PieChart: { screen: PieCharts },
   BarChart: { screen: BarCharts },
-  DoughnutCharts: { screen: DoughnutCharts },  
-  ViewDemo: { screen: ViewDemo },    
+  DoughnutCharts: { screen: DoughnutCharts },
+  ViewDemo: { screen: ViewDemo },
+  LineDemo: { screen: LineChart },
   WebDemo: { screen: WebDemo }
 });
 
