@@ -25,7 +25,8 @@ export default class Main extends React.Component {
                 { name: '柱状图', id: 3 },
                 { name: '环形图', id: 4 },
                 { name: '基础类', id: 5 },
-                { name: '折线图', id: 6 },                
+                { name: '折线图', id: 6 },
+                { name: '漏斗图', id: 7 },
                 { name: 'webView图', id: 100 },
             ]
         }
@@ -59,6 +60,9 @@ export default class Main extends React.Component {
                 return;
             case 6:
                 navigate('LineDemo')
+                return;
+            case 7:
+                navigate('FunnelDemo')
                 return;
             case 100:
                 navigate('WebDemo')

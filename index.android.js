@@ -21,6 +21,7 @@ import WebDemo from './webDemo';
 import BarCharts from './src/barCharts';
 import DoughnutCharts from './src/doughnutCharts';
 import LineChart from './src/lineCharts';
+import FunnelDemo from './src/funnelCharts'
 
 
 import ViewDemo from './src/viewDemo';
@@ -41,7 +42,8 @@ const App = StackNavigator({
   DoughnutCharts: { screen: DoughnutCharts },
   ViewDemo: { screen: ViewDemo },
   LineDemo: { screen: LineChart },
-  WebDemo: { screen: WebDemo }
+  WebDemo: { screen: WebDemo },
+  FunnelDemo: { screen: FunnelDemo }
 });
 
 
