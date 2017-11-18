@@ -11,10 +11,10 @@ const { width, height } = Dimensions.get('window');
 
 import Bar from '../lib/elements/commonBar';
 
-export default class BarCharts extends React.Component {
+export default class HorizontalBarCharts extends React.Component {
 
     static navigationOptions = {
-        title: '柱状图',
+        title: '水平普通柱形图',
     };
 
     constructor(props) {
@@ -42,7 +42,7 @@ export default class BarCharts extends React.Component {
         let { data, yMax } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bar style={{ height: 230, width: width, marginTop: 20 }} />
+                <Bar style={{ height: 230, width: width }} option={this.props.option} />
                 <View style={{ width: 100 }}>
                     <Button
                         style={{ width: 100 }}
@@ -58,4 +58,43 @@ export default class BarCharts extends React.Component {
             </View>
         )
     }
+}
+
+HorizontalBarCharts.defaultProps = {
+    option: {
+        xAxis: {
+            type: 'category',
+            // type: 'value',
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            axisTick: {
+                alignWithLabel: true
+            }
+        },
+        yAxis: {
+            // type: 'category',
+            type: 'value',
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            axisTick: {
+                alignWithLabel: true
+            }
+        },
+        series: [
+            {
+                name: '直接访问',
+                type: 'bar',
+                barWidth: '60%',
+                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+            },
+            {
+                name: '非直接访问',
+                type: 'bar',
+                barWidth: '60%',
+                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+            }
+        ],
+        stack: false
+    },
+    valueInterval: 3,
+    style: { height: 400, width: window.width },
+    interWidth: 10
 }

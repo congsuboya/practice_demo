@@ -20,49 +20,42 @@ export default class Main extends React.Component {
         super(props);
         this.state = {
             Data: [
-                { name: 'Demo', id: 1 },
-                { name: '饼图', id: 2 },
-                { name: '柱状图', id: 3 },
-                { name: '环形图', id: 4 },
-                { name: '基础类', id: 5 },
-                { name: '折线图', id: 6 },
-                { name: '漏斗图', id: 7 },
-                { name: 'webView图', id: 100 },
+                { name: '水平普通柱形图', id: 1 },
+                { name: '水平堆叠柱形图', id: 2 },
+                { name: '竖直普通柱形图', id: 3 },
+                { name: '竖直堆叠柱形图', id: 4 },
+                { name: '折线图', id: 5 },
+                { name: '漏斗图', id: 6 },
+                { name: '扇形图', id: 7 }
             ]
         }
         this.renderItem = this.renderItem.bind(this);
         this.clickItem = this.clickItem.bind(this);
-
-        // let num = 188990;
-        // let num22 = Math.pow(10, num.toString().length - 1);
-        // Math.ceil(num / num22)
-        // // Math.pow(10, num.toString().length)
-        // alert(Math.ceil(num / num22));
     }
 
     clickItem(Id) {
         const { navigate } = this.props.navigation;
         switch (Id) {
             case 1:
-                navigate('Demo')
+                navigate('HorizontalBar')
                 return;
             case 2:
-                navigate('PieChart')
+                navigate('HorizontalBarStack')
                 return;
             case 3:
-                navigate('BarChart')
+                navigate('VerticalBar')
                 return;
             case 4:
-                navigate('DoughnutCharts')
+                navigate('VerticalBarStack')
                 return;
             case 5:
-                navigate('ViewDemo')
-                return;
-            case 6:
                 navigate('LineDemo')
                 return;
-            case 7:
+            case 6:
                 navigate('FunnelDemo')
+                return;
+            case 7:
+                navigate('PieDemo')
                 return;
             case 100:
                 navigate('WebDemo')
