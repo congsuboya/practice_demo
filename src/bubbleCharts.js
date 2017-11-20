@@ -26,7 +26,7 @@ export default class BarCharts extends React.Component {
     render() {
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bubble style={{ height: 500, width: width }} />
+                <Bubble style={{ height: 230, width: width }} />
             </View>
         )
     }
