@@ -9,12 +9,12 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import Line from '../lib/elements/line';
+import { Funnel } from '../src';
 
 export default class LineCharts extends React.Component {
 
     static navigationOptions = {
-        title: '折线图',
+        title: '漏斗图',
     };
 
     constructor(props) {
@@ -42,7 +42,7 @@ export default class LineCharts extends React.Component {
         let { data, yMax } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Line style={{ height: 230, width: width }} />
+                <Funnel style={{ height: 230, width: width }} />
                 <View style={{ width: 100 }}>
                     <Button
                         style={{ width: 100 }}

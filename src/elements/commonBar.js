@@ -6,7 +6,7 @@ import {
 
 import HorizontalBar from './horizontalBar';
 import VerticalBar from './verticalBar';
-import { dealWithOption } from '../utils/applicationUtils';
+import { dealWithOption } from '../chartUtils';
 
 import ToastView from './toastView';
 

@@ -9,7 +9,7 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import Bar from '../lib/elements/commonBar';
+import { Bar } from '../src';
 
 export default class HorizontalBarCharts extends React.Component {
 
@@ -92,7 +92,7 @@ HorizontalBarCharts.defaultProps = {
                 data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
             }
         ],
-        stack: true
+        stack: false
     },
     valueInterval: 3,
     style: { height: 400, width: window.width },

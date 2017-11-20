@@ -9,7 +9,7 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import Bar from '../lib/elements/commonBar';
+import { Bar } from '../src';
 
 export default class HorizontalBarCharts extends React.Component {
 

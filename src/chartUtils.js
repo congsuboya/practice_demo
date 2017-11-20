@@ -9,7 +9,7 @@ import Svg, {
     Line,
 } from 'react-native-svg';
 
-import ColorList from '../globalVariable';
+import ColorList from './globalVariable';
 
 export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, offSetNum = 2) {
     let YAxisList = [];

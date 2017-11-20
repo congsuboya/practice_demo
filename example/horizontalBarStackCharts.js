@@ -9,7 +9,7 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import Bar from '../lib/elements/commonBar';
+import { Bar } from '../src';
 
 export default class HorizontalBarCharts extends React.Component {
 
@@ -63,16 +63,16 @@ export default class HorizontalBarCharts extends React.Component {
 HorizontalBarCharts.defaultProps = {
     option: {
         xAxis: {
-            // type: 'category',
-            type: 'value',
+            type: 'category',
+            // type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
             axisTick: {
                 alignWithLabel: true
             }
         },
         yAxis: {
-            type: 'category',
-            // type: 'value',
+            // type: 'category',
+            type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
             axisTick: {
                 alignWithLabel: true
@@ -92,7 +92,7 @@ HorizontalBarCharts.defaultProps = {
                 data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
             }
         ],
-        stack: false
+        stack: true
     },
     valueInterval: 3,
     style: { height: 400, width: window.width },

@@ -17,7 +17,7 @@ import Svg, {
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
-import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView } from '../utils/applicationUtils';
+import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView } from '../chartUtils';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 export default class VerticalBar extends React.Component {

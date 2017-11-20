@@ -19,7 +19,7 @@ import Svg, {
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
-import { DrawXYAxisLine, dealWithOption, DrawYXAxisValue, DrawYValueView } from '../utils/applicationUtils';
+import { DrawXYAxisLine, dealWithOption, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 

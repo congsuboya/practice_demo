@@ -21,7 +21,7 @@ import Svg, {
     Text as SvgText
 } from 'react-native-svg';
 
-import { DrawXYAxisLine, dealWithOption, DrawYXAxisValue, DrawYValueView } from '../utils/applicationUtils';
+import { DrawXYAxisLine, dealWithOption, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
 
 import ToastView from './toastView';
 

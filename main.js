@@ -26,11 +26,9 @@ export default class Main extends React.Component {
                 { name: '竖直堆叠柱形图', id: 4 },
                 { name: '折线图', id: 5 },
                 { name: '漏斗图', id: 6 },
-                { name: '扇形图', id: 7 },
-                { name: '气泡图', id: 8 }
+                { name: '扇形图', id: 7 }
             ]
         }
-
         this.renderItem = this.renderItem.bind(this);
         this.clickItem = this.clickItem.bind(this);
     }
@@ -59,8 +57,6 @@ export default class Main extends React.Component {
             case 7:
                 navigate('PieDemo')
                 return;
-            case 8:
-                navigate('BubbleDemo')
             case 100:
                 navigate('WebDemo')
                 return;

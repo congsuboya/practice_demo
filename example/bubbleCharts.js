@@ -9,7 +9,7 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import Bubble from '../lib/elements/bubble';
+import { Bubble } from '../src';
 
 export default class BarCharts extends React.Component {
 

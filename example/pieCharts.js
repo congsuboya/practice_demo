@@ -9,7 +9,8 @@ import {
 
 const { width, height } = Dimensions.get('window');
 
-import { Pie } from '../lib';
+import { Pie } from '../src';
+
 
 export default class PieCharts extends React.Component {
 

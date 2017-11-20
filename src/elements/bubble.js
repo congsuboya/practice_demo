@@ -21,7 +21,7 @@ import Svg, {
     Text as SvgText
 } from 'react-native-svg';
 
-import { DrawXYAxisLine, DrawYValueView, getBubbleMaxMinNum, getMaxValue, DrawXValueView, DrawBubbleXValueView } from '../utils/applicationUtils';
+import { DrawXYAxisLine, DrawYValueView, getBubbleMaxMinNum, getMaxValue, DrawXValueView, DrawBubbleXValueView } from '../chartUtils';
 
 import ToastView from './toastView';
 

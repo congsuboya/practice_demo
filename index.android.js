@@ -1,45 +1,19 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+import { AppRegistry } from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
 
-import PieCharts from './src/pieCharts';
-import mainDemo from './demo';
-import Main from './main';
+
+import Main from './App';
 
 
-import HorizontalBar from './src/horizontalBarCharts';
-import HorizontalBarStack from './src/horizontalBarStackCharts';
-import VerticalBar from './src/verticalBarCharts';
-import VerticalBarStack from './src/verticalBarStackCharts';
-import LineDemo from './src/lineCharts';
-import FunnelDemo from './src/funnelCharts';
-import PieDemo from './src/pieCharts';
-import BubbleDemo from './src/bubbleCharts';
-
-
-
-import DoughnutCharts from './src/doughnutCharts';//环形图
-import ViewDemo from './src/viewDemo';
-
-
-
-Array.prototype.sum = function () {
-  return this.reduce(function (partial, value) {
-    return partial + value;
-  })
-};
+import HorizontalBar from './example/horizontalBarCharts';
+import HorizontalBarStack from './example/horizontalBarStackCharts';
+import VerticalBar from './example/verticalBarCharts';
+import VerticalBarStack from './example/verticalBarStackCharts';
+import LineDemo from './example/lineCharts';
+import FunnelDemo from './example/funnelCharts';
+import PieDemo from './example/pieCharts';
+import BubbleDemo from './example/bubbleCharts';
 
 const App = StackNavigator({
   Main: { screen: Main },
@@ -52,11 +26,5 @@ const App = StackNavigator({
   PieDemo: { screen: PieDemo },
   BubbleDemo: { screen: BubbleDemo }
 });
-
-
-
-import doughnut from './lib/elements/doughnut';
-
-import Demo from './base/demo';
 
 AppRegistry.registerComponent('PracticeDemo', () => App);
