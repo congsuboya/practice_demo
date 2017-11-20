@@ -24,8 +24,9 @@ import HorizontalBarStack from './src/horizontalBarStackCharts';
 import VerticalBar from './src/verticalBarCharts';
 import VerticalBarStack from './src/verticalBarStackCharts';
 import LineDemo from './src/lineCharts';
-import FunnelDemo from './src/funnelCharts'
-import PieDemo from './src/pieCharts'
+import FunnelDemo from './src/funnelCharts';
+import PieDemo from './src/pieCharts';
+import BubbleDemo from './src/bubbleCharts';
 
 
 
@@ -48,8 +49,8 @@ const App = StackNavigator({
   VerticalBarStack: { screen: VerticalBarStack },
   LineDemo: { screen: LineDemo },
   FunnelDemo: { screen: FunnelDemo },
-  PieDemo: { screen: PieDemo }
-
+  PieDemo: { screen: PieDemo },
+  BubbleDemo: { screen: BubbleDemo }
 });
 
 
