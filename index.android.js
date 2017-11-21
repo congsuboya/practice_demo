@@ -14,6 +14,7 @@ import LineDemo from './example/lineCharts';
 import FunnelDemo from './example/funnelCharts';
 import PieDemo from './example/pieCharts';
 import BubbleDemo from './example/bubbleCharts';
+import GaugeDemo from './example/gaugeCharts';
 
 const App = StackNavigator({
   Main: { screen: Main },
@@ -24,7 +25,8 @@ const App = StackNavigator({
   LineDemo: { screen: LineDemo },
   FunnelDemo: { screen: FunnelDemo },
   PieDemo: { screen: PieDemo },
-  BubbleDemo: { screen: BubbleDemo }
+  BubbleDemo: { screen: BubbleDemo },
+  GaugeDemo: { screen: GaugeDemo },  
 });
 
 AppRegistry.registerComponent('PracticeDemo', () => App);

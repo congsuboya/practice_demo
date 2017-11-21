@@ -3,6 +3,8 @@ import Pie from './elements/pie';
 import Line from './elements/line';
 import Funnel from './elements/funnel';
 import Bubble from './elements/bubble';
+import Gauge from './elements/gauge';
+
 
 
 export {
@@ -10,5 +12,6 @@ export {
     Pie,
     Line,
     Funnel,
-    Bubble
+    Bubble,
+    Gauge
 }
