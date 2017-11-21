@@ -43,18 +43,6 @@ export default class HorizontalBarCharts extends React.Component {
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
                 <Bar style={{ height: 230, width: width }} option={this.props.option} />
-                <View style={{ width: 100 }}>
-                    <Button
-                        style={{ width: 100 }}
-                        onPress={() => {
-                            let datas = this.produceData();
-                            this.setState({
-                                data: datas,
-                            })
-                        }}
-                        title="重置"
-                    />
-                </View>
             </View>
         )
     }
@@ -64,6 +52,7 @@ HorizontalBarCharts.defaultProps = {
     option: {
         xAxis: {
             type: 'category',
+            title: '星期',
             // type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
             axisTick: {
@@ -74,6 +63,7 @@ HorizontalBarCharts.defaultProps = {
             // type: 'category',
             type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            title: '个数',
             axisTick: {
                 alignWithLabel: true
             }
@@ -83,13 +73,13 @@ HorizontalBarCharts.defaultProps = {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+                data: [10]
             },
             {
                 name: '非直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+                data: [3]
             }
         ],
         stack: false

@@ -114,16 +114,16 @@ export default class Bubble extends React.Component {
     }
 
     render() {
-        let { valueInterval, xMax, yMax, yMin, viewWidth, svgHeight, svgWidth, viewHeight,
-            selected, selectedItem, selectedCX, selectedCY } = this.state;
+        let { valueInterval, xMax, yMax, yMin, viewWidth, svgHeight, svgWidth, viewHeight, xLable,
+            yLable, selected, selectedItem, selectedCX, selectedCY } = this.state;
 
         let allPointViewList = this.renderPointView();
 
         if (!this.xAxisViewList) {
-            this.xAxisViewList = DrawBubbleXValueView(6, svgWidth - 5, svgWidth + 25, xMax);
+            this.xAxisViewList = DrawBubbleXValueView(6, svgWidth - 5, svgWidth + 25, xMax, xLable);
         }
         if (!this.yAxisViewList) {
-            this.yAxisViewList = DrawYValueView(valueInterval, svgHeight - 15, svgHeight, yMax, yMin);
+            this.yAxisViewList = DrawYValueView(valueInterval, svgHeight - 15, svgHeight, yMax, { title: yLable }, yMin);
         }
         if (!this.xLineList) {
             this.xLineList = DrawXYAxisLine(svgWidth - 5, svgHeight - 10, false, 6, 10);
@@ -133,9 +133,8 @@ export default class Bubble extends React.Component {
         }
 
         return (
-            <View 
-            onMagicTap ={(e)=>{}}
-            style={[{ backgroundColor: 'white' }, this.props.style]}>
+            <View
+                style={[{ backgroundColor: 'white' }, this.props.style]}>
                 <View style={{ width: viewWidth, height: svgHeight, flexDirection: 'row' }}>
                     {this.yAxisViewList}
                     <View style={{ flex: 1, backgroundColor: 'white', height: svgHeight, width: svgWidth, marginLeft: 2 }}>
@@ -153,7 +152,7 @@ export default class Bubble extends React.Component {
                                     </G>)
                                 } else {
                                     return (<G
-                                        opacity='0.7'
+                                        opacity='0.5'
                                     >
                                         {item}
                                     </G>)
@@ -178,6 +177,8 @@ Bubble.defaultProps = {
         yAxis: (item) => item[1],
         symbolSize: (item) => item[2],
         label: (item) => item[4],
+        xLable: '金额',
+        yLable: '个数',
         series: [{
             name: '1990',
             data: [

@@ -11,6 +11,38 @@ import Svg, {
 
 import ColorList from './globalVariable';
 
+
+export function DrawDimension(DimData, type) {
+    let DimensList = [];
+    console.log('lkjoijljlj', DimData);
+    DimData.map((item, index) => {
+        if (index < 15) {
+            DimensList.push(
+                <View style={{ height: 13, flex: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    {DrawDimenIcon(type, index)}
+                    <Text numberOfLines={1} style={{ fontSize: 9, flex: 0, color: '#8FA1B2', marginRight: 8, marginLeft: 2 }}>{item}</Text>
+                </View>
+            )
+        }
+    });
+    return DimensList;
+}
+
+
+function DrawDimenIcon(type, index) {
+    switch (type) {
+        case 'biViewLine'://折线图
+            return <View style={{ height: 2, width: 8, borderRadius: 1, backgroundColor: ColorList[index % ColorList.length] }} />
+        case 'biViewFunnel'://漏斗
+            return <View style={{ height: 8, width: 8, backgroundColor: ColorList[index % ColorList.length] }} />
+        case 'biViewPie':
+            return <View style={{ height: 8, width: 8, backgroundColor: ColorList[index % ColorList.length], borderRadius: 4 }} />
+        default:
+            return <View style={{ height: 8, width: 8, backgroundColor: ColorList[index % ColorList.length] }} />
+    }
+}
+
+
 export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, offSetNum = 2) {
     let YAxisList = [];
     let interval = yHeight / intervalNum;
@@ -40,7 +72,7 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
     return YAxisList;
 }
 
-export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNum, offSetNum = 0) {
+export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNum, yAxis, offSetNum = 0) {
     let valueList = [];
     let valueNum;
     let innerMax = maxNum - offSetNum;
@@ -64,7 +96,7 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
                 left: 5,
                 top: (viewHeight - 120) / 2,
                 textAlignVertical: 'center'
-            }}>y轴名称</Text>
+            }}>{yAxis.title ? yAxis.title : 'y轴名称'}</Text>
             <View style={{ flex: 1 }}>
                 {valueList}
             </View>
@@ -73,7 +105,7 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
 }
 
 
-export function DrawBubbleXValueView(valueInterval, svgCanvasWidth, viewWidth, maxNum, offSetNum = 0) {
+export function DrawBubbleXValueView(valueInterval, svgCanvasWidth, viewWidth, maxNum, xLable, offSetNum = 0) {
     let valueList = [];
     let valueNum;
     let marginLeft = 0;
@@ -99,19 +131,19 @@ export function DrawBubbleXValueView(valueInterval, svgCanvasWidth, viewWidth, m
             </View>
             <Text
                 style={{
-                    marginLeft: viewWidth / 2,
+                    marginLeft: (viewWidth - 60) / 2,
                     marginTop: 5,
                     flex: 0,
                     fontSize: 9,
                     width: 100,
                     height: 10,
                     textAlign: 'center'
-                }}>x轴名称</Text>
+                }}>{xLable ? xLable : 'x轴名称'}</Text>
         </View>
     )
 }
 
-export function DrawXValueView(valueInterval, svgCanvasWidth, viewWidth, maxNum) {
+export function DrawXValueView(valueInterval, svgCanvasWidth, viewWidth, maxNum, xAxis) {
     let valueList = [];
     let valueNum;
     let marginLeft = 0;
@@ -141,19 +173,22 @@ export function DrawXValueView(valueInterval, svgCanvasWidth, viewWidth, maxNum)
                     width: 100,
                     height: 10,
                     textAlign: 'center'
-                }}>x轴名称</Text>
+                }}>{xAxis.title ? xAxis.title : 'x轴名称'}</Text>
         </View>
     )
 }
 
-export function DrawYXAxisValue(axis, horizontal, svgLength, perLength) {
+export function DrawYXAxisValue(axis, horizontal, svgLength, perLength, offsetLength, intervalNum) {
     let aXisViews = [];
     let perViewStyle = { alignItems: 'center', justifyContent: 'center', height: horizontal ? 25 : perLength, width: horizontal ? perLength : 25 };
     let perTextStyle = {
         flex: 0, fontSize: 9, color: '#292F33', textAlign: horizontal ? 'center' : 'right', height: 10, width: 25,
-        transform: [{ rotate: horizontal ? -45 : 0 }]
+        transform: [{ rotate: horizontal ? '-45deg' : '0deg' }]
     };
-    axis.data.map((item, index) => {
+    axis.data.some((item, index) => {
+        if (index > intervalNum - 1) {
+            return true;
+        }
         aXisViews.push(
             <View style={perViewStyle}>
                 <Text numberOfLines={1} style={perTextStyle}>{item}</Text>
@@ -162,7 +197,13 @@ export function DrawYXAxisValue(axis, horizontal, svgLength, perLength) {
     });
 
     return (
-        <View style={{ height: horizontal ? 40 : svgLength, width: horizontal ? svgLength : 30, flexDirection: horizontal ? 'row' : 'column' }}>
+        <View style={{
+            height: horizontal ? 40 : svgLength,
+            width: horizontal ? svgLength : 30,
+            flexDirection: horizontal ? 'row' : 'column',
+            marginLeft: horizontal ? offsetLength : 0,
+            marginTop: horizontal ? 0 : offsetLength,
+        }}>
             {aXisViews}
         </View>
     );
@@ -258,6 +299,8 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     let series = option.series;
     let horizontal = true;
 
+    let offsetLength = 0;
+
     let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
     let intervalNum = series[0].data.length;//间隔
 
@@ -277,6 +320,13 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     }
 
     svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
+    if (horizontal && svgLength < chartWidth - 50) {
+        offsetLength = (chartWidth - 50 - svgLength) / 2;
+        svgLength = chartWidth - 50;
+    } else if (!horizontal && svgLength < chartHeight - 50) {
+        offsetLength = (chartHeight - 50 - svgLength) / 2;
+        svgLength = chartHeight - 50;
+    }
     let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
     let axisHeight = 0;
     if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
@@ -302,7 +352,8 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         rectNum,
         rectWidth,
         barCanvasHeight,
-        perRectHeight
+        perRectHeight,
+        offsetLength
     }
 }
 

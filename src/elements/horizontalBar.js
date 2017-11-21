@@ -46,7 +46,8 @@ export default class HorizontalBar extends React.Component {
             perRectHeight,
             barCanvasHeight,
             interWidth,
-            stack
+            stack,
+            offsetLength
         } = this.state;
 
         let barViewList = [];
@@ -75,7 +76,7 @@ export default class HorizontalBar extends React.Component {
                 }
                 barViewList.push(
                     <AnimatedRect
-                        x={xNum}
+                        x={xNum + offsetLength}
                         y={barCanvasHeight + 10 - lastHeight}
                         width={rectWidth}
                         height={-rectHight}
@@ -89,7 +90,7 @@ export default class HorizontalBar extends React.Component {
                 }
 
                 numlength = mapItem.data[i].toString().length;
-                textX = xNum + rectWidth / 2 - 1;
+                textX = xNum + rectWidth / 2 - 1 + offsetLength;
                 textY = barCanvasHeight + 10 - lastHeight + numlength * preTextWidth / 2;
                 textColor = 'white';
                 if (numlength * 10 > rectHight) {
@@ -121,7 +122,7 @@ export default class HorizontalBar extends React.Component {
         this.props.showToastView(i, series, newLocation);
     }
     renderClickItemView() {
-        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, svgHeight, series } = this.state;
+        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, svgHeight, series, offsetLength } = this.state;
         let clickViewList = [];
         for (let i = 0; i < intervalNum; i++) {
             let clickAreWidth = (rectWidth * rectNum + interWidth * 2);
@@ -137,13 +138,14 @@ export default class HorizontalBar extends React.Component {
     }
 
     render() {
-        let { maxNum, series, xAxis, valueInterval,
+        let { maxNum, series, xAxis, yAxis, valueInterval,
             viewWidth, viewHeight, svgHeight, svgWidth,
-            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth
+            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth, offsetLength,
+            intervalNum
             } = this.state;
         return (
             <View style={[{ flexDirection: 'row' }, this.props.style]}>
-                {DrawYValueView(valueInterval, barCanvasHeight, viewHeight, maxNum)}
+                {DrawYValueView(valueInterval, barCanvasHeight, viewHeight, maxNum, yAxis)}
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={true}
@@ -165,11 +167,11 @@ export default class HorizontalBar extends React.Component {
                                 {this.renderBarItem()}
                             </Svg>
                         </View>
-                        <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row' }}>
+                        <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
                             {this.renderClickItemView()}
                         </View>
 
-                        {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth)}
+                        {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
                     </View>
                 </ScrollView >
 
@@ -183,7 +185,7 @@ export default class HorizontalBar extends React.Component {
                     textAlign: 'center',
                     bottom: -7,
                     right: (viewWidth - 135) / 2
-                }}> x轴名称</Text >
+                }}>{xAxis.title}</Text >
             </View >
         )
     }

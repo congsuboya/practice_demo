@@ -43,18 +43,6 @@ export default class LineCharts extends React.Component {
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
                 <Funnel style={{ height: 230, width: width }} />
-                <View style={{ width: 100 }}>
-                    <Button
-                        style={{ width: 100 }}
-                        onPress={() => {
-                            let datas = this.produceData();
-                            this.setState({
-                                data: datas,
-                            })
-                        }}
-                        title="重置"
-                    />
-                </View>
             </View>
         )
     }

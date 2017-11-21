@@ -43,18 +43,6 @@ export default class HorizontalBarCharts extends React.Component {
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
                 <Bar style={{ height: 230, width: width }} option={this.props.option} />
-                <View style={{ width: 100 }}>
-                    <Button
-                        style={{ width: 100 }}
-                        onPress={() => {
-                            let datas = this.produceData();
-                            this.setState({
-                                data: datas,
-                            })
-                        }}
-                        title="重置"
-                    />
-                </View>
             </View>
         )
     }

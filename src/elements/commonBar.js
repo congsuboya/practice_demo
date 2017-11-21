@@ -55,17 +55,11 @@ Bar.defaultProps = {
             type: 'category',
             // type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
         },
         yAxis: {
             // type: 'category',
             type: 'value',
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
         },
         series: [
             {

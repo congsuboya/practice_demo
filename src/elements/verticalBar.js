@@ -45,7 +45,8 @@ export default class VerticalBar extends React.Component {
             barCanvasHeight,
             horizontal,
             interWidth,
-            stack
+            stack,
+            offsetLength
         } = this.state;
 
         let barViewList = [];
@@ -75,7 +76,7 @@ export default class VerticalBar extends React.Component {
                 barViewList.push(
                     <AnimatedRect
                         x={2 + lastWidth}
-                        y={yNum}
+                        y={yNum + offsetLength}
                         width={rectHight}
                         height={rectWidth}
                         fill={ColorList[index]}
@@ -90,9 +91,9 @@ export default class VerticalBar extends React.Component {
 
                 numlength = mapItem.data[i].toString().length;
                 if (numlength * 10 > rectHight) {
-                    barViewList.push(< SvgText x={lastWidth + 3} y={yNum + (rectWidth - 10) / 2} fontSize="10" textAnchor="start">{mapItem.data[i]}</SvgText >)
+                    barViewList.push(< SvgText x={lastWidth + 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="start">{mapItem.data[i]}</SvgText >)
                 } else {
-                    barViewList.push(< SvgText fill="white" x={lastWidth - 3} y={yNum + (rectWidth - 10) / 2} fontSize="10" textAnchor="end">{mapItem.data[i]}</SvgText >)
+                    barViewList.push(< SvgText fill="white" x={lastWidth - 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="end">{mapItem.data[i]}</SvgText >)
                 }
 
                 if (!stack) {
@@ -130,7 +131,8 @@ export default class VerticalBar extends React.Component {
     render() {
         let { maxNum, series, xAxis, yAxis, valueInterval, intervalNum,
             viewWidth, viewHeight, svgHeight, svgWidth,
-            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth
+            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
+            offsetLength
             } = this.state;
         return (
             < View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]} >
@@ -139,10 +141,10 @@ export default class VerticalBar extends React.Component {
                     width: 10,
                     height: 100,
                     textAlign: 'center',
-                    marginTop: (viewHeight - 135) / 2,
+                    marginTop: (viewHeight - 60) / 2,
                     marginLeft: 5,
                     marginRight: 5
-                }}>y轴名称</Text>
+                }}>{yAxis.title ? yAxis.title : 'y轴名称'}</Text>
                 <View style={{ flex: 1, backgroundColor: 'white' }}>
                     <ScrollView
                         horizontal={false}
@@ -160,7 +162,7 @@ export default class VerticalBar extends React.Component {
                     >
                         <View style={{ width: viewWidth - 20, height: svgHeight, flexDirection: 'row', backgroundColor: 'white' }}>
                             <View style={{ width: 30, height: svgHeight }}>
-                                {DrawYXAxisValue(yAxis, false, svgHeight, rectWidth * rectNum + 2 * interWidth)}
+                                {DrawYXAxisValue(yAxis, false, svgHeight, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
                             </View>
                             <View style={{ flex: 0 }}>
                                 <Svg width={svgWidth} height={svgHeight}>
@@ -168,12 +170,12 @@ export default class VerticalBar extends React.Component {
                                     {this.renderBarItem()}
                                 </Svg>
                             </View>
-                            <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 0, right: 0 }}>
+                            <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: offsetLength, right: 0 }}>
                                 {this.renderClickItemView()}
                             </View>
                         </View>
                     </ScrollView>
-                    {DrawXValueView(valueInterval, barCanvasHeight, viewWidth, maxNum)}
+                    {DrawXValueView(valueInterval, barCanvasHeight, viewWidth, maxNum, xAxis)}
                 </View >
             </View >
         )

@@ -46,9 +46,10 @@ export default class LineChart extends React.Component {
             ...dealWithOption(viewWidth, viewHeight, props.option, props.valueInterval, true)
         }
         this.clickChart = this.clickChart.bind(this);
+        this.renderLineItem = this.renderLineItem.bind(this);
     }
 
-    renderBarItem() {
+    renderLineItem() {
         let {
              series,
             rectWidth,
@@ -67,7 +68,7 @@ export default class LineChart extends React.Component {
         series.map((mapItem, index) => {
             mapItem.data.map((innerItem, innerIndex) => {
                 initX = interWidth + rectWidth / 2 + innerIndex * pointInterWidth;
-                pointY = innerItem * perRectHeight;
+                pointY = barCanvasHeight - innerItem * perRectHeight + 10;
                 if (innerIndex == 0) {
                     dStr = `M${initX} ${pointY}`;
                 } else {
@@ -111,13 +112,13 @@ export default class LineChart extends React.Component {
     }
 
     render() {
-        let { maxNum, series, xAxis, valueInterval,
+        let { maxNum, series, xAxis, yAxis, valueInterval,
             viewWidth, viewHeight, svgHeight, svgWidth,
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth
             } = this.state;
         return (
             <View style={[{ flexDirection: 'row' }, this.props.style]}>
-                {DrawYValueView(valueInterval, barCanvasHeight, viewHeight, maxNum)}
+                {DrawYValueView(valueInterval, barCanvasHeight, viewHeight, maxNum, yAxis)}
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={true}
@@ -135,7 +136,7 @@ export default class LineChart extends React.Component {
                                     <Stop offset="1" stopColor="#3AE8CB" stopOpacity="0.11" />
                                 </LinearGradient>
                                 {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
-                                {this.renderBarItem()}
+                                {this.renderLineItem()}
                             </Svg>
                         </View>
                         <TouchableWithoutFeedback
@@ -156,7 +157,7 @@ export default class LineChart extends React.Component {
                     textAlign: 'center',
                     bottom: -7,
                     right: (viewWidth - 135) / 2
-                }}> x轴名称</Text >
+                }}> {xAxis.title ? xAxis.title : 'x轴名称'}</Text >
                 <ToastView ref='toast' />
             </View >
         )
@@ -184,7 +185,7 @@ LineChart.defaultProps = {
                 name: '直接访问',
                 type: 'line',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 7, 6, 5, 2, 3]
+                data: [4, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 7, 6, 5, 2, 3]
             },
             {
                 name: '非直接访问',
