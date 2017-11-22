@@ -19,7 +19,7 @@ import Svg, {
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
-import { DrawXYAxisLine, dealWithOption, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
+import { DrawXYAxisLine, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 
@@ -28,16 +28,45 @@ export default class HorizontalBar extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            ...props
+            ...props,
+            drawNum: 0
         }
         this.viewAnimatedList = [];
         this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
         this.scrollOffX = 0;
+        this.scrollNum = 0;
+        this.svgItemList = [];
+        this.renderSvgItemView = this.renderSvgItemView.bind(this);
+    }
+
+    componentWillMount() {
+        let { cutPerWidth, barCanvasHeight, svgHeight, valueInterval } = this.state;
+        this.svgItemList.push(
+            < Svg width={cutPerWidth} height={svgHeight}>
+                {DrawXYAxisLine(barCanvasHeight, cutPerWidth, true, valueInterval)}
+                {this.renderBarItem(0)}
+            </Svg>
+        )
+    }
+
+    renderSvgItemView(num) {
+        let { cutPerWidth, barCanvasHeight, svgHeight, valueInterval, cutNum } = this.state;
+        if (this.svgItemList.length < cutNum && cutNum != 0) {
+            this.svgItemList.push(
+                < Svg key={num} width={cutPerWidth} height={svgHeight}>
+                    {DrawXYAxisLine(barCanvasHeight, cutPerWidth, true, valueInterval)}
+                    {this.renderBarItem(num)}
+                </Svg>
+            )
+            this.setState({
+                drawNum: num
+            })
+        }
     }
 
 
-    renderBarItem() {
+    renderBarItem(hadedDrawNum) {
         let {
             maxNum, series,
             intervalNum,
@@ -47,7 +76,9 @@ export default class HorizontalBar extends React.Component {
             barCanvasHeight,
             interWidth,
             stack,
-            offsetLength
+            offsetLength,
+            cutNum,
+            cutApartNum
         } = this.state;
 
         let barViewList = [];
@@ -60,17 +91,14 @@ export default class HorizontalBar extends React.Component {
         let rotateY;
         let preTextWidth = 3;
 
-        for (let i = 0; i < intervalNum; i++) {
-
+        for (let i = 0; i < cutApartNum; i++) {
             let lastHeight = 0;
-            series.map((mapItem, index) => {
-                rectHight = mapItem.data[i] * perRectHeight;
+            series.some((mapItem, index) => {
+                rectHight = mapItem.data[i + hadedDrawNum * cutApartNum] * perRectHeight;
                 if (rectHight < 2) {
                     rectHight = 2;
                 }
-
                 xNum = (i * 2 + 1) * interWidth + i * rectWidth * rectNum;
-
                 if (!stack) {
                     xNum = xNum + index * rectWidth;
                 }
@@ -108,7 +136,7 @@ export default class HorizontalBar extends React.Component {
                             x={textX}
                             y={textY}
                             fontSize="10"
-                            textAnchor="middle">{mapItem.data[i]}</SvgText >
+                            textAnchor="middle">{mapItem.data[i + hadedDrawNum * cutApartNum]}</SvgText >
                     </G>
                 )
             })
@@ -141,7 +169,7 @@ export default class HorizontalBar extends React.Component {
         let { maxNum, series, xAxis, yAxis, valueInterval,
             viewWidth, viewHeight, svgHeight, svgWidth,
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth, offsetLength,
-            intervalNum
+            intervalNum, cutPerWidth
             } = this.state;
         return (
             <View style={[{ flexDirection: 'row' }, this.props.style]}>
@@ -157,15 +185,15 @@ export default class HorizontalBar extends React.Component {
                         }
                     }}
                     onScroll={(e) => {
+                        if (e.nativeEvent.contentOffset.x > (this.svgItemList.length - 1) * cutPerWidth + 360) {
+                            this.renderSvgItemView(this.svgItemList.length)
+                        }
                         this.props.closeToastView();
                     }}
                 >
                     <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
-                        <View style={{ flex: 0, backgroundColor: 'white' }}>
-                            < Svg width={svgWidth} height={svgHeight}>
-                                {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
-                                {this.renderBarItem()}
-                            </Svg>
+                        <View style={{ flex: 0, backgroundColor: 'white', flexDirection: 'row' }}>
+                            {this.svgItemList}
                         </View>
                         <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
                             {this.renderClickItemView()}

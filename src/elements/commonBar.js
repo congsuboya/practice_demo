@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import {
-    View
+    View,
+    Dimensions
 } from 'react-native';
 
+
+const window = Dimensions.get('window');
 
 import HorizontalBar from './horizontalBar';
 import VerticalBar from './verticalBar';
@@ -32,6 +35,7 @@ export default class Bar extends React.Component {
     showToastView(showClickIndex, series, location) {
         this.refs.toast.show(showClickIndex, series, location)
     }
+
     closeToastView() {
         this.refs.toast.hide()
     }

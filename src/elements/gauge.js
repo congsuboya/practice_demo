@@ -83,7 +83,7 @@ export default class Gauge extends Component {
                     width: imageWidth, height: imageWidth / 2 + 5,
                     position: 'absolute', top: 5, alignItems: 'center',
                     borderTopRightRadius: imageWidth / 2, borderTopLeftRadius: imageWidth / 2,
-                    backgroundColor: 'pink',
+                    backgroundColor: '#f5f8fa',
                     paddingBottom: 5
                 }}>
                     <Image
@@ -97,21 +97,27 @@ export default class Gauge extends Component {
                     <Text style={{ position: 'absolute', top: aLength, right: aLength - 15, fontSize: 9, color: '#92A0B1', textAlign: 'center', width: 30 }}>75</Text>
                     <Text style={{ position: 'absolute', right: 20, bottom: 0, fontSize: 9, color: '#92A0B1', textAlign: 'center' }}>100</Text>
 
-                    <Animated.Image
-                        source={require('../image/pic.png')}
-                        resizeMode={'stretch'}
+                    <Animated.View
                         style={{
-                            width: imageWidth - 60,
-                            height: 2,
+                            width: imageWidth - 80,
+                            height: 10,
                             position: 'absolute',
-                            left: 28,
+                            left: 35,
                             bottom: 7,
+                            flexDirection: 'row',
                             transform: [
                                 {
                                     rotateZ: this.rotateZ
                                 },
                             ]
-                        }} />
+                        }} >
+                        <Image source={require('../image/pic.png')}
+                            resizeMode={'stretch'}
+                            style={{
+                                width: imageWidth / 2 - 40,
+                                height: 10,
+                            }} />
+                    </Animated.View>
                     <View style={{ position: 'absolute', width: 160, height: 80, borderTopRightRadius: 80, borderTopLeftRadius: 80, bottom: 5, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }} >
                         <Text style={{ fontSize: 40, color: '#228EE6', textAlign: 'center' }}>{data.value}</Text>
                         <Text style={{ fontSize: 13, color: '#3A3F00', textAlign: 'center' }}>{data.name}</Text>

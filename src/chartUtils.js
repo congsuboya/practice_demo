@@ -11,6 +11,9 @@ import Svg, {
 
 import ColorList from './globalVariable';
 
+const showWidth = 360;
+const showHeight = 600;
+
 
 export function DrawDimension(DimData, type) {
     let DimensList = [];
@@ -78,12 +81,14 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
     let innerMax = maxNum - offSetNum;
     for (let i = 0; i <= valueInterval; i++) {
         valueNum = innerMax * (1 - i / valueInterval) + offSetNum;
-        valueList.push(<Text style={{
-            marginTop: i == 0 ? 5 : (svgCanvasHeight / valueInterval - 10),
-            fontSize: 9,
-            textAlign: 'right',
-            lineHeight: 10
-        }}>{parseInt(valueNum)}</Text>)
+        valueList.push(<Text
+            numberOfLines={1}
+            style={{
+                marginTop: i == 0 ? 5 : (svgCanvasHeight / valueInterval - 10),
+                fontSize: 9,
+                textAlign: 'right',
+                lineHeight: 10
+            }}>{parseInt(valueNum)}</Text>)
     }
     return (
         <View style={{ backgroundColor: 'white', width: 35, height: viewHeight, flexDirection: 'row' }}>
@@ -339,6 +344,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
     let perRectHeight = barCanvasHeight / maxNum;
 
+
     return {
         xAxis,
         yAxis,
@@ -353,7 +359,8 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         rectWidth,
         barCanvasHeight,
         perRectHeight,
-        offsetLength
+        offsetLength,
+        ...cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum)
     }
 }
 
@@ -381,6 +388,103 @@ function getMaxNum(series, intervalNum, valueInterval, stack = false) {
 
     let maxValue = Math.ceil(Math.ceil(maxData / tenCube) / valueInterval) * valueInterval * tenCube;
     return maxValue;
+}
+
+
+
+///--------------------------------/////
+export function dealWithBarOption(chartWidth, chartHeight, option, valueInterval, isLine = false) {
+    let xAxis = Object.assign(initXAxis, option.xAxis);
+    let yAxis = Object.assign(initYAxis, option.yAxis);
+    let series = option.series;
+    let horizontal = true;
+
+    let offsetLength = 0;
+
+    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
+    let intervalNum = series[0].data.length;//间隔
+
+    if (xAxis.type == 'category' && yAxis.type == 'value') {
+        horizontal = true;
+    } else if (xAxis.type == 'value' && yAxis.type == 'category') {
+        horizontal = false;
+    }
+
+    let svgLength = (horizontal ? chartWidth : chartHeight) - 50;
+    let rectWidth = ((svgLength / intervalNum) - 20) / rectNum;//每个柱形图的宽度
+
+    if (rectWidth < 12) {
+        rectWidth = 12;
+    } else if (rectWidth > 48) {
+        rectWidth = 48
+    }
+
+    svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
+    if (horizontal && svgLength < chartWidth - 50) {
+        offsetLength = (chartWidth - 50 - svgLength) / 2;
+        svgLength = chartWidth - 50;
+    } else if (!horizontal && svgLength < chartHeight - 50) {
+        offsetLength = (chartHeight - 50 - svgLength) / 2;
+        svgLength = chartHeight - 50;
+    }
+    let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
+    let axisHeight = 0;
+    if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
+        axisHeight = 35
+    }
+
+    let svgWidth = horizontal ? svgLength : chartWidth - 50;
+    let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
+
+    let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
+    let perRectHeight = barCanvasHeight / maxNum;
+
+    return {
+        xAxis,
+        yAxis,
+        horizontal,
+        series,
+        svgLength,
+        svgWidth,
+        svgHeight,
+        maxNum,
+        intervalNum,
+        rectNum,
+        rectWidth,
+        barCanvasHeight,
+        perRectHeight,
+        offsetLength
+    }
+}
+
+
+function cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum) {
+    let maxShowLength = showWidth * 3;
+    if (!horizontal) {
+        maxShowLength = showHeight * 3;
+    };
+    let cutNum = parseInt(svgLength / maxShowLength);
+
+    let cutApartNum = intervalNum;
+    let cutPerWidth = svgLength;
+    if (cutNum == 0) {
+        return {
+            cutNum,
+            cutApartNum,
+            cutPerWidth
+        };
+    } else {
+        cutApartNum = parseInt(intervalNum / cutNum);
+        if (intervalNum % cutNum != 0) {
+            cutApartNum = cutApartNum + 1;
+        }
+        cutPerWidth = (rectWidth * rectNum + 20) * cutApartNum
+        return {
+            cutNum,
+            cutApartNum,
+            cutPerWidth
+        }
+    }
 }
 
 
