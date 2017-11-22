@@ -216,22 +216,7 @@ export function DrawYXAxisValue(axis, horizontal, svgLength, perLength, offsetLe
 }
 
 
-const initXAxis = {
-    show: true,
-    type: 'category',//'category','time','long'
-    position: 'bottom',//'top'
-    name: '',
-    nameRotate: 0,//坐标轴旋转角度
-    nameLocation: 'start',//'middle' 或者 'center' 'end'
-}
-const initYAxis = {
-    show: true,
-    type: 'value',//'value','time','long'
-    position: 'left',//'right'
-    name: '',
-    nameRotate: 0,//坐标轴旋转角度
-    nameLocation: 'end',//'middle' 或者 'center' 'end'
-}
+
 
 
 
@@ -298,71 +283,71 @@ export function getMaxValue(maxData, valueInterval = 3) {
 }
 
 
-export function dealWithOption(chartWidth, chartHeight, option, valueInterval, isLine = false) {
-    let xAxis = Object.assign(initXAxis, option.xAxis);
-    let yAxis = Object.assign(initYAxis, option.yAxis);
-    let series = option.series;
-    let horizontal = true;
+// export function dealWithOption(chartWidth, chartHeight, option, valueInterval, isLine = false) {
+//     let xAxis = Object.assign(initXAxis, option.xAxis);
+//     let yAxis = Object.assign(initYAxis, option.yAxis);
+//     let series = option.series;
+//     let horizontal = true;
 
-    let offsetLength = 0;
+//     let offsetLength = 0;
 
-    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
-    let intervalNum = series[0].data.length;//间隔
+//     let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
+//     let intervalNum = series[0].data.length;//间隔
 
-    if (xAxis.type == 'category' && yAxis.type == 'value') {
-        horizontal = true;
-    } else if (xAxis.type == 'value' && yAxis.type == 'category') {
-        horizontal = false;
-    }
+//     if (xAxis.type == 'category' && yAxis.type == 'value') {
+//         horizontal = true;
+//     } else if (xAxis.type == 'value' && yAxis.type == 'category') {
+//         horizontal = false;
+//     }
 
-    let svgLength = (horizontal ? chartWidth : chartHeight) - 50;
-    let rectWidth = ((svgLength / intervalNum) - 20) / rectNum;//每个柱形图的宽度
+//     let svgLength = (horizontal ? chartWidth : chartHeight) - 50;
+//     let rectWidth = ((svgLength / intervalNum) - 20) / rectNum;//每个柱形图的宽度
 
-    if (rectWidth < 12) {
-        rectWidth = 12;
-    } else if (rectWidth > 48) {
-        rectWidth = 48
-    }
+//     if (rectWidth < 12) {
+//         rectWidth = 12;
+//     } else if (rectWidth > 48) {
+//         rectWidth = 48
+//     }
 
-    svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
-    if (horizontal && svgLength < chartWidth - 50) {
-        offsetLength = (chartWidth - 50 - svgLength) / 2;
-        svgLength = chartWidth - 50;
-    } else if (!horizontal && svgLength < chartHeight - 50) {
-        offsetLength = (chartHeight - 50 - svgLength) / 2;
-        svgLength = chartHeight - 50;
-    }
-    let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
-    let axisHeight = 0;
-    if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
-        axisHeight = 35
-    }
+//     svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
+//     if (horizontal && svgLength < chartWidth - 50) {
+//         offsetLength = (chartWidth - 50 - svgLength) / 2;
+//         svgLength = chartWidth - 50;
+//     } else if (!horizontal && svgLength < chartHeight - 50) {
+//         offsetLength = (chartHeight - 50 - svgLength) / 2;
+//         svgLength = chartHeight - 50;
+//     }
+//     let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
+//     let axisHeight = 0;
+//     if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
+//         axisHeight = 35
+//     }
 
-    let svgWidth = horizontal ? svgLength : chartWidth - 50;
-    let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
+//     let svgWidth = horizontal ? svgLength : chartWidth - 50;
+//     let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
 
-    let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
-    let perRectHeight = barCanvasHeight / maxNum;
+//     let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
+//     let perRectHeight = barCanvasHeight / maxNum;
 
 
-    return {
-        xAxis,
-        yAxis,
-        horizontal,
-        series,
-        svgLength,
-        svgWidth,
-        svgHeight,
-        maxNum,
-        intervalNum,
-        rectNum,
-        rectWidth,
-        barCanvasHeight,
-        perRectHeight,
-        offsetLength,
-        ...cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum)
-    }
-}
+//     return {
+//         xAxis,
+//         yAxis,
+//         horizontal,
+//         series,
+//         svgLength,
+//         svgWidth,
+//         svgHeight,
+//         maxNum,
+//         intervalNum,
+//         rectNum,
+//         rectWidth,
+//         barCanvasHeight,
+//         perRectHeight,
+//         offsetLength,
+//         ...cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum)
+//     }
+// }
 
 function getMaxNum(series, intervalNum, valueInterval, stack = false) {
     let tempMaxList = [];
@@ -484,6 +469,99 @@ function cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum) {
             cutApartNum,
             cutPerWidth
         }
+    }
+}
+
+
+const initXAxis = {
+    show: true,
+    type: 'category',//'category','time','long'
+    position: 'bottom',//'top'
+    name: 'x轴名称',
+    nameRotate: 0,//坐标轴旋转角度
+    nameLocation: 'start',//'middle' 或者 'center' 'end'
+}
+const initYAxis = {
+    show: true,
+    type: 'value',//'value','time','long'
+    position: 'left',//'right'
+    name: 'y轴名称',
+    nameRotate: 0,//坐标轴旋转角度
+    nameLocation: 'end',//'middle' 或者 'center' 'end'
+}
+
+
+export function dealWithOption(chartWidth, chartHeight, option, valueInterval, interWidth, isLine = false) {
+    let xAxis = Object.assign(initXAxis, option.xAxis);
+    let yAxis = Object.assign(initYAxis, option.yAxis);
+    let xAxisLength = xAxis.show ? 50 : 10;
+    let yAxisLength = yAxis.show ? 50 : 10;
+
+
+    let series = option.series;
+    let horizontal = true;
+    let offsetLength = 0;
+
+    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
+    let intervalNum = series[0].data.length;//间隔
+
+    if (xAxis.type == 'category' && yAxis.type == 'value') {
+        horizontal = true;
+    } else if (xAxis.type == 'value' && yAxis.type == 'category') {
+        horizontal = false;
+    }
+
+    let svgLength = (horizontal ? chartWidth - xAxisLength : chartHeight - yAxisLength);
+    let rectWidth = ((svgLength / intervalNum) - interWidth * 2) / rectNum;//每个柱形图的宽度
+
+    if (rectWidth < 12) {
+        rectWidth = 12;
+    } else if (rectWidth > 48) {
+        rectWidth = 48
+    }
+
+    svgLength = (rectWidth * rectNum + interWidth * 2) * intervalNum; //柱形图最大长度
+    if (horizontal && svgLength < chartWidth - xAxisLength) {
+        offsetLength = (chartWidth - xAxisLength - svgLength) / 2;
+        svgLength = chartWidth - xAxisLength;
+    } else if (!horizontal && svgLength < chartHeight - yAxisLength) {
+        offsetLength = (chartHeight - yAxisLength - svgLength) / 2;
+        svgLength = chartHeight - yAxisLength;
+    }
+
+    let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
+
+    let axisHeight = 0;
+    if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
+        axisHeight = 35
+    }
+
+    let svgWidth = horizontal ? svgLength : chartWidth - xAxisLength;
+    let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
+
+    let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 10 - yAxisLength;
+
+    let perRectHeight = barCanvasHeight / maxNum;
+
+    let itemWidth = interWidth * 2 + rectWidth * rectNum;
+    let perInterHeight = barCanvasHeight / valueInterval;
+    return {
+        xAxis,
+        yAxis,
+        horizontal,
+        series,
+        svgLength,
+        svgWidth,
+        svgHeight,
+        maxNum,
+        intervalNum,
+        rectNum,
+        rectWidth,
+        barCanvasHeight,
+        perRectHeight,
+        offsetLength,
+        itemWidth,
+        perInterHeight
     }
 }
 

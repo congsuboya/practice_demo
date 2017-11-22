@@ -7,7 +7,7 @@ import {
 
 const window = Dimensions.get('window');
 
-import HorizontalBar from './horizontalBar';
+import HorizontalBar from './bigDataBar';
 import VerticalBar from './verticalBar';
 import { dealWithOption } from '../chartUtils';
 
@@ -25,7 +25,7 @@ export default class Bar extends React.Component {
             interWidth: props.interWidth,
             valueInterval: props.valueInterval,
             stack: props.option.stack,
-            ...dealWithOption(viewWidth, viewHeight, props.option, props.valueInterval)
+            ...dealWithOption(viewWidth, viewHeight, props.option, props.valueInterval, props.interWidth)
         }
         this.showToastView = this.showToastView.bind(this);
         this.closeToastView = this.closeToastView.bind(this);
