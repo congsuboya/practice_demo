@@ -7,7 +7,7 @@ import {
 
 const window = Dimensions.get('window');
 
-import HorizontalBar from './horizontalBar';
+import HorizontalBar from './bigDataBar';
 import VerticalBar from './verticalBar';
 import { dealWithOption } from '../chartUtils';
 

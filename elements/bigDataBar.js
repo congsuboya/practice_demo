@@ -186,25 +186,25 @@ export default class HorizontalBar extends React.Component {
         this.props.showToastView(i, series, newLocation);
     }
 
-    renderPerBarView(index, series, perRectHeight, stack, rectWidth) {
+    renderPerBarView(index, series, perRectHeight, stack) {
         let perBarList = [];
         let mapItem;
         if (stack) {
             for (let i = series.length - 1; i >= 0; i--) {
                 mapItem = series[i];
                 perBarList.push(
-                    < View key={i + 'listItem'} style={{ backgroundColor: ColorList[i], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
+                    < View key={i + 'listItem'} style={{ backgroundColor: ColorList[i], width: 12, height: mapItem.data[index] * perRectHeight }} />
                 )
             }
         } else {
-            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
+            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: 12, height: mapItem.data[index] * perRectHeight }} />)
         }
         return perBarList;
         // series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: 12, height: mapItem.data[index] * perRectHeight }} />)
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, itemWidth, barCanvasHeight, stack, rectNum, rectWidth } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, itemWidth, barCanvasHeight, stack, rectNum } = this.state;
         return (
             <TouchableHighlight
                 underlayColor='rgba(34,142,230,0.10)'
@@ -212,7 +212,7 @@ export default class HorizontalBar extends React.Component {
                 <View style={{ height: viewHeight, width: itemWidth, backgroundColor: 'white' }}>
                     {this.lineView}
                     <View style={[{ width: itemWidth, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
-                        {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth)}
+                        {this.renderPerBarView(index, series, perRectHeight, stack)}
                     </View>
                     {xAxis.show ? <View style={{ width: itemWidth, height: 30, justifyContent: 'center', alignItems: 'center' }} >
                         <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>

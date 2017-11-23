@@ -5,8 +5,7 @@ import {
     Animated,
     ScrollView,
     Text,
-    TouchableHighlight,
-    FlatList
+    TouchableHighlight
 } from 'react-native';
 
 import Svg, {
@@ -30,16 +29,42 @@ export default class HorizontalBar extends React.Component {
         super(props)
         this.state = {
             ...props,
-            topHeight: 10
+            drawNum: 0
         }
         this.viewAnimatedList = [];
         this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
         this.scrollOffX = 0;
-        this.renderItem = this.renderItem.bind(this);
-        this.createLineView = this.createLineView.bind(this);
-        this.createYValue = this.createYValue.bind(this);
+        this.scrollNum = 0;
+        this.svgItemList = [];
+        this.renderSvgItemView = this.renderSvgItemView.bind(this);
     }
+
+    componentWillMount() {
+        let { cutPerWidth, barCanvasHeight, svgHeight, valueInterval } = this.state;
+        this.svgItemList.push(
+            < Svg width={cutPerWidth} height={svgHeight}>
+                {DrawXYAxisLine(barCanvasHeight, cutPerWidth, true, valueInterval)}
+                {this.renderBarItem(0)}
+            </Svg>
+        )
+    }
+
+    renderSvgItemView(num) {
+        let { cutPerWidth, barCanvasHeight, svgHeight, valueInterval, cutNum } = this.state;
+        if (this.svgItemList.length < cutNum && cutNum != 0) {
+            this.svgItemList.push(
+                < Svg key={num} width={cutPerWidth} height={svgHeight}>
+                    {DrawXYAxisLine(barCanvasHeight, cutPerWidth, true, valueInterval)}
+                    {this.renderBarItem(num)}
+                </Svg>
+            )
+            this.setState({
+                drawNum: num
+            })
+        }
+    }
+
 
     renderBarItem(hadedDrawNum) {
         let {
@@ -119,38 +144,6 @@ export default class HorizontalBar extends React.Component {
         return barViewList;
     }
 
-    componentWillMount() {
-        this.createLineView();
-        this.createYValue();
-    }
-
-    createLineView() {
-        let { itemWidth, perInterHeight, valueInterval } = this.state;
-        let lineList = [];
-        for (let i = 0; i <= valueInterval; i++) {
-            lineList.push(<View key={i + 'line'} style={{ height: 1, width: itemWidth, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterHeight - 1 }} />)
-        }
-        this.lineView = (
-            <View style={{ position: 'absolute', top: 10, right: 0, left: 0 }}>
-                {lineList}
-            </View>
-        )
-    }
-
-    createYValue() {
-        let { itemWidth, perInterHeight, maxNum, valueInterval, viewHeight } = this.state;
-        let valueList = [];
-        let valueNum;
-        for (let i = 0; i <= valueInterval; i++) {
-            valueNum = maxNum * (1 - i / valueInterval);
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterHeight - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{valueNum}</Text>)
-        }
-        this.yValueView = (
-            <View style={{ width: 50, height: viewHeight, alignItems: 'flex-end' }}>
-                {valueList}
-            </View>)
-    }
-
     clickItemView(i, clickAreWidth, location) {
         let { series } = this.state;
         let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + 40) })
@@ -172,44 +165,58 @@ export default class HorizontalBar extends React.Component {
         return clickViewList;
     }
 
-    renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, itemWidth, barCanvasHeight } = this.state;
-
-        return (
-            <TouchableHighlight
-                underlayColor='rgba(34,142,230,0.10)'
-                onPressIn={(e) => this.clickItemView(index, itemWidth, e.nativeEvent)}>
-                <View style={{ height: viewHeight, width: itemWidth, backgroundColor: 'white' }}>
-                    {this.lineView}
-                    <View style={{ width: itemWidth, height: barCanvasHeight, alignItems: 'flex-end', justifyContent: 'center', paddingLeft: 10, paddingRight: 10, flexDirection: 'row', marginTop: 10 }}>
-                        {series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: 12, height: mapItem.data[index] * perRectHeight }} />)}
-                    </View>
-                    {xAxis.show ? <View style={{ width: itemWidth, height: 30, justifyContent: 'center', alignItems: 'center' }} >
-                        <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
-                    </View> : null}
-                </View>
-            </TouchableHighlight>
-        )
-    }
-
     render() {
-        let {
-            series, viewHeight, barCanvasHeight
+        let { maxNum, series, xAxis, yAxis, valueInterval,
+            viewWidth, viewHeight, svgHeight, svgWidth,
+            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth, offsetLength,
+            intervalNum, cutPerWidth
             } = this.state;
         return (
-            <View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]}>
-                {this.yValueView}
-                <FlatList
-                    data={series[0].data}
+            <View style={[{ flexDirection: 'row' }, this.props.style]}>
+                {DrawYValueView(valueInterval, barCanvasHeight, viewHeight, maxNum, yAxis)}
+                <ScrollView
                     horizontal={true}
-                    renderItem={this.renderItem}
-                    keyExtractor={(item, index) => index}
-                    ItemSeparatorComponent={() => <View />}
-                />
+                    showsHorizontalScrollIndicator={true}
+                    showsVerticalScrollIndicator={false}
+                    style={{ height: viewHeight, width: viewWidth - 50 }}
+                    onMomentumScrollEnd={(e) => {
+                        if (viewWidth - 50 < svgWidth) {
+                            this.scrollOffX = e.nativeEvent.contentOffset.x;
+                        }
+                    }}
+                    onScroll={(e) => {
+                        if (e.nativeEvent.contentOffset.x > (this.svgItemList.length - 1) * cutPerWidth + 360) {
+                            this.renderSvgItemView(this.svgItemList.length)
+                        }
+                        this.props.closeToastView();
+                    }}
+                >
+                    <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
+                        <View style={{ flex: 0, backgroundColor: 'white', flexDirection: 'row' }}>
+                            {this.svgItemList}
+                        </View>
+                        <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
+                            {this.renderClickItemView()}
+                        </View>
+
+                        {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
+                    </View>
+                </ScrollView >
+
+                <Text style={{
+                    color: '#8FA1B2',
+                    fontSize: 9,
+                    height: 20,
+                    marginTop: 5,
+                    width: 100,
+                    position: 'absolute',
+                    textAlign: 'center',
+                    bottom: -7,
+                    right: (viewWidth - 135) / 2
+                }}>{xAxis.title}</Text >
             </View >
         )
     }
 }
-
 
 

@@ -1331,17 +1331,13 @@ HorizontalBarCharts.defaultProps = {
             // type: 'value',
             show: true,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
         },
         yAxis: {
             // type: 'category',
             type: 'value',
+            show: true,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
+
         },
         series: [
             {
