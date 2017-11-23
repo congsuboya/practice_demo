@@ -21,6 +21,7 @@ import ColorList from '../globalVariable';
 import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView } from '../chartUtils';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
+
 export default class VerticalBar extends React.Component {
 
     constructor(props) {
@@ -30,12 +31,68 @@ export default class VerticalBar extends React.Component {
         }
         this.viewAnimatedList = [];
         this.renderBarItem = this.renderBarItem.bind(this);
-        this.renderClickItemView = this.renderClickItemView.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
         this.scrollOffY = 0;
         this.renderItem = this.renderItem.bind(this);
+        this.lineView = null;
+        this.yValueTitle = null;
     }
 
+    componentWillMount() {
+        let { yAxis, xAxis } = this.state;
+        if (yAxis.show) {
+            this.createYValueTitle();
+        }
+        if (xAxis.show) {
+            this.createXValue()
+        }
+        this.createLineView();
+    }
+
+
+    createYValueTitle() {
+        let { viewHeight, yAxis } = this.state
+        this.yValueTitle = <Text style={{
+            fontSize: 9,
+            width: 10,
+            height: 100,
+            textAlign: 'center',
+            position: 'absolute',
+            textAlignVertical: 'center',
+            bottom: 5,
+            top: (viewHeight - 130) / 2,
+            left: 5,
+            textAlignVertical: 'center'
+        }}>{yAxis.name}</Text>
+    }
+
+    createXValue() {
+        let { perLength, perInterHeight, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = this.state;
+        let valueList = [];
+        let valueNum;
+        for (let i = 0; i <= valueInterval; i++) {
+            valueNum = maxNum * i / valueInterval;
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: i == 0 ? 0 : perInterHeight - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{valueNum}</Text>)
+        }
+        this.xValueView = (
+            <View style={{ width: viewWidth, height: 30 }}>
+                <View style={{ height: 30, alignItems: 'flex-start', flexDirection: 'row', marginLeft: yAxis.show ? 35 : -5, paddingTop: 3 }}>
+                    {valueList}
+                </View>
+                <Text
+                    style={{
+                        fontSize: 9,
+                        width: 100,
+                        height: 10,
+                        bottom: 5,
+                        textAlign: 'center',
+                        position: 'absolute',
+                        left: (viewWidth - 155) / 2 + 40,
+                        textAlignVertical: 'center'
+                    }}>{xAxis.name}</Text>
+            </View>
+        )
+    }
 
     renderBarItem() {
         let {
@@ -113,74 +170,64 @@ export default class VerticalBar extends React.Component {
         this.props.showToastView(i, series, newLocation);
     }
 
-    renderClickItemView() {
-        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, series } = this.state;
-        let clickViewList = [];
-        let clickAreHeight
-        for (let i = 0; i < intervalNum; i++) {
-            clickAreHeight = (rectWidth * rectNum + interWidth * 2);
-            clickViewList.push(
-                <TouchableHighlight
-                    underlayColor='rgba(34,142,230,0.10)'
-                    onPressIn={(e) => this.clickItemView(i, clickAreHeight, e.nativeEvent)}>
-                    <View style={{ width: svgWidth, height: clickAreHeight }} />
-                </TouchableHighlight>
-            )
-        };
-        return clickViewList;
-    }
-
-
     createLineView() {
-        let { itemWidth, perInterHeight, valueInterval } = this.state;
+        let { perLength, perInterHeight, valueInterval, yAxis } = this.state;
+        if (yAxis.show) {
+
+        }
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
-            lineList.push(<View key={i + 'line'} style={{ height: 1, width: itemWidth, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterHeight - 1 }} />)
+            lineList.push(<View key={i + 'line'} style={{ height: perLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterHeight - 1 }} />)
         }
         this.lineView = (
-            <View style={{ position: 'absolute', top: 10, right: 0, left: 0 }}>
+            <View style={{ position: 'absolute', top: 0, right: 10, left: yAxis.show ? 50 : 10, flexDirection: 'row' }}>
                 {lineList}
             </View>
         )
     }
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, itemWidth, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth, perInterHeight } = this.state;
         return (
-            <View style={{ height: itemWidth, width: viewWidth, backgroundColor: 'white', flexDirection: 'row' }}>
-                {yAxis.show ? <View style={{ width: 30, height: itemWidth, justifyContent: 'center', alignItems: 'center' }} >
-                    <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9 }}>{yAxis.data[index]}</Text>
-                </View> : null}
+            <View style={{ height: perLength, width: viewWidth, backgroundColor: 'white', flexDirection: 'row' }}>
+                {yAxis.show ? <Text numberOfLines={1} style={{ textAlign: 'right', fontSize: 9, width: 50, height: perLength, textAlignVertical: 'center', paddingRight: 5 }}>{yAxis.data[index]}</Text>
+                    : <View style={{ width: 10 }} />}
+                {this.lineView}
                 <TouchableHighlight
                     underlayColor='rgba(34,142,230,0.10)'
-                    onPressIn={(e) => this.clickItemView(index, itemWidth, e.nativeEvent)}>
-                    <View style={[{ width: barCanvasHeight, height: itemWidth, alignItems: 'flex-start', paddingTop: 10, paddingBottom: 10 }]}>
+                    onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
+                    <View style={[{ width: barCanvasHeight, height: perLength, alignItems: 'flex-start', paddingBottom: 10, paddingTop: 10 }, stack ? { flexDirection: 'row' } : {}]}>
                         {series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: mapItem.data[index] * perRectHeight, height: rectWidth }} />)}
                     </View>
                 </TouchableHighlight>
-
             </View>
         )
     }
 
     render() {
         let { maxNum, series, xAxis, yAxis, valueInterval, intervalNum,
-            viewWidth, viewHeight, svgHeight, svgWidth,
+            viewWidth, viewHeight, svgHeight, svgWidth, perLength,
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
-            offsetLength
+            offsetLength,
             } = this.state;
+        let offsetHeight = xAxis.show ? 40 : 20;
         return (
-            < View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]} >
-                <FlatList
-                    data={series[0].data}
-                    horizontal={false}
-                    renderItem={this.renderItem}
-                    keyExtractor={(item, index) => index}
-                    onScroll={(e) => {
-                        this.scrollOffY = e.nativeEvent.contentOffset.x;
-                        this.props.closeToastView();
-                    }}
-                    ItemSeparatorComponent={() => <View />}
-                />
+            < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >
+                <View style={{ marginTop: 10, height: viewHeight - offsetHeight }}>
+                    <FlatList
+                        data={series[0].data}
+                        horizontal={false}
+                        renderItem={this.renderItem}
+                        keyExtractor={(item, index) => index}
+                        onScroll={(e) => {
+                            this.scrollOffY = e.nativeEvent.contentOffset.y;
+                            this.props.closeToastView();
+                        }}
+                        getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
+                        ItemSeparatorComponent={() => <View />}
+                    />
+                </View>
+                {this.yValueTitle}
+                {this.xValueView}
             </View >
         )
     }

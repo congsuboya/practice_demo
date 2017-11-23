@@ -127,10 +127,10 @@ export default class HorizontalBar extends React.Component {
     }
 
     createLineView() {
-        let { itemWidth, perInterHeight, valueInterval } = this.state;
+        let { perLength, perInterHeight, valueInterval } = this.state;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
-            lineList.push(<View key={i + 'line'} style={{ height: 1, width: itemWidth, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterHeight - 1 }} />)
+            lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterHeight - 1 }} />)
         }
         this.lineView = (
             <View style={{ position: 'absolute', top: 10, right: 0, left: 0 }}>
@@ -140,7 +140,7 @@ export default class HorizontalBar extends React.Component {
     }
 
     createYValue() {
-        let { itemWidth, perInterHeight, maxNum, valueInterval, viewHeight, yAxis } = this.state;
+        let { perLength, perInterHeight, maxNum, valueInterval, viewHeight, yAxis } = this.state;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
@@ -200,21 +200,20 @@ export default class HorizontalBar extends React.Component {
             perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
         }
         return perBarList;
-        // series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: 12, height: mapItem.data[index] * perRectHeight }} />)
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, itemWidth, barCanvasHeight, stack, rectNum, rectWidth } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth } = this.state;
         return (
             <TouchableHighlight
                 underlayColor='rgba(34,142,230,0.10)'
-                onPressIn={(e) => this.clickItemView(index, itemWidth, e.nativeEvent)}>
-                <View style={{ height: viewHeight, width: itemWidth, backgroundColor: 'white' }}>
+                onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
+                <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
                     {this.lineView}
-                    <View style={[{ width: itemWidth, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
+                    <View style={[{ width: perLength, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
                         {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth)}
                     </View>
-                    {xAxis.show ? <View style={{ width: itemWidth, height: 30, justifyContent: 'center', alignItems: 'center' }} >
+                    {xAxis.show ? <View style={{ width: perLength, height: 30, justifyContent: 'center', alignItems: 'center' }} >
                         <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
                     </View> : null}
                 </View>

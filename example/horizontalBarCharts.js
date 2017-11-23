@@ -42,7 +42,7 @@ export default class HorizontalBarCharts extends React.Component {
         let { data, yMax } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bar style={{ height: 230, width: width }} option={this.props.option} />
+                <Bar style={{ height: 230, width: width }} option={this.props.option} valueInterval={3} />
             </View>
         )
     }
@@ -1355,7 +1355,7 @@ HorizontalBarCharts.defaultProps = {
         ],
         stack: false
     },
-    valueInterval: 3,
+    valueInterval: 6,
     style: { height: 400, width: window.width },
     interWidth: 10
 }

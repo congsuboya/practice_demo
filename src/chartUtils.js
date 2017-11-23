@@ -539,11 +539,11 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     let svgWidth = horizontal ? svgLength : chartWidth - xAxisLength;
     let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
 
-    let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 10 - yAxisLength;
+    let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 15 - yAxisLength;
 
     let perRectHeight = barCanvasHeight / maxNum;
 
-    let itemWidth = interWidth * 2 + rectWidth * rectNum;
+    let perLength = interWidth * 2 + rectWidth * rectNum;
     let perInterHeight = barCanvasHeight / valueInterval;
     return {
         xAxis,
@@ -560,7 +560,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         barCanvasHeight,
         perRectHeight,
         offsetLength,
-        itemWidth,
+        perLength,
         perInterHeight
     }
 }
