@@ -197,31 +197,22 @@ export default class LineChart extends React.Component {
         let lastNum;
         let firstNum;
         let initX;
+        let dStr;
         series.map((mapItem, innerIndex) => {
-           
             middleNum = mapItem.data[index];
             initX = perLength / 2;
             if (index == 0) {
                 lastNum = mapItem.data[index + 1];
-                
+                dStr = `M${initX} ${barCanvasHeight - middleNum * perRectHeight} L${perLength} ${barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight}`;
             } else if (index == intervalNum - 1) {
                 firstNum = mapItem.data[index - 1];
+                dStr = `M${0} ${barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight} L${initX} ${barCanvasHeight - middleNum * perRectHeight}`;
             } else {
                 firstNum = mapItem.data[index - 1];
                 lastNum = mapItem.data[index + 1];
+                dStr = `M${0} ${barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight} L${initX} ${barCanvasHeight - middleNum * perRectHeight} L${perLength} ${barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight}`;
             }
-            perLineList.push(<Path d={dStr} strokeWidth='1' stroke={ColorList[index]} fill='none' />)
-
-            let pointY = barCanvasHeight - middleNum * perRectHeight;
-
-            let pointY2 = barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight;
-            perLineList.push(<Line
-                x1={initX}
-                y1={pointY}
-                x2={perLength}
-                y2={pointY2}
-                stroke={ColorList[innerIndex]}
-                strokeWidth='1' />)
+            perLineList.push(<Path d={dStr} strokeWidth='1' stroke={ColorList[innerIndex]} fill='none' />)
         })
         return (
             <Svg width={perLength} height={barCanvasHeight}>
@@ -260,7 +251,6 @@ export default class LineChart extends React.Component {
                             this.scrollOffX = e.nativeEvent.contentOffset.x;
                             // this.props.closeToastView();
                         }}
-                        ItemSeparatorComponent={() => <View />}
                     />
                 </View>
                 {this.xValueTitle}
@@ -928,7 +918,7 @@ LineChart.defaultProps = {
         yAxis: {
             // type: 'category',
             type: 'value',
-            show: true,
+            show: false,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
 
         },
@@ -938,6 +928,12 @@ LineChart.defaultProps = {
                 type: 'bar',
                 barWidth: '60%',
                 data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+            },
+            {
+                name: '非直接访问',
+                type: 'bar',
+                barWidth: '60%',
+                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
             }
         ],
         stack: false
