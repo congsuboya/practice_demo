@@ -42,7 +42,7 @@ export default class HorizontalBarCharts extends React.Component {
         let { data, yMax } = this.state;
         return (
             <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bar style={{ height: 230, width: width }} option={this.props.option} />
+                <Bar style={{ height: 500, width: width }} option={this.props.option} />
             </View>
         )
     }
@@ -53,33 +53,27 @@ HorizontalBarCharts.defaultProps = {
         xAxis: {
             // type: 'category',
             type: 'value',
-            title: '访问量',
+            show: true,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
         },
         yAxis: {
             type: 'category',
             // type: 'value',
-            title: '星期',
+            show: true,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
-            axisTick: {
-                alignWithLabel: true
-            }
         },
         series: [
             {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10]
+                data: [10, 5]
             },
             {
                 name: '非直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [3]
+                data: [3, 4]
             }
         ],
         stack: false

@@ -521,6 +521,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     }
 
     svgLength = (rectWidth * rectNum + interWidth * 2) * intervalNum; //柱形图最大长度
+    let perLength = interWidth * 2 + rectWidth * rectNum;
     if (horizontal && svgLength < chartWidth - xAxisLength) {
         offsetLength = (chartWidth - xAxisLength - svgLength) / 2;
         svgLength = chartWidth - xAxisLength;
@@ -538,13 +539,10 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
 
     let svgWidth = horizontal ? svgLength : chartWidth - xAxisLength;
     let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
-
     let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 15 - yAxisLength;
-
     let perRectHeight = barCanvasHeight / maxNum;
+    let perInterLength = barCanvasHeight / valueInterval;
 
-    let perLength = interWidth * 2 + rectWidth * rectNum;
-    let perInterHeight = barCanvasHeight / valueInterval;
     return {
         xAxis,
         yAxis,
@@ -561,7 +559,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         perRectHeight,
         offsetLength,
         perLength,
-        perInterHeight
+        perInterLength
     }
 }
 

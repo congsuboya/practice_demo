@@ -9,6 +9,17 @@ import {
     FlatList
 } from 'react-native';
 
+import Svg, {
+    Circle,
+    Path,
+    Rect,
+    G,
+    TSpan,
+    Text as SvgText
+} from 'react-native-svg';
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
+
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 import { DrawXYAxisLine, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
@@ -33,6 +44,8 @@ export default class HorizontalBar extends React.Component {
         this.createLineView = this.createLineView.bind(this);
         this.createYValue = this.createYValue.bind(this);
         this.createXValueTitle = this.createXValueTitle.bind(this);
+        this.renderSingView = this.renderSingView.bind(this);
+        this.renderClickItemView = this.renderClickItemView.bind(this);
         this.yValueView = null;
         this.xValueTitle = null;
     }
@@ -47,9 +60,7 @@ export default class HorizontalBar extends React.Component {
             barCanvasHeight,
             interWidth,
             stack,
-            offsetLength,
-            cutNum,
-            cutApartNum
+            offsetLength
         } = this.state;
 
         let barViewList = [];
@@ -62,10 +73,10 @@ export default class HorizontalBar extends React.Component {
         let rotateY;
         let preTextWidth = 3;
 
-        for (let i = 0; i < cutApartNum; i++) {
+        for (let i = 0; i < intervalNum; i++) {
             let lastHeight = 0;
             series.some((mapItem, index) => {
-                rectHight = mapItem.data[i + hadedDrawNum * cutApartNum] * perRectHeight;
+                rectHight = mapItem.data[i] * perRectHeight;
                 if (rectHight < 2) {
                     rectHight = 2;
                 }
@@ -107,7 +118,7 @@ export default class HorizontalBar extends React.Component {
                             x={textX}
                             y={textY}
                             fontSize="10"
-                            textAnchor="middle">{mapItem.data[i + hadedDrawNum * cutApartNum]}</SvgText >
+                            textAnchor="middle">{mapItem.data[i]}</SvgText >
                     </G>
                 )
             })
@@ -127,10 +138,10 @@ export default class HorizontalBar extends React.Component {
     }
 
     createLineView() {
-        let { perLength, perInterHeight, valueInterval } = this.state;
+        let { perLength, perInterLength, valueInterval } = this.state;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
-            lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterHeight - 1 }} />)
+            lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.lineView = (
             <View style={{ position: 'absolute', top: 10, right: 0, left: 0 }}>
@@ -140,12 +151,12 @@ export default class HorizontalBar extends React.Component {
     }
 
     createYValue() {
-        let { perLength, perInterHeight, maxNum, valueInterval, viewHeight, yAxis } = this.state;
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = this.state;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
             valueNum = maxNum * (1 - i / valueInterval);
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterHeight - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{valueNum}</Text>)
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{valueNum}</Text>)
         }
         this.yValueView = (
             <View style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row' }}>
@@ -181,8 +192,9 @@ export default class HorizontalBar extends React.Component {
     }
 
     clickItemView(i, clickAreWidth, location) {
-        let { series } = this.state;
-        let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + 40) })
+        let { series, yAxis } = this.state;
+        let offsetWidth = yAxis.show ? 40 : 10
+        let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) })
         this.props.showToastView(i, series, newLocation);
     }
 
@@ -193,11 +205,11 @@ export default class HorizontalBar extends React.Component {
             for (let i = series.length - 1; i >= 0; i--) {
                 mapItem = series[i];
                 perBarList.push(
-                    < View key={i + 'listItem'} style={{ backgroundColor: ColorList[i], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
+                    < View key={i + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[i], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
                 )
             }
         } else {
-            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} style={{ backgroundColor: ColorList[innerIndex], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
+            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
         }
         return perBarList;
     }
@@ -205,29 +217,65 @@ export default class HorizontalBar extends React.Component {
     renderItem({ item, index }) {
         let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth } = this.state;
         return (
-            <TouchableHighlight
-                underlayColor='rgba(34,142,230,0.10)'
-                onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
-                <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
-                    {this.lineView}
+            <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
+                {this.lineView}
+                <TouchableHighlight
+                    underlayColor='rgba(34,142,230,0.10)'
+                    onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
                     <View style={[{ width: perLength, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
                         {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth)}
                     </View>
-                    {xAxis.show ? <View style={{ width: perLength, height: 30, justifyContent: 'center', alignItems: 'center' }} >
-                        <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
-                    </View> : null}
+                </TouchableHighlight>
+                {xAxis.show ? <View style={{ width: perLength, height: 30, justifyContent: 'center', alignItems: 'center' }} >
+                    <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
+                </View> : null}
+            </View>
+        )
+    }
+
+    renderClickItemView() {
+        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, svgHeight, series, offsetLength } = this.props;
+        let clickViewList = [];
+        for (let i = 0; i < intervalNum; i++) {
+            let clickAreWidth = (rectWidth * rectNum + interWidth * 2);
+            clickViewList.push(
+                <TouchableHighlight
+                    underlayColor='rgba(34,142,230,0.10)'
+                    onPressIn={(e) => this.clickItemView(i, clickAreWidth, e.nativeEvent)}>
+                    <View style={{ width: clickAreWidth, height: svgHeight - 10 }} />
+                </TouchableHighlight>
+            )
+        };
+        return clickViewList;
+    }
+
+    renderSingView() {
+        let { valueInterval, svgHeight, svgWidth, viewHeight,
+            barCanvasHeight, xAxis, rectWidth, rectNum,
+            interWidth, offsetLength, intervalNum } = this.state;
+        return (
+            <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
+                <View style={{ flex: 0, }}>
+                    < Svg width={svgWidth} height={svgHeight} >
+                        {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
+                        {this.renderBarItem()}
+                    </Svg>
                 </View>
-            </TouchableHighlight>
+                <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
+                    {this.renderClickItemView()}
+                </View>
+                {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
+            </View>
         )
     }
 
     render() {
-        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, svgWidth } = this.state;
+        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.state;
         let offsetWidth = yAxis.show ? 50 : 20;
         return (
             <View style={[{ flexDirection: 'row', backgroundColor: 'white', paddingLeft: 10 }, this.props.style]}>
                 {this.yValueView}
-                <View style={{ flex: 0, width: viewWidth - offsetWidth }}>
+                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - offsetWidth }}>
                     <FlatList
                         data={series[0].data}
                         horizontal={true}
@@ -239,7 +287,7 @@ export default class HorizontalBar extends React.Component {
                         }}
                         ItemSeparatorComponent={() => <View />}
                     />
-                </View>
+                </View>}
                 {this.xValueTitle}
             </View >
         )
