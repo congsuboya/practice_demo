@@ -18,7 +18,8 @@ import Svg, {
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
-import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView } from '../chartUtils';
+import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView, dealwithNum } from '../chartUtils';
+import { fromJS, is } from 'immutable';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 
@@ -26,9 +27,6 @@ export default class VerticalBar extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            ...props
-        }
         this.viewAnimatedList = [];
         this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
@@ -40,7 +38,7 @@ export default class VerticalBar extends React.Component {
     }
 
     componentWillMount() {
-        let { yAxis, xAxis } = this.state;
+        let { yAxis, xAxis } = this.props;
         if (yAxis.show) {
             this.createYValueTitle();
         }
@@ -52,7 +50,7 @@ export default class VerticalBar extends React.Component {
 
 
     createYValueTitle() {
-        let { viewHeight, yAxis } = this.state
+        let { viewHeight, yAxis } = this.props
         this.yValueTitle = <Text style={{
             fontSize: 9,
             width: 10,
@@ -68,12 +66,12 @@ export default class VerticalBar extends React.Component {
     }
 
     createXValue() {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = this.state;
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = this.props;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
             valueNum = maxNum * i / valueInterval;
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: i == 0 ? 0 : perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{valueNum}</Text>)
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: i == 0 ? 0 : perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.xValueView = (
             <View style={{ width: viewWidth, height: 30 }}>
@@ -107,7 +105,7 @@ export default class VerticalBar extends React.Component {
             interWidth,
             stack,
             offsetLength
-        } = this.state;
+        } = this.props;
 
         let barViewList = [];
         let rectHight;
@@ -142,30 +140,30 @@ export default class VerticalBar extends React.Component {
                 if (stack) {
                     lastWidth = rectHight + lastWidth;
                 } else {
-                    lastWidth = rectHight;
-                }
-                numlength = mapItem.data[i].toString().length;
-                if (numlength * 10 > rectHight) {
-                    barViewList.push(< SvgText x={lastWidth + 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="start">{mapItem.data[i]}</SvgText >)
-                } else {
-                    barViewList.push(< SvgText fill="white" x={lastWidth - 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="end">{mapItem.data[i]}</SvgText >)
-                }
-                if (!stack) {
                     lastWidth = 0;
                 }
+                // numlength = mapItem.data[i].toString().length;
+                // if (numlength * 10 > rectHight) {
+                //     barViewList.push(< SvgText x={lastWidth + 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="start">{mapItem.data[i]}</SvgText >)
+                // } else {
+                //     barViewList.push(< SvgText fill="white" x={lastWidth - 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="end">{mapItem.data[i]}</SvgText >)
+                // }
+                // if (!stack) {
+                //     lastWidth = 0;
+                // }
             })
         }
         return barViewList;
     }
 
     clickItemView(i, clickAreHeight, location) {
-        let { series } = this.state;
+        let { series } = this.props;
         let newLocation = Object.assign(location, { locationY: (i * clickAreHeight - this.scrollOffY + location.locationY + 10) }, { locationX: location.locationX + 50 })
         this.props.showToastView(i, series, newLocation);
     }
 
     createLineView() {
-        let { perLength, perInterLength, valueInterval, yAxis } = this.state;
+        let { perLength, perInterLength, valueInterval, yAxis } = this.props;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
             lineList.push(<View key={i + 'line'} style={{ height: perLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterLength - 1 }} />)
@@ -179,7 +177,7 @@ export default class VerticalBar extends React.Component {
 
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength } = this.props;
         return (
             <View style={{ height: perLength, width: viewWidth, backgroundColor: 'white', flexDirection: 'row' }}>
                 {yAxis.show ? <Text numberOfLines={1} style={{ textAlign: 'right', fontSize: 9, width: 50, height: perLength, textAlignVertical: 'center', paddingRight: 5 }}>{yAxis.data[index]}</Text>
@@ -201,7 +199,7 @@ export default class VerticalBar extends React.Component {
             viewWidth, viewHeight, svgHeight, svgWidth, perLength,
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
             offsetLength,
-            } = this.state;
+            } = this.props;
         return (
             <View style={{ width: viewWidth, height: svgHeight, flexDirection: 'row', backgroundColor: 'white' }}>
                 <View style={{ width: 48, height: svgHeight }}>
@@ -221,7 +219,7 @@ export default class VerticalBar extends React.Component {
     }
 
     renderClickItemView() {
-        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, series } = this.state;
+        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, series } = this.props;
         let clickViewList = [];
         let clickAreHeight
         for (let i = 0; i < intervalNum; i++) {
@@ -242,7 +240,7 @@ export default class VerticalBar extends React.Component {
             viewWidth, viewHeight, svgHeight, svgWidth, perLength,
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
             offsetLength,
-            } = this.state;
+            } = this.props;
         let offsetHeight = xAxis.show ? 40 : 20;
         return (
             < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >

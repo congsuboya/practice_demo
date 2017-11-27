@@ -31,6 +31,8 @@ import ColorList from '../globalVariable';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
+import { fromJS, is } from 'immutable';
+
 export default class Bubble extends React.Component {
 
 
@@ -54,6 +56,31 @@ export default class Bubble extends React.Component {
         this.renderPointView = this.renderPointView.bind(this);
         this.allPointViewList = [];
         this.xAxisViewList, this.yAxisViewList, this.xLineList, this.yLineList;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { height, width } = nextProps.style;
+            let viewHeight = height ? height : 300;
+            let viewWidth = width ? width : window.width;
+            this.state = {
+                viewHeight,
+                viewWidth,
+                selected: 0,
+                selectedItem: null,
+                svgWidth: viewWidth - 50,
+                svgHeight: viewHeight - 35,
+                interWidth: nextProps.interWidth,
+                valueInterval: nextProps.valueInterval,
+                ...nextProps.option,
+                ...getBubbleMaxMinNum(nextProps.option)
+            };
+            this.allPointViewList = [];
+            this.xAxisViewList = null;
+            this.yAxisViewList = null;
+            this.xLineList = null;
+            this.yLineList = null;
+        }
     }
 
     renderPointView() {

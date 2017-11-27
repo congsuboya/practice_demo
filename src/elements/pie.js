@@ -23,6 +23,7 @@ import ToastView from './toastView';
 let AnimatedPath = Animated.createAnimatedComponent(Path);
 let AnimatedG = Animated.createAnimatedComponent(G);
 
+import { is, fromJS } from 'immutable';
 
 export default class Pie extends React.Component {
 
@@ -58,8 +59,43 @@ export default class Pie extends React.Component {
         this.clickItemView = this.clickItemView.bind(this);
     }
 
-    componentWillMount() {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (is(fromJS(nextProps), fromJS(this.props)) && this.state.selectedIndex == nextState.selectedIndex) {
+            return false
+        }
+        return true;
+    }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.focused !== this.props.focused && !nextProps.focused) {
+            this.refs.toast.hide();
+        } else if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { height, width } = nextProps.style;
+            let viewHeight = height ? height : 300;
+            let viewWidth = width ? width : window.width;
+            let pieData = nextProps.option.series[0].data;
+            let svgCanvasHeight = viewHeight < viewWidth ? viewHeight : viewWidth;
+            let pieR = (svgCanvasHeight - 5) / 22 * 10;
+
+            let sum = 0;
+            pieData.map((item, index) => {
+                sum += item.value;
+            });
+            this.pieItemViewList = [];
+            this.setState({
+                selectedIndex: -1,
+                viewHeight,
+                viewWidth,
+                pieR,
+                sum,
+                pieData: pieData,
+                interNum: pieData.length,
+                cx: svgCanvasHeight / 2,
+                cy: svgCanvasHeight / 2,
+                svgCanvasHeight,
+                ...nextProps.option
+            });
+        }
     }
 
     renderPieItemView() {
@@ -139,7 +175,7 @@ export default class Pie extends React.Component {
         let { svgCanvasHeight, selectedIndex, cx, cy } = this.state;
         let itemViewList = this.renderPieItemView();
         return (
-            <View style={[{ alignItems: 'center' }, this.props.style]}>
+            <View style={[{ alignItems: 'center', justifyContent: 'center' }, this.props.style]}>
                 <View style={{ flex: 0 }}>
                     <Svg height={svgCanvasHeight} width={svgCanvasHeight}>
                         {itemViewList.map((item, index) => {

@@ -22,7 +22,8 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
-import { DrawXYAxisLine, DrawYXAxisValue, DrawYValueView } from '../chartUtils';
+import { DrawXYAxisLine, DrawYXAxisValue, DrawYValueView, dealwithNum } from '../chartUtils';
+import { is, fromJS } from 'immutable';
 
 const itemViewStyle = { justifyContent: 'center', flexDirection: 'row' };
 const itemViewStackStyle = { justifyContent: 'flex-end', flexDirection: 'column' };
@@ -32,10 +33,6 @@ export default class HorizontalBar extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = {
-            ...props,
-            topHeight: 10
-        }
         this.viewAnimatedList = [];
         this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
@@ -61,7 +58,7 @@ export default class HorizontalBar extends React.Component {
             interWidth,
             stack,
             offsetLength
-        } = this.state;
+        } = this.props;
 
         let barViewList = [];
         let rectHight;
@@ -99,46 +96,59 @@ export default class HorizontalBar extends React.Component {
                     lastHeight = rectHight;
                 }
 
-                numlength = mapItem.data[i].toString().length;
-                textX = xNum + rectWidth / 2 - 1 + offsetLength;
-                textY = barCanvasHeight + 10 - lastHeight + numlength * preTextWidth / 2;
-                textColor = 'white';
-                if (numlength * 10 > rectHight) {
-                    textY = barCanvasHeight + 4 - lastHeight - numlength * preTextWidth / 2;
-                    textColor = 'black';
-                }
+                // numlength = mapItem.data[i].toString().length;
+                // textX = xNum + rectWidth / 2 - 1 + offsetLength;
+                // textY = barCanvasHeight + 10 - lastHeight + numlength * preTextWidth / 2;
+                // textColor = 'white';
+                // if (numlength * 10 > rectHight) {
+                //     textY = barCanvasHeight + 4 - lastHeight - numlength * preTextWidth / 2;
+                //     textColor = 'black';
+                // }
 
-                if (!stack) {
-                    lastHeight = 0;
-                }
-                barViewList.push(
-                    <G rotate="-90" origin={`${textX},${textY + 5}`} >
-                        < SvgText
-                            fill={textColor}
-                            x={textX}
-                            y={textY}
-                            fontSize="10"
-                            textAnchor="middle">{mapItem.data[i]}</SvgText >
-                    </G>
-                )
+                // if (!stack) {
+                //     lastHeight = 0;
+                // }
+                // barViewList.push(
+                //     <G rotate="-90" origin={`${textX},${textY + 5}`} >
+                //         < SvgText
+                //             fill={textColor}
+                //             x={textX}
+                //             y={textY}
+                //             fontSize="10"
+                //             textAnchor="middle">{mapItem.data[i]}</SvgText >
+                //     </G>
+                // )
             })
         }
         return barViewList;
     }
 
     componentWillMount() {
-        let { yAxis, xAxis } = this.state;
+        let { yAxis, xAxis } = this.props;
         if (yAxis.show) {
-            this.createYValue();
+            this.createYValue(this.props);
         }
         if (xAxis.show) {
-            this.createXValueTitle()
+            this.createXValueTitle(this.props);
         }
-        this.createLineView();
+        this.createLineView(this.props);
     }
 
-    createLineView() {
-        let { perLength, perInterLength, valueInterval } = this.state;
+    componentWillReceiveProps(nextProps) {
+        if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { yAxis, xAxis } = this.props;
+            if (yAxis.show) {
+                this.createYValue(nextProps);
+            }
+            if (xAxis.show) {
+                this.createXValueTitle(nextProps)
+            }
+            this.createLineView(nextProps);
+        }
+    }
+
+    createLineView(props) {
+        let { perLength, perInterLength, valueInterval } = props;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
             lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
@@ -150,13 +160,13 @@ export default class HorizontalBar extends React.Component {
         )
     }
 
-    createYValue() {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = this.state;
+    createYValue(props) {
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = props;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
-            valueNum = maxNum * (1 - i / valueInterval);
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{valueNum}</Text>)
+            valueNum = maxNum - maxNum * i / valueInterval;
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.yValueView = (
             <View style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row' }}>
@@ -177,8 +187,8 @@ export default class HorizontalBar extends React.Component {
             </View>)
     }
 
-    createXValueTitle() {
-        let { viewWidth, xAxis } = this.state
+    createXValueTitle(props) {
+        let { viewWidth, xAxis, offsetLength } = props
         this.xValueTitle = <Text style={{
             fontSize: 9,
             width: 100,
@@ -186,13 +196,13 @@ export default class HorizontalBar extends React.Component {
             textAlign: 'center',
             position: 'absolute',
             bottom: 5,
-            left: (viewWidth - 50) / 2,
+            left: (viewWidth - 50 - offsetLength) / 2,
             textAlignVertical: 'center'
-        }}>{xAxis.name}</Text>
+        }}>{xAxis.name}</Text>;
     }
 
     clickItemView(i, clickAreWidth, location) {
-        let { series, yAxis } = this.state;
+        let { series, yAxis } = this.props;
         let offsetWidth = yAxis.show ? 40 : 10
         let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) })
         this.props.showToastView(i, series, newLocation);
@@ -215,7 +225,7 @@ export default class HorizontalBar extends React.Component {
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth } = this.props;
         return (
             <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
                 {this.lineView}
@@ -252,10 +262,10 @@ export default class HorizontalBar extends React.Component {
     renderSingView() {
         let { valueInterval, svgHeight, svgWidth, viewHeight,
             barCanvasHeight, xAxis, rectWidth, rectNum,
-            interWidth, offsetLength, intervalNum } = this.state;
+            interWidth, offsetLength, intervalNum } = this.props;
         return (
             <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
-                <View style={{ flex: 0, }}>
+                <View style={{ flex: 0 }}>
                     < Svg width={svgWidth} height={svgHeight} >
                         {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
                         {this.renderBarItem()}
@@ -270,12 +280,12 @@ export default class HorizontalBar extends React.Component {
     }
 
     render() {
-        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.state;
+        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.props;
         let offsetWidth = yAxis.show ? 50 : 20;
         return (
-            <View style={[{ flexDirection: 'row', backgroundColor: 'white', paddingLeft: 10 }, this.props.style]}>
+            <View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]}>
                 {this.yValueView}
-                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - offsetWidth }}>
+                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - offsetWidth, backgroundColor: 'green' }}>
                     <FlatList
                         data={series[0].data}
                         horizontal={true}

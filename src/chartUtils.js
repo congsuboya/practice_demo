@@ -17,7 +17,7 @@ const showHeight = 600;
 
 export function DrawDimension(DimData, type) {
     let DimensList = [];
-    console.log('lkjoijljlj', DimData);
+    if (!DimData) return DimensList;
     DimData.map((item, index) => {
         if (index < 15) {
             DimensList.push(
@@ -80,7 +80,7 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
     let valueNum;
     let innerMax = maxNum - offSetNum;
     for (let i = 0; i <= valueInterval; i++) {
-        valueNum = innerMax * (1 - i / valueInterval) + offSetNum;
+        valueNum = innerMax - innerMax * i / valueInterval + offSetNum;
         valueList.push(<Text
             numberOfLines={1}
             style={{
@@ -88,7 +88,7 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
                 fontSize: 9,
                 textAlign: 'right',
                 lineHeight: 10
-            }}>{parseInt(valueNum)}</Text>)
+            }}>{dealwithNum(valueNum.toString())}</Text>)
     }
     return (
         <View style={{ backgroundColor: 'white', width: 35, height: viewHeight, flexDirection: 'row' }}>
@@ -127,7 +127,7 @@ export function DrawBubbleXValueView(valueInterval, svgCanvasWidth, viewWidth, m
                 textAlign: 'center',
                 lineHeight: 10,
                 width: 30
-            }}>{parseInt(valueNum)}</Text>)
+            }}>{dealwithNum(valueNum.toString())}</Text>)
     }
     return (
         <View style={{ width: viewWidth, height: 35, backgroundColor: 'white' }}>
@@ -281,73 +281,6 @@ export function getMaxValue(maxData, valueInterval = 3) {
     }
     return Math.ceil(Math.ceil(maxData / tenCube) / valueInterval) * valueInterval * tenCube;
 }
-
-
-// export function dealWithOption(chartWidth, chartHeight, option, valueInterval, isLine = false) {
-//     let xAxis = Object.assign(initXAxis, option.xAxis);
-//     let yAxis = Object.assign(initYAxis, option.yAxis);
-//     let series = option.series;
-//     let horizontal = true;
-
-//     let offsetLength = 0;
-
-//     let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
-//     let intervalNum = series[0].data.length;//间隔
-
-//     if (xAxis.type == 'category' && yAxis.type == 'value') {
-//         horizontal = true;
-//     } else if (xAxis.type == 'value' && yAxis.type == 'category') {
-//         horizontal = false;
-//     }
-
-//     let svgLength = (horizontal ? chartWidth : chartHeight) - 50;
-//     let rectWidth = ((svgLength / intervalNum) - 20) / rectNum;//每个柱形图的宽度
-
-//     if (rectWidth < 12) {
-//         rectWidth = 12;
-//     } else if (rectWidth > 48) {
-//         rectWidth = 48
-//     }
-
-//     svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
-//     if (horizontal && svgLength < chartWidth - 50) {
-//         offsetLength = (chartWidth - 50 - svgLength) / 2;
-//         svgLength = chartWidth - 50;
-//     } else if (!horizontal && svgLength < chartHeight - 50) {
-//         offsetLength = (chartHeight - 50 - svgLength) / 2;
-//         svgLength = chartHeight - 50;
-//     }
-//     let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
-//     let axisHeight = 0;
-//     if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
-//         axisHeight = 35
-//     }
-
-//     let svgWidth = horizontal ? svgLength : chartWidth - 50;
-//     let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
-
-//     let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
-//     let perRectHeight = barCanvasHeight / maxNum;
-
-
-//     return {
-//         xAxis,
-//         yAxis,
-//         horizontal,
-//         series,
-//         svgLength,
-//         svgWidth,
-//         svgHeight,
-//         maxNum,
-//         intervalNum,
-//         rectNum,
-//         rectWidth,
-//         barCanvasHeight,
-//         perRectHeight,
-//         offsetLength,
-//         ...cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum)
-//     }
-// }
 
 function getMaxNum(series, intervalNum, valueInterval, stack = false) {
     let tempMaxList = [];
@@ -561,6 +494,19 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         perLength,
         perInterLength
     }
+}
+
+export function dealwithNum(numStr) {
+    let numLength = numStr.length;
+    let zeroLength = numLength - numStr.indexOf('0');
+    if (3 <= zeroLength && zeroLength < 6) {
+        numStr = numStr.substring(0, numLength - 3) + 'K';
+    } else if (6 <= zeroLength && zeroLength < 9) {
+        numStr = numStr.substring(0, numLength - 6) + 'M';
+    } else if (zeroLength >= 9) {
+        numStr = numStr.substring(0, numLength - 9) + 'B';
+    }
+    return numStr;
 }
 
 

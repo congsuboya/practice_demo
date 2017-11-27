@@ -11,6 +11,7 @@ import HorizontalBar from './horizontalBar';
 import VerticalBar from './verticalBar';
 import { dealWithOption } from '../chartUtils';
 
+import { is, fromJS } from 'immutable';
 import ToastView from './toastView';
 
 export default class Bar extends React.Component {
@@ -32,6 +33,31 @@ export default class Bar extends React.Component {
     }
 
 
+    shouldComponentUpdate(nextProps, nextState) {
+        if (is(fromJS(nextProps), fromJS(this.props))) {
+            return false
+        }
+        return true;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.focused !== this.props.focused && !nextProps.focused) {
+            this.refs.toast.hide();
+        } else if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { height, width } = nextProps.style;
+            let viewHeight = height ? height : 300;
+            let viewWidth = width ? width : window.width;
+            this.setState({
+                viewHeight,
+                viewWidth,
+                interWidth: nextProps.interWidth,
+                valueInterval: nextProps.valueInterval,
+                stack: nextProps.option.stack,
+                ...dealWithOption(viewWidth, viewHeight, nextProps.option, nextProps.valueInterval, nextProps.interWidth),
+            });
+        }
+    }
+
     showToastView(showClickIndex, series, location) {
         this.refs.toast.show(showClickIndex, series, location)
     }
@@ -42,7 +68,7 @@ export default class Bar extends React.Component {
 
     render() {
         return (
-            <View >
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 {this.state.horizontal ?
                     < HorizontalBar {...this.state } style={this.props.style} showToastView={this.showToastView} closeToastView={this.closeToastView} /> :
                     < VerticalBar {...this.state } style={this.props.style} showToastView={this.showToastView} closeToastView={this.closeToastView} />}

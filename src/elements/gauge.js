@@ -13,6 +13,7 @@ import {
     Platform
 } from 'react-native';
 
+import { fromJS, is } from 'immutable';
 const window = Dimensions.get('window');
 
 export default class Gauge extends Component {

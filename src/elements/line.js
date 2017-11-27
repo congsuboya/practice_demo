@@ -20,11 +20,12 @@ import Svg, {
 } from 'react-native-svg';
 
 const { Surface, Shape, Path, Group } = ART;
-import { dealWithOption } from '../chartUtils';
+import { dealWithOption, dealwithNum } from '../chartUtils';
 import ToastView from './toastView';
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
+import { is, fromJS } from 'immutable';
 
 const itemViewStyle = { justifyContent: 'center', flexDirection: 'row' };
 const itemViewStackStyle = { justifyContent: 'flex-end', flexDirection: 'column' };
@@ -62,16 +63,55 @@ export default class LineChart extends React.Component {
     componentWillMount() {
         let { yAxis, xAxis } = this.state;
         if (yAxis.show) {
-            this.createYValue();
+            this.createYValue(this.state);
         }
         if (xAxis.show) {
-            this.createXValueTitle()
+            this.createXValueTitle(this.state)
         }
-        this.createLineView();
+        this.createLineView(this.state);
     }
 
-    createLineView() {
-        let { perLength, perInterLength, valueInterval } = this.state;
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (is(fromJS(nextProps), fromJS(this.props))) {
+            return false
+        }
+        return true;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.focused !== this.props.focused && !nextProps.focused) {
+            this.refs.toast.hide();
+        } else if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { height, width } = nextProps.style;
+            let viewHeight = height ? height : 300;
+            let viewWidth = width ? width : window.width;
+            let tempState = {
+                viewHeight,
+                viewWidth,
+                interWidth: nextProps.interWidth,
+                valueInterval: nextProps.valueInterval,
+                stack: nextProps.option.stack,
+                selectIndex: -1,
+                ...dealWithOption(viewWidth, viewHeight, nextProps.option, nextProps.valueInterval, nextProps.interWidth, true)
+            }
+            this.setState({
+                ...tempState
+            });
+            this.scrollOffX = 0;
+
+            let { yAxis, xAxis } = tempState;
+            if (yAxis.show) {
+                this.createYValue(tempState);
+            }
+            if (xAxis.show) {
+                this.createXValueTitle(tempState)
+            }
+            this.createLineView(tempState);
+        }
+    }
+    createLineView(props) {
+        let { perLength, perInterLength, valueInterval } = props;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
             lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
@@ -83,13 +123,13 @@ export default class LineChart extends React.Component {
         )
     }
 
-    createYValue() {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = this.state;
+    createYValue(props) {
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = props;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
-            valueNum = maxNum * (1 - i / valueInterval);
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{valueNum}</Text>)
+            valueNum = maxNum - maxNum * i / valueInterval;
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.yValueView = (
             <View style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row' }}>
@@ -110,8 +150,8 @@ export default class LineChart extends React.Component {
             </View>)
     }
 
-    createXValueTitle() {
-        let { viewWidth, xAxis } = this.state
+    createXValueTitle(props) {
+        let { viewWidth, xAxis } = props
         this.xValueTitle = <Text style={{
             fontSize: 9,
             width: 100,
