@@ -46,27 +46,12 @@ export default class Gauge extends Component {
     }
 
 
-    startAnimation() {
-        let precent = 0
-        if (this.state.finished == undefined) {
-            precent = 0;
-        } else if (this.state.finished > 100) {
-            precent = 1;
-        } else {
-            precent = this.state.finished / 100
-        }
-
-        this.state.rotateValue.setValue(0);//弹动没有变化
-        Animated.timing(this.state.rotateValue, {
-            delay: 100,
-            toValue: precent,        //属性目标值
-            duration: 3000    //动画执行时间
-        }).start();
-    }
-
     componentDidMount() {
         let { max, data } = this.state;
-        let precent = max / 100 * data.value
+        let precent = max / 100 * data.value;
+        if (precent > 100) {
+            precent = 100;
+        }
         Animated.timing(this.rotateValue, {
             delay: 100,
             toValue: precent,        //属性目标值
@@ -77,15 +62,14 @@ export default class Gauge extends Component {
     render() {
 
         let { imageWidth, viewHeight, viewWidth, aLength, data } = this.state;
+        let innerR = imageWidth * 40 / 135;
         return (
             <View style={[{ flex: 0, alignItems: 'center', backgroundColor: 'white', paddingTop: 5 }, this.props.style]}>
 
                 <View style={{
-                    width: imageWidth, height: imageWidth / 2 + 5,
-                    position: 'absolute', top: 5, alignItems: 'center',
-                    borderTopRightRadius: imageWidth / 2, borderTopLeftRadius: imageWidth / 2,
-                    backgroundColor: '#f5f8fa',
-                    paddingBottom: 5
+                    width: imageWidth, height: imageWidth / 2,
+                    position: 'absolute', top: (viewHeight - imageWidth / 2 - 5) / 2, alignItems: 'center',
+                    justifyContent: 'flex-end'
                 }}>
                     <Image
                         style={{ width: imageWidth, height: imageWidth / 2, position: 'absolute' }}
@@ -102,9 +86,6 @@ export default class Gauge extends Component {
                         style={{
                             width: imageWidth - 80,
                             height: 10,
-                            position: 'absolute',
-                            left: 35,
-                            bottom: 7,
                             flexDirection: 'row',
                             transform: [
                                 {
@@ -119,7 +100,8 @@ export default class Gauge extends Component {
                                 height: 10,
                             }} />
                     </Animated.View>
-                    <View style={{ position: 'absolute', width: 160, height: 80, borderTopRightRadius: 80, borderTopLeftRadius: 80, bottom: 5, backgroundColor: 'white', alignItems: 'center', justifyContent: 'center' }} >
+
+                    <View style={{ position: 'absolute', width: innerR * 2, height: innerR, borderTopRightRadius: innerR, borderTopLeftRadius: innerR, bottom: 0, backgroundColor: 'white', alignItems: 'center', justifyContent: 'flex-end' }} >
                         <Text style={{ fontSize: 40, color: '#228EE6', textAlign: 'center' }}>{data.value}</Text>
                         <Text style={{ fontSize: 13, color: '#3A3F00', textAlign: 'center' }}>{data.name}</Text>
                     </View>

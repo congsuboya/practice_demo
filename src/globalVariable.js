@@ -1,3 +1,13 @@
 
-const ColorList = ['#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae', '#749f83', '#ca8622', '#bda29a', '#6e7074', '#546570', '#c4ccd3'];
+const ColorList = ["#45abff",
+                    "#6be6c1",
+                    "#ffa51f",
+                    "#ffd64e",
+                    "#3fd183",
+                    "#6ea7c7",
+                    "#5b7cf4",
+                    "#00bfd5",
+                    "#8bc7ff",
+                    "#f48784",
+                    "#d25537"];
 export default ColorList;

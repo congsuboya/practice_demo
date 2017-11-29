@@ -53,6 +53,7 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
     for (let i = 0; i <= intervalNum; i++) {
         if (horizontal) {
             perLine = <Line
+                key={'line' + i}
                 x1='0'
                 y1={10 + interval * i}
                 x2={lineLight}
@@ -62,6 +63,7 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
             />
         } else {
             perLine = <Line
+                key={'line' + i}
                 x1={2 + interval * i}
                 y1={offSetNum}
                 x2={2 + interval * i}
