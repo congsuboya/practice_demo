@@ -95,6 +95,7 @@ export default class HorizontalBar extends React.Component {
                 } else {
                     lastHeight = 0;
                 }
+
             })
         }
         return barViewList;
@@ -225,8 +226,8 @@ export default class HorizontalBar extends React.Component {
     renderClickItemView() {
         let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, svgHeight, series, offsetLength } = this.props;
         let clickViewList = [];
+        let clickAreWidth = (rectWidth * rectNum + interWidth * 2);
         for (let i = 0; i < intervalNum; i++) {
-            let clickAreWidth = (rectWidth * rectNum + interWidth * 2);
             clickViewList.push(
                 <TouchableHighlight
                     underlayColor='rgba(34,142,230,0.10)'
@@ -239,19 +240,18 @@ export default class HorizontalBar extends React.Component {
     }
 
     renderSingView() {
-        let { valueInterval, svgHeight, svgWidth, viewHeight,
+        let { valueInterval, svgHeight, svgWidth, viewHeight, viewWidth,
             barCanvasHeight, xAxis, rectWidth, rectNum,
             interWidth, offsetLength, intervalNum } = this.props;
-        alert(offsetLength);
         return (
-            <View style={{ flex: 1, backgroundColor: 'yellow', height: viewHeight, width: svgWidth }}>
+            <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
                 <View style={{ flex: 0 }}>
                     < Svg width={svgWidth} height={svgHeight} >
                         {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
                         {this.renderBarItem()}
                     </Svg>
                 </View>
-                <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: 10, right: 0, flexDirection: 'row', paddingLeft: offsetLength, backgroundColor: 'pink' }}>
+                <View style={{ width: svgWidth, height: svgHeight - 20, position: 'absolute', top: 10, left: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
                     {this.renderClickItemView()}
                 </View>
                 {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
@@ -267,7 +267,8 @@ export default class HorizontalBar extends React.Component {
                 {this.yValueView}
                 {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - offsetWidth, backgroundColor: 'green' }}>
                     <FlatList
-                        data={series[0].data}
+                        data={xAxis.data}
+                        alwaysBounceHorizontal={false}
                         horizontal={true}
                         renderItem={this.renderItem}
                         keyExtractor={(item, index) => index}

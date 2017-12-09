@@ -41,7 +41,7 @@ function DrawDimenIcon(type, index) {
         case 'biViewPie':
             return <View style={{ height: 8, width: 8, backgroundColor: ColorList[index % ColorList.length], borderRadius: 4 }} />
         default:
-            return <View style={{ height: 8, width: 8, backgroundColor: ColorList[index % ColorList.length] }} />
+            return <View style={{ height: 8, width: 8, borderRadius: 1, backgroundColor: ColorList[index % ColorList.length] }} />
     }
 }
 
@@ -53,7 +53,6 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
     for (let i = 0; i <= intervalNum; i++) {
         if (horizontal) {
             perLine = <Line
-                key={'line' + i}
                 x1='0'
                 y1={10 + interval * i}
                 x2={lineLight}
@@ -63,7 +62,6 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
             />
         } else {
             perLine = <Line
-                key={'line' + i}
                 x1={2 + interval * i}
                 y1={offSetNum}
                 x2={2 + interval * i}
@@ -412,7 +410,7 @@ const initXAxis = {
     show: true,
     type: 'category',//'category','time','long'
     position: 'bottom',//'top'
-    name: 'x轴名称',
+    name: '',
     nameRotate: 0,//坐标轴旋转角度
     nameLocation: 'start',//'middle' 或者 'center' 'end'
 }
@@ -420,7 +418,7 @@ const initYAxis = {
     show: true,
     type: 'value',//'value','time','long'
     position: 'left',//'right'
-    name: 'y轴名称',
+    name: '',
     nameRotate: 0,//坐标轴旋转角度
     nameLocation: 'end',//'middle' 或者 'center' 'end'
 }

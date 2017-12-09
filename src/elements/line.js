@@ -73,7 +73,7 @@ export default class LineChart extends React.Component {
 
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (is(fromJS(nextProps), fromJS(this.props))) {
+        if (is(fromJS(nextProps), fromJS(this.props)) && nextState.selectIndex == this.state.selectIndex) {
             return false
         }
         return true;
@@ -191,7 +191,6 @@ export default class LineChart extends React.Component {
                 path = new Path().moveTo(0, (barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight)).lineTo(initX, (barCanvasHeight - middleNum * perRectHeight)).lineTo(perLength, (barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight))
                 dStr = `M${0} ${barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight} L${initX} ${barCanvasHeight - middleNum * perRectHeight} L${perLength} ${barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight}`;
             }
-            // perLineList.push(<Path d={dStr} strokeWidth='1' stroke={ColorList[innerIndex]} fill='none' />)
             perLineList.push(path);
         })
 
@@ -205,7 +204,6 @@ export default class LineChart extends React.Component {
 
     clickChart(clickItemIndex, clickAreWidth, location) {
         let { series, selectIndex, yAxis } = this.state;
-
         if (selectIndex != clickItemIndex) {
             let offsetWidth = yAxis.show ? 40 : 10
             let newLocation = Object.assign(location, { locationX: (clickItemIndex * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) })
@@ -276,6 +274,7 @@ export default class LineChart extends React.Component {
                 <View style={{ flex: 0, width: viewWidth - offsetWidth }}>
                     <FlatList
                         data={series[0].data}
+                        alwaysBounceHorizontal={false}
                         horizontal={true}
                         renderItem={this.renderItem}
                         keyExtractor={(item, index) => index}

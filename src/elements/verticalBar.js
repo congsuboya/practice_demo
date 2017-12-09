@@ -6,7 +6,8 @@ import {
     ScrollView,
     Text,
     TouchableHighlight,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 
 import Svg, {
@@ -40,17 +41,30 @@ export default class VerticalBar extends React.Component {
     componentWillMount() {
         let { yAxis, xAxis } = this.props;
         if (yAxis.show) {
-            this.createYValueTitle();
+            this.createYValueTitle(this.props);
         }
         if (xAxis.show) {
-            this.createXValue()
+            this.createXValue(this.props)
         }
-        this.createLineView();
+        this.createLineView(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!is(fromJS(nextProps), fromJS(this.props))) {
+            let { yAxis, xAxis } = nextProps;
+            if (yAxis.show) {
+                this.createYValueTitle(nextProps);
+            }
+            if (xAxis.show) {
+                this.createXValue(nextProps)
+            }
+            this.createLineView(nextProps);
+        }
     }
 
 
-    createYValueTitle() {
-        let { viewHeight, yAxis } = this.props
+    createYValueTitle(props) {
+        let { viewHeight, yAxis } = props
         this.yValueTitle = <Text style={{
             fontSize: 9,
             width: 10,
@@ -65,8 +79,8 @@ export default class VerticalBar extends React.Component {
         }}>{yAxis.name}</Text>
     }
 
-    createXValue() {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = this.props;
+    createXValue(props) {
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = props;
         let valueList = [];
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
@@ -142,15 +156,6 @@ export default class VerticalBar extends React.Component {
                 } else {
                     lastWidth = 0;
                 }
-                // numlength = mapItem.data[i].toString().length;
-                // if (numlength * 10 > rectHight) {
-                //     barViewList.push(< SvgText x={lastWidth + 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="start">{mapItem.data[i]}</SvgText >)
-                // } else {
-                //     barViewList.push(< SvgText fill="white" x={lastWidth - 3} y={yNum + (rectWidth - 10) / 2 + offsetLength} fontSize="10" textAnchor="end">{mapItem.data[i]}</SvgText >)
-                // }
-                // if (!stack) {
-                //     lastWidth = 0;
-                // }
             })
         }
         return barViewList;
@@ -162,8 +167,8 @@ export default class VerticalBar extends React.Component {
         this.props.showToastView(i, series, newLocation);
     }
 
-    createLineView() {
-        let { perLength, perInterLength, valueInterval, yAxis } = this.props;
+    createLineView(props) {
+        let { perLength, perInterLength, valueInterval, yAxis } = props;
         let lineList = [];
         for (let i = 0; i <= valueInterval; i++) {
             lineList.push(<View key={i + 'line'} style={{ height: perLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterLength - 1 }} />)
@@ -180,7 +185,7 @@ export default class VerticalBar extends React.Component {
         let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength } = this.props;
         return (
             <View style={{ height: perLength, width: viewWidth, backgroundColor: 'white', flexDirection: 'row' }}>
-                {yAxis.show ? <Text numberOfLines={1} style={{ textAlign: 'right', fontSize: 9, width: 50, height: perLength, textAlignVertical: 'center', paddingRight: 5 }}>{yAxis.data[index]}</Text>
+                {yAxis.show ? <Text numberOfLines={1} style={[{ textAlign: 'right', fontSize: 9, width: 50, height: perLength, textAlignVertical: 'center', paddingRight: 5 }, Platform.OS == 'ios' ? { paddingTop: (perLength - 10) / 2 } : {}]}>{yAxis.data[index]}</Text>
                     : <View style={{ width: 10 }} />}
                 {this.lineView}
                 <TouchableHighlight
@@ -247,6 +252,7 @@ export default class VerticalBar extends React.Component {
                 {offsetLength > 0 ? this.renderSingView() : <View style={{ marginTop: 10, height: viewHeight - offsetHeight }}>
                     <FlatList
                         data={series[0].data}
+                        alwaysBounceVertical={false}
                         horizontal={false}
                         renderItem={this.renderItem}
                         keyExtractor={(item, index) => index}
