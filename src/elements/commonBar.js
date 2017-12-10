@@ -9,6 +9,9 @@ const window = Dimensions.get('window');
 
 import HorizontalBar from './horizontalBar';
 import VerticalBar from './verticalBar';
+
+import NativeBar from './nativeBar';
+
 import { dealWithOption } from '../chartUtils';
 
 import { is, fromJS } from 'immutable';

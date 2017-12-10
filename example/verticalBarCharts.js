@@ -11,6 +11,80 @@ const { width, height } = Dimensions.get('window');
 
 import { Bar } from '../src';
 
+import NativeBar from '../src/elements/nativeBar';
+
+
+const nativeOption ={
+    "perLength": 116,
+    "barCanvasHeight": 295,
+    "offsetLength": 109,
+    "rectWidth": 12,
+    "intervalNum": 2,
+    "perRectHeight": 24.583333333333332,
+    "svgHeight": 450,
+    "svgWidth": 310,
+    "viewHeight": 500,
+    "svgLength": 450,
+    "viewWidth": 360,
+    "interWidth": 10,
+    "valueInterval": 3,
+    "stack": false,
+    "perInterLength": 98.33333333333333,
+    "xAxis": {
+        "data": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thusssss",
+            "Fri",
+            "Sat",
+            "Sun",
+            "wqe",
+            "sdr",
+            "opu"
+        ],
+        "nameLocation": "start",
+        "name": "",
+        "nameRotate": 0,
+        "position": "bottom",
+        "type": "value",
+        "show": true
+    },
+    "yAxis": {
+        "data": [
+            "Mon",
+            "Tue",
+            "Wed",
+            "Thusssss",
+            "Fri",
+            "Sat",
+            "Sun",
+            "wqe",
+            "sdr",
+            "opu"
+        ],
+        "nameLocation": "end",
+        "name": "",
+        "nameRotate": 0,
+        "position": "left",
+        "type": "category",
+        "show": true
+    },
+    "rectNum": 2,
+    "horizontal": false,
+    "maxNum": 12,
+    "series": [
+        {
+            "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,],
+            "name": "直接访问"
+        },
+        {
+            "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+            "name": "非直接访问"
+        }
+    ]
+}
+
 export default class HorizontalBarCharts extends React.Component {
 
     static navigationOptions = {
@@ -41,8 +115,8 @@ export default class HorizontalBarCharts extends React.Component {
     render() {
         let { data, yMax } = this.state;
         return (
-            <View style={{ flex: 1, alignItems: 'center' }}>
-                <Bar style={{ height: 500, width: width }} option={this.props.option} />
+            <View style ={{flex:1,backgroundColor:'white'}}>
+                <Bar style={{ height: 230, width: width }} option={this.props.option} valueInterval={3} />
             </View>
         )
     }
@@ -67,13 +141,13 @@ HorizontalBarCharts.defaultProps = {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5]
+                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
             },
             {
                 name: '非直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [3, 4]
+                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
             }
         ],
         stack: false

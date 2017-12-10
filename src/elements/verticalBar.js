@@ -23,6 +23,7 @@ import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView, dealwithNum } from '..
 import { fromJS, is } from 'immutable';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
+import NativeBar from './nativeBar';
 
 export default class VerticalBar extends React.Component {
 
@@ -250,23 +251,16 @@ export default class VerticalBar extends React.Component {
         return (
             < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >
                 {offsetLength > 0 ? this.renderSingView() : <View style={{ marginTop: 10, height: viewHeight - offsetHeight }}>
-                    <FlatList
-                        data={series[0].data}
-                        alwaysBounceVertical={false}
-                        horizontal={false}
-                        renderItem={this.renderItem}
-                        keyExtractor={(item, index) => index}
-                        onScroll={(e) => {
-                            this.scrollOffY = e.nativeEvent.contentOffset.y;
-                            this.props.closeToastView();
-                        }}
-                        getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
-                        ItemSeparatorComponent={() => <View />}
-                    />
+                    <NativeBar  style={{ marginTop: 10,marginLeft:14, height: viewHeight - offsetHeight -8 }}
+                    option ={{
+                        ...this.props
+                    }}
+                     />
                 </View>}
                 {this.yValueTitle}
                 {this.xValueView}
             </View >
+
         )
     }
 }

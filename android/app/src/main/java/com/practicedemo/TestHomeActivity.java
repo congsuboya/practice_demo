@@ -3,13 +3,14 @@ package com.practicedemo;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.practicedemo.BarSrc.BarView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +33,14 @@ public class TestHomeActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.test_home_layout);
-        initData();
-
-        myRecyclerView = (RecyclerView) findViewById(R.id.test_recycleView);
-
-        myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        myRecyclerView.setAdapter(mAdapter = new HomeAdapter());
+       LinearLayout holder = (LinearLayout) findViewById(R.id.home_layout);
+       holder.addView(new BarView(this));
+//        initData();
+//
+//        myRecyclerView = (RecyclerView) findViewById(R.id.test_recycleView);
+//
+//        myRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+//        myRecyclerView.setAdapter(mAdapter = new HomeAdapter());
 
     }
 
