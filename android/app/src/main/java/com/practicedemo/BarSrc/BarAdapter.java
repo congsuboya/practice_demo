@@ -34,7 +34,6 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
     public BarItemVIewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         BarItemVIewHolder holder = new BarItemVIewHolder(LayoutInflater.from(context).inflate(R.layout.bar_item_layout, parent, false));
         RecyclerView.LayoutParams itemHolderParam = (RecyclerView.LayoutParams) holder.allHolder.getLayoutParams();
-//        itemHolderParam.width = (int) myBarParams.barCanvasHeight + dip2px(context, 50);
         itemHolderParam.height = (int) myBarParams.perLength;
         holder.allHolder.setLayoutParams(itemHolderParam);
 
@@ -42,28 +41,25 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
             holder.barHolder.setOrientation(LinearLayout.VERTICAL);
         }
 
-        View.OnTouchListener barlistener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                /**
-                 * Projection 用于将屏幕坐标转换为地理位置坐标
-                 */
-                int x = (int) event.getX();
-                int y = (int) event.getY();
-                Log.e("clickojlkjoijjljoij",x+"___"+y);
-                return false;
-            }
-        };
-
-        holder.barHolder.setOnTouchListener(barlistener);
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(BarItemVIewHolder holder, int position) {
+    public void onBindViewHolder(final BarItemVIewHolder holder, int position) {
         holder.xAsixText.setText(mData.get(position));
         addLineView(holder.lineHolder);
         addBarView(holder.barHolder, position);
+
+
+//        if (mOnItemClickLitener != null){
+//            holder.barHolder.setOnClickListener(new View.OnClickListener(){
+//                @Override
+//                public void onClick(View v){
+//                    int pos = holder.getLayoutPosition();
+//                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
+//                }
+//            });
+//        }
     }
 
     public BarAdapter(List<String> mData, Context context, List<JsonSeries> seriesList, JsonBarParams myBarParams) {
@@ -103,7 +99,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
      */
     private void addLineView(LinearLayout view) {
         if (view.getChildCount() != (myBarParams.valueInterval + 1)) {
-            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(dip2px(context,1), (int) myBarParams.perLength);
+            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(dip2px(context, 1), (int) myBarParams.perLength);
             lineParams.setMargins((int) (myBarParams.perInterLength), 0, 0, 0);
 
             LinearLayout.LayoutParams initLineParams = new LinearLayout.LayoutParams(1, (int) myBarParams.perLength);
@@ -142,6 +138,17 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
             barView.setLayoutParams(barParams);
             view.addView(barView);
         }
+    }
+
+
+    public interface OnItemClickLitener {
+        void onItemClick(View view, int position);
+    }
+
+    private OnItemClickLitener mOnItemClickLitener;
+
+    public void setOnItemClickLitener(OnItemClickLitener mOnItemClickLitener) {
+        this.mOnItemClickLitener = mOnItemClickLitener;
     }
 
 

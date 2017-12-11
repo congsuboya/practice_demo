@@ -3,13 +3,22 @@ package com.practicedemo.BarSrc;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.LinearLayout;
 
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +82,7 @@ public class BarView extends LinearLayout {
         myBarParams.interWidth = dip2px((float) option.getDouble("interWidth"));
         myBarParams.intervalNum = option.getInt("intervalNum");
         myBarParams.stack = option.getBoolean("stack");
-        myBarParams.perLength =dip2px((float) option.getDouble("perLength"));
+        myBarParams.perLength = dip2px((float) option.getDouble("perLength"));
         myBarParams.perRectHeight = dip2px((float) option.getDouble("perRectHeight"));
         myBarParams.perInterLength = dip2px((float) option.getDouble("perInterLength"));
 
@@ -95,7 +104,51 @@ public class BarView extends LinearLayout {
 
         barAdapter = new BarAdapter(mDatas, context, seriesList, myBarParams);
         listView.setAdapter(barAdapter);
+        mGestureDetectorCompat = new GestureDetectorCompat(context, new MyGestureListener());
+        listView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                mGestureDetectorCompat.onTouchEvent(e);
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            }
+
+        });
+
         this.addView(listView);
+    }
+
+    private GestureDetectorCompat mGestureDetectorCompat;
+
+    private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            View childe = listView.findChildViewUnder(e.getX(), e.getY());
+            int position = listView.getChildLayoutPosition(childe);
+            if (childe != null) {
+                Log.e("uuuuuuuuuuu", e.getX() + "__" + childe.getY());
+
+                WritableMap event = Arguments.createMap();
+                event.putDouble("locationY", px2dip(childe.getY()));
+                event.putDouble("locationX", px2dip(e.getX()));
+                event.putDouble("position", position);
+
+                ReactContext reactContext = (ReactContext) getContext();
+                reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                        getId(),
+                        "topChange",
+                        event);
+            }
+            return true;
+        }
     }
 
 

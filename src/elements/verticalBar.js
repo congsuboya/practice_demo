@@ -164,7 +164,7 @@ export default class VerticalBar extends React.Component {
 
     clickItemView(i, clickAreHeight, location) {
         let { series } = this.props;
-        let newLocation = Object.assign(location, { locationY: (i * clickAreHeight - this.scrollOffY + location.locationY + 10) }, { locationX: location.locationX + 50 })
+        let newLocation = Object.assign(location, { locationY: (location.locationY + clickAreHeight / 2) }, { locationX: location.locationX })
         this.props.showToastView(i, series, newLocation);
     }
 
@@ -251,11 +251,13 @@ export default class VerticalBar extends React.Component {
         return (
             < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >
                 {offsetLength > 0 ? this.renderSingView() : <View style={{ marginTop: 10, height: viewHeight - offsetHeight }}>
-                    <NativeBar  style={{ marginTop: 10,marginLeft:14, height: viewHeight - offsetHeight -8 }}
-                    option ={{
-                        ...this.props
-                    }}
-                     />
+                    <NativeBar
+                        style={{ marginTop: 10, marginLeft: 14, height: viewHeight - offsetHeight - 8 }}
+                        option={{
+                            ...this.props
+                        }}
+                        onClickItem={(e) => this.clickItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
+                    />
                 </View>}
                 {this.yValueTitle}
                 {this.xValueView}
