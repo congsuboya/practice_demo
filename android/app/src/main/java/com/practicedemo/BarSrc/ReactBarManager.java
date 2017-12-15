@@ -4,9 +4,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.common.MapBuilder;
 import com.facebook.react.uimanager.SimpleViewManager;
 import com.facebook.react.uimanager.ThemedReactContext;
 import com.facebook.react.uimanager.annotations.ReactProp;
+
+import java.util.Map;
 
 /**
  * Created by liuchao on 2017/12/10.
@@ -28,5 +31,12 @@ public class ReactBarManager extends SimpleViewManager<BarView> {
     public void setOption(BarView view, @Nullable ReadableMap option){
         Log.e("yojwojrwlerjwoerjwir",option.toString());
         view.initBarData(option);
+    }
+
+    @javax.annotation.Nullable
+    @Override
+    public Map<String, Object> getExportedCustomDirectEventTypeConstants() {
+        return MapBuilder.<String, Object>of(
+                "listOnScroll", MapBuilder.of("registrationName", "nativeOnScroll"));
     }
 }

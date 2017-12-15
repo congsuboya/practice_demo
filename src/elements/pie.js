@@ -112,8 +112,9 @@ export default class Pie extends React.Component {
         let radian = 0;
         let textradian = 0;
 
-        let textValue;
+
         pieData.map((item, index) => {
+            let textValue;
             textradian = 0;
             if (360 * (item.value / sum) > 20) {
                 textradian = (perPieDeg + 180 * (item.value / sum)) * Math.PI / 180;
@@ -131,7 +132,7 @@ export default class Pie extends React.Component {
                 <Path
                     onPress={(e) => this.clickItemView(index, item, textValue, e.nativeEvent)}
                     key={index}
-                    fill={ColorList[index]}
+                    fill={ColorList[index % ColorList.length]}
                     d={`M${cx} ${cy},L${xList[index]} ${yList[index]},A${pieR} ${pieR}, 0 ${(360 * (item.value / sum)) > 180 ? '1' : '0'} 1 ${xList[index + 1]},${yList[index + 1]} Z`} />
             );
 
@@ -157,16 +158,16 @@ export default class Pie extends React.Component {
     }
 
     clickItemView(index, item, textValue, location) {
-        let { selectedIndex } = this.state;
+        let { selectedIndex, viewHeight } = this.state;
         if (selectedIndex != index) {
             this.setState({
                 selectedIndex: index
             });
             let series = [{
                 name: item.name,
-                data: [item.value + '--' + textValue]
+                data: [item.value]
             }]
-            this.refs.toast.show(0, series, location, ColorList[index]);
+            this.refs.toast.show(0, series, location, viewHeight, ColorList[index % ColorList.length]);
         }
     }
 

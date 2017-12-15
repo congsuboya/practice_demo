@@ -9,9 +9,6 @@ const window = Dimensions.get('window');
 
 import HorizontalBar from './horizontalBar';
 import VerticalBar from './verticalBar';
-
-import NativeBar from './nativeBar';
-
 import { dealWithOption } from '../chartUtils';
 
 import { is, fromJS } from 'immutable';
@@ -37,7 +34,7 @@ export default class Bar extends React.Component {
 
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (is(fromJS(nextProps), fromJS(this.props))) {
+        if (is(fromJS(nextState), fromJS(this.state))) {
             return false
         }
         return true;
@@ -61,8 +58,8 @@ export default class Bar extends React.Component {
         }
     }
 
-    showToastView(showClickIndex, series, location) {
-        this.refs.toast.show(showClickIndex, series, location)
+    showToastView(showClickIndex, series, location, svgHeight) {
+        this.refs.toast.show(showClickIndex, series, location, svgHeight)
     }
 
     closeToastView() {

@@ -15,19 +15,20 @@ const showWidth = 360;
 const showHeight = 600;
 
 
-export function DrawDimension(DimData, type) {
+export function DrawDimension(DimData, type, limitNum = 15) {
     let DimensList = [];
     if (!DimData) return DimensList;
     DimData.map((item, index) => {
-        if (index < 15) {
+        if (index < limitNum) {
             DimensList.push(
-                <View style={{ height: 13, flex: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View key={index + 'dimension'} style={{ height: 13, flex: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                     {DrawDimenIcon(type, index)}
                     <Text numberOfLines={1} style={{ fontSize: 9, flex: 0, color: '#8FA1B2', marginRight: 8, marginLeft: 2 }}>{item}</Text>
                 </View>
             )
         }
     });
+
     return DimensList;
 }
 
@@ -45,6 +46,25 @@ function DrawDimenIcon(type, index) {
     }
 }
 
+export function deepCopy(o) {//深层复制
+    if (o instanceof Array) {
+        let n = [];
+        for (let i = 0; i < o.length; ++i) {
+            n[i] = deepCopy(o[i]);
+        }
+        return n;
+
+    } else if (o instanceof Object) {
+        let n = {}
+        for (let i in o) {
+            n[i] = deepCopy(o[i]);
+        }
+        return n;
+    } else {
+        return o;
+    }
+}
+
 
 export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, offSetNum = 2) {
     let YAxisList = [];
@@ -53,6 +73,7 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
     for (let i = 0; i <= intervalNum; i++) {
         if (horizontal) {
             perLine = <Line
+                key={'line' + i}
                 x1='0'
                 y1={10 + interval * i}
                 x2={lineLight}
@@ -62,6 +83,7 @@ export function DrawXYAxisLine(yHeight, lineLight, horizontal, intervalNum = 3, 
             />
         } else {
             perLine = <Line
+                key={'line' + i}
                 x1={2 + interval * i}
                 y1={offSetNum}
                 x2={2 + interval * i}
@@ -82,6 +104,7 @@ export function DrawYValueView(valueInterval, svgCanvasHeight, viewHeight, maxNu
     for (let i = 0; i <= valueInterval; i++) {
         valueNum = innerMax - innerMax * i / valueInterval + offSetNum;
         valueList.push(<Text
+            key={'text' + i}
             numberOfLines={1}
             style={{
                 marginTop: i == 0 ? 5 : (svgCanvasHeight / valueInterval - 10),
@@ -187,7 +210,7 @@ export function DrawYXAxisValue(axis, horizontal, svgLength, perLength, offsetLe
     let aXisViews = [];
     let perViewStyle = { alignItems: 'center', justifyContent: 'center', height: horizontal ? 25 : perLength, width: horizontal ? perLength : 25 };
     let perTextStyle = {
-        flex: 0, fontSize: 9, color: '#292F33', textAlign: horizontal ? 'center' : 'right', height: 10, width: 25,
+        flex: 0, fontSize: 9, color: '#292F33', textAlign: horizontal ? 'center' : 'right', height: 10, width: 30,
         transform: [{ rotate: horizontal ? '-45deg' : '0deg' }]
     };
     axis.data.some((item, index) => {
@@ -282,30 +305,54 @@ export function getMaxValue(maxData, valueInterval = 3) {
     return Math.ceil(Math.ceil(maxData / tenCube) / valueInterval) * valueInterval * tenCube;
 }
 
+
+
 function getMaxNum(series, intervalNum, valueInterval, stack = false) {
     let tempMaxList = [];
+    let tempMinList = [];
     if (stack) {
         for (let i = 0; i < intervalNum; i++) {
             let tempNum = 0;
+            let tempMinNum = 0;
             series.map((item) => {
-                tempNum += item.data[i];
+                if (item.data[i] > 0) {
+                    tempNum += item.data[i];
+                } else {
+                    tempMinNum += item.data[i];
+                }
             });
+            tempMinList.push(tempMinNum);
             tempMaxList.push(tempNum);
         }
     } else {
         series.map((item) => {
             tempMaxList.push(Math.max.apply(null, item.data));
+            tempMinList.push(Math.min.apply(null, item.data));
         });
     }
     let maxData = Math.max.apply(null, tempMaxList);
-    let numLength = maxData.toString().split('.')[0].length;
+    let minData = Math.min.apply(null, tempMinList);
+
+    let absNum = Math.abs(minData) > maxData ? Math.abs(minData) : maxData;
+
+    let numLength = absNum.toString().split('.')[0].length;
     let tenCube = 1;
     if (numLength > 2) {
         tenCube = Math.pow(10, numLength - 2);
     }
 
-    let maxValue = Math.ceil(Math.ceil(maxData / tenCube) / valueInterval) * valueInterval * tenCube;
-    return maxValue;
+    let maxValue = Math.ceil(Math.ceil(absNum / tenCube) / valueInterval) * valueInterval * tenCube;
+    let perLengthNum = maxValue / valueInterval;
+    let negaNumInterval = 0;
+    if (minData < 0) {
+        let absMinNum = Math.abs(minData);
+        negaNumInterval = Math.ceil(absMinNum / perLengthNum);
+    }
+    return {
+        'maxNum': maxValue,
+        'negaNumInterval': negaNumInterval,
+        'minNum': minData,
+    };
 }
 
 
@@ -423,10 +470,20 @@ const initYAxis = {
     nameLocation: 'end',//'middle' 或者 'center' 'end'
 }
 
-
+/**
+ *
+ * @param chartWidth
+ * @param chartHeight
+ * @param option         x,y以及每个维度的数据等相关信息
+ * @param valueInterval  纵轴横线的数量
+ * @param interWidth     每个分组的paddingLeft和paddingRight
+ * @param isLine
+ * @returns {{xAxis: *, yAxis: *, horizontal: boolean, series: Array, svgLength: number, svgWidth: number, svgHeight: number, maxNum: *, intervalNum, rectNum: *, rectWidth: number, barCanvasHeight: number, perRectHeight: number, offsetLength: number, perLength: number, perInterLength: number}}
+ */
 export function dealWithOption(chartWidth, chartHeight, option, valueInterval, interWidth, isLine = false) {
-    let xAxis = Object.assign(initXAxis, option.xAxis);
-    let yAxis = Object.assign(initYAxis, option.yAxis);
+    let xAxis = deepCopy(Object.assign(initXAxis, option.xAxis));
+    let yAxis = deepCopy(Object.assign(initYAxis, option.yAxis));
+    //x轴的文字描述的空间
     let xAxisLength = xAxis.show ? 50 : 10;
     let yAxisLength = yAxis.show ? 50 : 10;
 
@@ -435,9 +492,9 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     let horizontal = true;
     let offsetLength = 0;
 
-    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
+    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个分组里的view的个数，比如柱形图有堆叠和不堆叠的类型
     let intervalNum = series[0].data.length;//间隔
-
+    //value 表示度量，Y轴是度量，表示是横着的，category是分组，还有个维度（比如series就是维度的集合）
     if (xAxis.type == 'category' && yAxis.type == 'value') {
         horizontal = true;
     } else if (xAxis.type == 'value' && yAxis.type == 'category') {
@@ -445,7 +502,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     }
 
     let svgLength = (horizontal ? chartWidth - xAxisLength : chartHeight - yAxisLength);
-    let rectWidth = ((svgLength / intervalNum) - interWidth * 2) / rectNum;//每个柱形图的宽度
+    let rectWidth = ((svgLength / intervalNum) - interWidth * 2) / rectNum;//分组中每个view的宽度
 
     if (rectWidth < 12) {
         rectWidth = 12;
@@ -455,6 +512,8 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
 
     svgLength = (rectWidth * rectNum + interWidth * 2) * intervalNum; //柱形图最大长度
     let perLength = interWidth * 2 + rectWidth * rectNum;
+
+    //当svgLength小于chartWidth的时候，需要计算svgView在chartview中的margin
     if (horizontal && svgLength < chartWidth - xAxisLength) {
         offsetLength = (chartWidth - xAxisLength - svgLength) / 2;
         svgLength = chartWidth - xAxisLength;
@@ -464,7 +523,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     }
 
     let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
-
+    //横轴文字的高度
     let axisHeight = 0;
     if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
         axisHeight = 35
@@ -472,6 +531,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
 
     let svgWidth = horizontal ? svgLength : chartWidth - xAxisLength;
     let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
+    //绘制区域的高度
     let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 15 - yAxisLength;
     let perRectHeight = barCanvasHeight / maxNum;
     let perInterLength = barCanvasHeight / valueInterval;
@@ -498,13 +558,15 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
 
 export function dealwithNum(numStr) {
     let numLength = numStr.length;
-    let zeroLength = numLength - numStr.indexOf('0');
-    if (3 <= zeroLength && zeroLength < 6) {
-        numStr = numStr.substring(0, numLength - 3) + 'K';
-    } else if (6 <= zeroLength && zeroLength < 9) {
-        numStr = numStr.substring(0, numLength - 6) + 'M';
-    } else if (zeroLength >= 9) {
-        numStr = numStr.substring(0, numLength - 9) + 'B';
+    if (numStr.indexOf('0') > -1) {
+        let zeroLength = numLength - numStr.indexOf('0');
+        if (3 <= zeroLength && zeroLength < 6) {
+            numStr = numStr.substring(0, numLength - 3) + 'K';
+        } else if (6 <= zeroLength && zeroLength < 9) {
+            numStr = numStr.substring(0, numLength - 6) + 'M';
+        } else if (zeroLength >= 9) {
+            numStr = numStr.substring(0, numLength - 9) + 'B';
+        }
     }
     return numStr;
 }

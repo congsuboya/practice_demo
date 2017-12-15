@@ -22,13 +22,14 @@ export default class ToastView extends React.Component {
         this.renderShowItemList = this.renderShowItemList.bind(this);
     }
 
-    show(showClickIndex, series, location, showColor = null) {
+    show(showClickIndex, series, location, svgHeight, showColor = null) {
         this.setState({
             show: true,
             series: series,
             location: location,
             showClickIndex: showClickIndex,
-            showColor: showColor
+            showColor: showColor,
+            svgHeight: svgHeight
         })
     }
 
@@ -37,23 +38,36 @@ export default class ToastView extends React.Component {
             show: false,
             series: null,
             location: null,
-            showClickIndex: null
+            showClickIndex: null,
+            svgHeight: null
         })
     }
 
+    toThousands(num) {
+        num = (num || 0).toString();
+        let result = '';
+        while (num.length > 3) {
+            result = ',' + num.slice(-3) + result;
+            num = num.slice(0, num.length - 3);
+        }
+        if (num) { result = num + result; }
+        return result;
+    }
     renderShowItemList() {
         let { showClickIndex, series, showColor } = this.state;
         let itemList = [];
-        this.maxWidth = 0
+        this.maxWidth = 0;
+        let dataNum = 0;
         series.map((item, index) => {
             let tempWidth = (item.name + item.data[showClickIndex]).toString().length * 10 + 12;
             if (tempWidth > this.maxWidth) {
                 this.maxWidth = tempWidth;
             }
+            dataNum = this.toThousands(item.data[showClickIndex]);
             itemList.push(
-                <View style={{ flex: 0, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ height: 6, width: 6, marginRight: 2, backgroundColor: showColor ? showColor : ColorList[index] }} />
-                    <Text style={{ color: 'white', fontSize: 9 }} >{`${item.name}：${item.data[showClickIndex]}`}</Text>
+                <View key={'toast' + index} style={{ flex: 0, flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ height: 6, width: 6, marginRight: 2, backgroundColor: showColor ? showColor : ColorList[index % ColorList.length] }} />
+                    <Text style={{ color: 'white', fontSize: 9 }} >{`${item.name}：${dataNum}`}</Text>
                 </View>
             )
         });
@@ -67,8 +81,13 @@ export default class ToastView extends React.Component {
             if (window.width - viewX < this.maxWidth) {
                 viewX = viewX - this.maxWidth - 10;
             }
+            let itemViewHeight = itemView.length * 13 > 110 ? 110 : itemView.length * 13;
+            let locationY = this.state.location.locationY;
+            if (itemViewHeight + locationY > this.state.svgHeigth / 2) {
+                locationY = this.state.svgHeigth / 2 - itemViewHeight
+            }
             return (
-                <View style={{ position: 'absolute', backgroundColor: '#0E4068', top: this.state.location.locationY, left: viewX, padding: 5 }}>
+                <View style={{ position: 'absolute', backgroundColor: '#0E4068', top: locationY, left: viewX, padding: 5 }}>
                     <ScrollView
                         style={{ maxHeight: 110 }}
                     >

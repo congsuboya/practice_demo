@@ -14,7 +14,7 @@ import { Bar } from '../src';
 import NativeBar from '../src/elements/nativeBar';
 
 
-const nativeOption ={
+const nativeOption = {
     "perLength": 116,
     "barCanvasHeight": 295,
     "offsetLength": 109,
@@ -115,7 +115,7 @@ export default class HorizontalBarCharts extends React.Component {
     render() {
         let { data, yMax } = this.state;
         return (
-            <View style ={{flex:1,backgroundColor:'white'}}>
+            <View style={{ flex: 1, backgroundColor: 'white' }}>
                 <Bar style={{ height: 230, width: width }} option={this.props.option} valueInterval={3} />
             </View>
         )
@@ -128,26 +128,82 @@ HorizontalBarCharts.defaultProps = {
             // type: 'category',
             type: 'value',
             show: true,
-            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            data: ["Mon",
+                "Tue",
+                "Wed",
+                "Thusssss",
+                "Fri",
+                "Sat",
+                "Sun",
+                "wqe",
+                "sdr",
+                "opu", "Mon",
+                "Tue",
+                "Wed",
+                "Thusssss",
+                "Fri",
+                "Sat",
+                "Sun",
+                "wqe",
+                "sdr",
+                "opu"],
         },
         yAxis: {
             type: 'category',
             // type: 'value',
             show: true,
-            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            data: ["Mon",
+                "Tue",
+                "Wed",
+                "Thusssss",
+                "Fri",
+                "Sat",
+                "Sun",
+                "wqe",
+                "sdr",
+                "opu", "Mon",
+                "Tue",
+                "Wed",
+                "Thusssss",
+                "Fri",
+                "Sat",
+                "Sun",
+                "wqe",
+                "sdr",
+                "opu"],
         },
         series: [
             {
-                name: '直接访问',
-                type: 'bar',
-                barWidth: '60%',
-                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
+                "name": "直接访问"
             },
             {
-                name: '非直接访问',
-                type: 'bar',
-                barWidth: '60%',
-                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+                "name": "非直接访问"
+            },
+            {
+                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
+                "name": "直接访问"
+            },
+            {
+                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+                "name": "非直接访问"
+            },
+            {
+                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
+                "name": "直接访问"
+            },
+            {
+                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+                "name": "非直接访问"
+            },
+            {
+                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
+                "name": "直接访问"
+            },
+            {
+                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+                "name": "非直接访问"
             }
         ],
         stack: false

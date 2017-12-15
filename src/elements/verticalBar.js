@@ -22,7 +22,6 @@ import ColorList from '../globalVariable';
 import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView, dealwithNum } from '../chartUtils';
 import { fromJS, is } from 'immutable';
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
-
 import NativeBar from './nativeBar';
 
 export default class VerticalBar extends React.Component {
@@ -48,6 +47,13 @@ export default class VerticalBar extends React.Component {
             this.createXValue(this.props)
         }
         this.createLineView(this.props);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (is(fromJS(nextProps), fromJS(this.props))) {
+            return false
+        }
+        return true;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -97,8 +103,7 @@ export default class VerticalBar extends React.Component {
                     style={{
                         fontSize: 9,
                         width: 100,
-                        height: 10,
-                        bottom: 5,
+                        bottom: 3,
                         textAlign: 'center',
                         position: 'absolute',
                         left: (viewWidth - 155) / 2 + 40,
@@ -149,7 +154,7 @@ export default class VerticalBar extends React.Component {
                         y={yNum + offsetLength}
                         width={rectHight}
                         height={rectWidth}
-                        fill={ColorList[index]}
+                        fill={ColorList[index % ColorList.length]}
                     />
                 );
                 if (stack) {
@@ -163,9 +168,15 @@ export default class VerticalBar extends React.Component {
     }
 
     clickItemView(i, clickAreHeight, location) {
-        let { series } = this.props;
+        let { series, barCanvasHeight } = this.props;
+        let newLocation = Object.assign(location, { locationY: (i * clickAreHeight - this.scrollOffY + location.locationY + 10) }, { locationX: location.locationX + 50 })
+        this.props.showToastView(i, series, newLocation, barCanvasHeight);
+    }
+
+    clickNativeItemView(i, clickAreHeight, location) {
+        let { series, barCanvasHeight } = this.props;
         let newLocation = Object.assign(location, { locationY: (location.locationY + clickAreHeight / 2) }, { locationX: location.locationX })
-        this.props.showToastView(i, series, newLocation);
+        this.props.showToastView(i, series, newLocation, barCanvasHeight);
     }
 
     createLineView(props) {
@@ -193,7 +204,7 @@ export default class VerticalBar extends React.Component {
                     underlayColor='rgba(34,142,230,0.10)'
                     onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
                     <View style={[{ width: barCanvasHeight, height: perLength, alignItems: 'flex-start', paddingBottom: 10, paddingTop: 10 }, stack ? { flexDirection: 'row' } : {}]}>
-                        {series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex], width: mapItem.data[index] * perRectHeight, height: rectWidth }} />)}
+                        {series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex % ColorList.length], width: mapItem.data[index] * perRectHeight, height: rectWidth }} />)}
                     </View>
                 </TouchableHighlight>
             </View>
@@ -247,22 +258,36 @@ export default class VerticalBar extends React.Component {
             barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
             offsetLength,
             } = this.props;
-        let offsetHeight = xAxis.show ? 40 : 20;
+        let offsetHeight = xAxis.show ? 30 : 10;
+        console.log('joijwoiejrowijrwr', series);
         return (
             < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >
-                {offsetLength > 0 ? this.renderSingView() : <View style={{ marginTop: 10, height: viewHeight - offsetHeight }}>
-                    <NativeBar
-                        style={{ marginTop: 10, marginLeft: 14, height: viewHeight - offsetHeight - 8 }}
+                {offsetLength > 0 ? this.renderSingView() : <View style={{ height: viewHeight - offsetHeight }}>
+                    {Platform.OS == 'ios' ? <FlatList
+                        data={yAxis.data}
+                        alwaysBounceVertical={false}
+                        horizontal={false}
+                        renderItem={this.renderItem}
+                        keyExtractor={(item, index) => index}
+                        onScroll={(e) => {
+                            this.scrollOffY = e.nativeEvent.contentOffset.y;
+                            this.props.closeToastView();
+                        }}
+                        getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
+                        ItemSeparatorComponent={() => <View />}
+                    /> : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetHeight }}
                         option={{
                             ...this.props
                         }}
-                        onClickItem={(e) => this.clickItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
-                    />
+                        rnOnScroll={(e) => {
+                            this.props.closeToastView();
+                        }}
+                        onClickItem={(e) => this.clickNativeItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
+                        />}
                 </View>}
                 {this.yValueTitle}
                 {this.xValueView}
             </View >
-
         )
     }
 }

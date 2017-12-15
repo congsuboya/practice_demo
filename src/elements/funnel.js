@@ -60,7 +60,7 @@ export default class Funnel extends Component {
             } else {
                 initX = item.value * perWidth;
                 polygonPath = `${midpointX - lastX - minWidth / 2},${(index - 1) * perHeight} ${midpointX + lastX + minWidth / 2},${(index - 1) * perHeight} ${midpointX + initX + minWidth / 2},${index * perHeight} ${midpointX - initX - minWidth / 2},${index * perHeight}`;
-                trapezoidViews.push(<Polygon points={polygonPath} fill={ColorList[index - 1]} />);
+                trapezoidViews.push(<Polygon points={polygonPath} fill={ColorList[(index - 1) % ColorList.length]} />);
                 lastX = initX;
                 if (perHeight > 10) {
                     trapezoidViews.push(<SvgText x={midpointX} y={(index - 1) * perHeight + (perHeight - 10) / 2} fontSize='9' fill='white' textAnchor='middle' >{funnelData[index - 1].name}</SvgText>);
@@ -70,7 +70,7 @@ export default class Funnel extends Component {
 
         if (lastX) {
             polygonPath = `${midpointX - lastX - minWidth / 2},${(interNum - 1) * perHeight} ${midpointX + lastX + minWidth / 2},${(interNum - 1) * perHeight} ${midpointX + minWidth / 2},${interNum * perHeight} ${midpointX - minWidth / 2},${interNum * perHeight}`;
-            trapezoidViews.push(<Polygon points={polygonPath} fill={ColorList[interNum]} />);
+            trapezoidViews.push(<Polygon points={polygonPath} fill={ColorList[interNum % ColorList.length]} />);
             if (perHeight > 10) {
                 trapezoidViews.push(<SvgText x={midpointX} y={(interNum - 1) * perHeight + (perHeight - 10) / 2} fontSize='9' fill='white' textAnchor='middle' >{funnelData[interNum - 1].name}</SvgText>);
             }
@@ -80,14 +80,14 @@ export default class Funnel extends Component {
 
 
     clickItemView(location) {
-        let { perHeight, funnelData, maxWidth, viewWidth } = this.state;
+        let { perHeight, funnelData, maxWidth, viewWidth, viewHeight } = this.state;
         let clickIndex = parseInt(location.locationY / perHeight)
         let series = [{
             name: funnelData[clickIndex].name,
             data: [funnelData[clickIndex].value]
         }]
         let newLocation = Object.assign(location, { locationX: location.locationX + (viewWidth - maxWidth) / 2 })
-        this.refs.toast.show(0, series, location, ColorList[clickIndex])
+        this.refs.toast.show(0, series, location, viewHeight, ColorList[clickIndex % ColorList.length])
     }
 
     render() {

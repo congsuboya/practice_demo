@@ -45,6 +45,7 @@ export default class HorizontalBar extends React.Component {
         this.renderClickItemView = this.renderClickItemView.bind(this);
         this.yValueView = null;
         this.xValueTitle = null;
+        this.yValueViewWisth = 20;
     }
 
     renderBarItem(hadedDrawNum) {
@@ -78,24 +79,21 @@ export default class HorizontalBar extends React.Component {
                     rectHight = 2;
                 }
                 xNum = (i * 2 + 1) * interWidth + i * rectWidth * rectNum;
-                if (!stack) {
-                    xNum = xNum + index * rectWidth;
-                }
-                barViewList.push(
-                    <AnimatedRect
-                        x={xNum + offsetLength}
-                        y={barCanvasHeight + 10 - lastHeight}
-                        width={rectWidth}
-                        height={-rectHight}
-                        fill={ColorList[index]}
-                    />
-                );
                 if (stack) {
                     lastHeight = rectHight + lastHeight;
                 } else {
-                    lastHeight = 0;
+                    lastHeight = rectHight;
+                    xNum = xNum + index * rectWidth;
                 }
-
+                barViewList.push(
+                    <Rect
+                        x={xNum + offsetLength}
+                        y={barCanvasHeight + 10 - lastHeight}
+                        width={rectWidth}
+                        height={rectHight}
+                        fill={ColorList[index]}
+                    />
+                );
             })
         }
         return barViewList;
@@ -110,6 +108,13 @@ export default class HorizontalBar extends React.Component {
             this.createXValueTitle(this.props);
         }
         this.createLineView(this.props);
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (is(fromJS(nextProps), fromJS(this.props))) {
+            return false
+        }
+        return true;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -144,19 +149,19 @@ export default class HorizontalBar extends React.Component {
         let valueNum;
         for (let i = 0; i <= valueInterval; i++) {
             valueNum = maxNum - maxNum * i / valueInterval;
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.yValueView = (
-            <View style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row' }}>
+            <View
+                onLayout={(e) => this.yValueViewWisth = e.nativeEvent.layout.width}
+                style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row', justifyContent: 'flex-end' }}>
                 <Text
                     style={{
                         fontSize: 9,
                         width: 10,
-                        height: 100,
-                        left: 3,
+                        marginBottom: 30,
+                        alignSelf: 'center',
                         textAlign: 'center',
-                        position: 'absolute',
-                        top: (viewHeight - 140) / 2,
                         textAlignVertical: 'center'
                     }}>{yAxis.name}</Text>
                 <View style={{ height: viewHeight, alignItems: 'flex-end', marginLeft: 2, maxWidth: 40, marginRight: 5 }}>
@@ -171,21 +176,20 @@ export default class HorizontalBar extends React.Component {
             this.xValueTitle = <Text style={{
                 fontSize: 9,
                 width: 100,
-                height: 10,
                 textAlign: 'center',
                 position: 'absolute',
-                bottom: 5,
-                left: (viewWidth - 50 - offsetLength) / 2,
+                bottom: 3,
+                left: (viewWidth - 60 - offsetLength) / 2,
                 textAlignVertical: 'center'
             }}>{xAxis.name}</Text>;
         }
     }
 
     clickItemView(i, clickAreWidth, location) {
-        let { series, yAxis } = this.props;
+        let { series, yAxis, barCanvasHeight } = this.props;
         let offsetWidth = yAxis.show ? 40 : 10
         let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) })
-        this.props.showToastView(i, series, newLocation);
+        this.props.showToastView(i, series, newLocation, barCanvasHeight);
     }
 
     renderPerBarView(index, series, perRectHeight, stack, rectWidth) {
@@ -195,17 +199,17 @@ export default class HorizontalBar extends React.Component {
             for (let i = series.length - 1; i >= 0; i--) {
                 mapItem = series[i];
                 perBarList.push(
-                    < View key={i + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[i], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
+                    < View key={i + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[i % ColorList.length], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
                 )
             }
         } else {
-            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
+            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex % ColorList.length], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
         }
         return perBarList;
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth } = this.props;
+        let { viewHeight, series, perRectHeight, perLength, xAxis, barCanvasHeight, stack, rectNum, rectWidth } = this.props;
         return (
             <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
                 {this.lineView}
@@ -261,11 +265,11 @@ export default class HorizontalBar extends React.Component {
 
     render() {
         let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.props;
-        let offsetWidth = yAxis.show ? 50 : 20;
+        // let offsetWidth = yAxis.show ? 40 : 20;
         return (
             <View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]}>
                 {this.yValueView}
-                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - offsetWidth, backgroundColor: 'green' }}>
+                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - this.yValueViewWisth - 10, backgroundColor: 'white' }}>
                     <FlatList
                         data={xAxis.data}
                         alwaysBounceHorizontal={false}

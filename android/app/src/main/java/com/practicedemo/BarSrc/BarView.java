@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.LinearLayout;
 
 import com.facebook.react.bridge.Arguments;
@@ -19,6 +20,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import com.facebook.react.uimanager.events.TouchEventType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ public class BarView extends LinearLayout {
     private float scale = -1;
     private JsonBarParams myBarParams;
 
+    int listState;
 
     public BarView(Context context) {
         super(context);
@@ -105,6 +108,30 @@ public class BarView extends LinearLayout {
         barAdapter = new BarAdapter(mDatas, context, seriesList, myBarParams);
         listView.setAdapter(barAdapter);
         mGestureDetectorCompat = new GestureDetectorCompat(context, new MyGestureListener());
+        listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                listState = newState;
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (listState >= AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL && Math.abs(dy) > 5) {
+                    Log.e("ijoiwjerw", dx + "__" + dy);
+                    WritableMap event = Arguments.createMap();
+                    event.putDouble("dy", dy);
+                    ReactContext reactContext = (ReactContext) getContext();
+                    reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
+                            getId(),
+                            "listOnScroll",
+                            event);
+                }
+
+            }
+        });
         listView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
             @Override
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {

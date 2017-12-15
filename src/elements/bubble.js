@@ -27,7 +27,7 @@ import ToastView from './toastView';
 
 const window = Dimensions.get('window');
 
-import ColorList from '../globalVariable';
+import ColorList, { ColorListOpcity, ColorListBubble } from '../globalVariable';
 
 const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
@@ -59,7 +59,9 @@ export default class Bubble extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (!is(fromJS(nextProps), fromJS(this.props))) {
+        if (nextProps.focused !== this.props.focused && !nextProps.focused) {
+            this.refs.toast.hide();
+        } else if (!is(fromJS(nextProps), fromJS(this.props))) {
             let { height, width } = nextProps.style;
             let viewHeight = height ? height : 300;
             let viewWidth = width ? width : window.width;
@@ -108,7 +110,7 @@ export default class Bubble extends React.Component {
                         cx={cx}
                         cy={cy}
                         r={cr}
-                        fill={ColorList[index]}
+                        fill={ColorList[index % ColorList.length]}
                     />
                 )
             })
@@ -120,7 +122,7 @@ export default class Bubble extends React.Component {
 
     clickPointItem(colorIndex, index, indexItem, cx, cy) {
 
-        let { selected, xAxis, yAxis, symbolSize, label } = this.state;
+        let { selected, xAxis, yAxis, symbolSize, label, viewHeight } = this.state;
         if (selected != index && indexItem) {
             this.setState({
                 selected: index,
@@ -136,7 +138,7 @@ export default class Bubble extends React.Component {
                 locationY: cy + 10,
                 locationX: cx + 35
             }
-            this.refs.toast.show(0, series, location, ColorList[colorIndex]);
+            this.refs.toast.show(0, series, location, ColorList[colorIndex % ColorList.length], viewHeight);
         }
     }
 
@@ -179,7 +181,7 @@ export default class Bubble extends React.Component {
                                     </G>)
                                 } else {
                                     return (<G
-                                        opacity='0.5'
+                                        opacity='0.4'
                                     >
                                         {item}
                                     </G>)
