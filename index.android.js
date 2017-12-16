@@ -26,7 +26,7 @@ const App = StackNavigator({
   FunnelDemo: { screen: FunnelDemo },
   PieDemo: { screen: PieDemo },
   BubbleDemo: { screen: BubbleDemo },
-  GaugeDemo: { screen: GaugeDemo },  
+  GaugeDemo: { screen: GaugeDemo },
 });
 
 AppRegistry.registerComponent('PracticeDemo', () => App);
