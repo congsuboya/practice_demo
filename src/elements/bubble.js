@@ -121,7 +121,7 @@ export default class Bubble extends React.Component {
     }
 
     clickPointItem(colorIndex, index, indexItem, cx, cy) {
-        let { selected, xAxis, yAxis, symbolSize, label, viewHeight } = this.state;
+        let { selected, xAxis, yAxis, symbolSize, label, viewHeight, svgHeight } = this.state;
         if (selected != index && indexItem) {
             this.setState({
                 selected: index,
@@ -137,7 +137,7 @@ export default class Bubble extends React.Component {
                 locationY: cy + 10,
                 locationX: cx + 35
             }
-            this.refs.toast.show(0, series, location, viewHeight, ColorList[colorIndex % ColorList.length]);
+            this.refs.toast.show(0, series, location, svgHeight - 20, ColorList[colorIndex % ColorList.length]);
         }
     }
 

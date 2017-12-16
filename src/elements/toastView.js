@@ -22,14 +22,15 @@ export default class ToastView extends React.Component {
         this.renderShowItemList = this.renderShowItemList.bind(this);
     }
 
-    show(showClickIndex, series, location, svgHeight, showColor = null) {
+    show(showClickIndex, series, location, svgHeight, showColor = null, title = null) {
         this.setState({
             show: true,
             series: series,
             location: location,
             showClickIndex: showClickIndex,
             showColor: showColor,
-            svgHeight: svgHeight
+            svgHeight: svgHeight,
+            title: title
         })
     }
 
@@ -54,10 +55,13 @@ export default class ToastView extends React.Component {
         return result;
     }
     renderShowItemList() {
-        let { showClickIndex, series, showColor } = this.state;
+        let { showClickIndex, series, showColor, title } = this.state;
         let itemList = [];
         this.maxWidth = 0;
         let dataNum = 0;
+        if (title) {
+            itemList.push(<Text key={'title'} style={{ color: 'white', fontSize: 9 }} >{title}</Text>)
+        }
         series.map((item, index) => {
             if (item.data[showClickIndex] != undefined) {
                 let tempWidth = (item.name + item.data[showClickIndex]).toString().length * 10 + 12;
@@ -85,8 +89,8 @@ export default class ToastView extends React.Component {
             }
             let itemViewHeight = itemView.length * 13 > 110 ? 110 : itemView.length * 13;
             let locationY = this.state.location.locationY;
-            if (itemViewHeight + locationY > this.state.svgHeigth / 2) {
-                locationY = this.state.svgHeigth / 2 - itemViewHeight
+            if ((itemViewHeight + locationY) > this.state.svgHeight) {
+                locationY = this.state.svgHeight - itemViewHeight
             }
             return (
                 <View style={{ position: 'absolute', backgroundColor: '#0E4068', top: locationY, left: viewX, padding: 5 }}>

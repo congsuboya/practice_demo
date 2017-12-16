@@ -246,7 +246,7 @@ export default class LineChart extends React.Component {
     }
 
     clickChart(clickItemIndex, clickAreWidth, location) {
-        let { series, selectIndex, yAxis, viewHeight, offsetLength } = this.state;
+        let { series, selectIndex, yAxis, barCanvasHeight, offsetLength, xAxis } = this.state;
         let showclick = false
         series.some((seriItem) => {
             if (seriItem.data[clickItemIndex] != undefined) {
@@ -257,7 +257,7 @@ export default class LineChart extends React.Component {
         if (selectIndex != clickItemIndex && showclick) {
             let offsetWidth = yAxis.show ? 40 : 10
             let newLocation = Object.assign(location, { locationX: (clickItemIndex * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth + offsetLength) })
-            this.refs.toast.show(clickItemIndex, series, newLocation, viewHeight);
+            this.refs.toast.show(clickItemIndex, series, newLocation, barCanvasHeight, null, xAxis.data[clickItemIndex]);
             this.setState({
                 selectIndex: clickItemIndex
             })

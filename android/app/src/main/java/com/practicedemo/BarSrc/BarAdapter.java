@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -49,17 +48,6 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
         holder.xAsixText.setText(mData.get(position));
         addLineView(holder.lineHolder);
         addBarView(holder.barHolder, position);
-
-
-//        if (mOnItemClickLitener != null){
-//            holder.barHolder.setOnClickListener(new View.OnClickListener(){
-//                @Override
-//                public void onClick(View v){
-//                    int pos = holder.getLayoutPosition();
-//                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-//                }
-//            });
-//        }
     }
 
     public BarAdapter(List<String> mData, Context context, List<JsonSeries> seriesList, JsonBarParams myBarParams) {

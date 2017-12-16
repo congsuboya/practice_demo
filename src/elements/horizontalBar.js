@@ -155,10 +155,10 @@ export default class HorizontalBar extends React.Component {
     }
 
     clickItemView(i, clickAreWidth, location) {
-        let { series, yAxis, barCanvasHeight } = this.props;
+        let { series, yAxis, barCanvasHeight, xAxis } = this.props;
         let offsetWidth = yAxis.show ? 40 : 10
-        let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) })
-        this.props.showToastView(i, series, newLocation, barCanvasHeight);
+        let newLocation = Object.assign(location, { locationX: (i * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth) });
+        this.props.showToastView(i, series, newLocation, barCanvasHeight, xAxis.data[i]);
     }
 
     renderPerBarView(index, series, perRectHeight, stack, rectWidth, negaNumInterval, perInterLength) {

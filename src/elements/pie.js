@@ -182,6 +182,7 @@ export default class Pie extends React.Component {
                         {itemViewList.map((item, index) => {
                             if (selectedIndex > -1 && index == selectedIndex) {
                                 return (<G
+                                    key={'gg' + index}
                                     scale={1.1}
                                     origin={`${cx},${cy}`}
                                 >

@@ -58,8 +58,8 @@ export default class Bar extends React.Component {
         }
     }
 
-    showToastView(showClickIndex, series, location, svgHeight) {
-        this.refs.toast.show(showClickIndex, series, location, svgHeight)
+    showToastView(showClickIndex, series, location, svgHeight, title) {
+        this.refs.toast.show(showClickIndex, series, location, svgHeight, null, title)
     }
 
     closeToastView() {

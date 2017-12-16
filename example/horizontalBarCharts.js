@@ -63,7 +63,7 @@ HorizontalBarCharts.defaultProps = {
             type: 'category',
             // type: 'value',
             name: 'x轴名称',
-            show: false,
+            show: true,
             data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsfsdfsdfsf', 'Sun', 'wqe', 'sdr', 'opu'],
         },
         yAxis: {
@@ -78,7 +78,7 @@ HorizontalBarCharts.defaultProps = {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+                data: [10, 5, 2, 3, -10, 7, 6, 5, 2, 3,]
             },
             {
                 name: '非直接访问',

@@ -159,7 +159,7 @@ HorizontalBarCharts.defaultProps = {
         },
         series: [
             {
-                "data": [-10, -5],
+                "data": [-10, 5],
                 "name": "直接访问"
             },
             {
@@ -167,7 +167,7 @@ HorizontalBarCharts.defaultProps = {
                 "name": "非直接访问"
             }
         ],
-        stack: true
+        stack: false
     },
     valueInterval: 3,
     style: { height: 400, width: window.width },

@@ -136,15 +136,15 @@ export default class VerticalBar extends React.Component {
 
 
     clickItemView(i, clickAreHeight, location) {
-        let { series, barCanvasHeight } = this.props;
+        let { series, viewHeight, yAxis } = this.props;
         let newLocation = Object.assign(location, { locationY: (i * clickAreHeight - this.scrollOffY + location.locationY + 10) }, { locationX: location.locationX + 50 })
-        this.props.showToastView(i, series, newLocation, barCanvasHeight);
+        this.props.showToastView(i, series, newLocation, viewHeight - 40, yAxis.data[i]);
     }
 
     clickNativeItemView(i, clickAreHeight, location) {
-        let { series, barCanvasHeight } = this.props;
+        let { series, viewHeight } = this.props;
         let newLocation = Object.assign(location, { locationY: (location.locationY + clickAreHeight / 2) }, { locationX: location.locationX })
-        this.props.showToastView(i, series, newLocation, barCanvasHeight);
+        this.props.showToastView(i, series, newLocation, viewHeight - 50);
     }
 
     createLineView(props) {
@@ -223,7 +223,7 @@ export default class VerticalBar extends React.Component {
         let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight,
             stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength, negaNumInterval } = this.props;
         return (
-            <View style={{ flex: 0, height: perLength, flexDirection: 'row', width: viewWidth - 10 }}>
+            <View style={{ flex: 0, height: perLength, flexDirection: 'row', width: viewWidth - 20 }}>
                 {yAxis.show ? <Text numberOfLines={1} style={[{ textAlign: 'right', fontSize: 9, width: 40, height: perLength, textAlignVertical: 'center', paddingRight: 5 }, Platform.OS == 'ios' ? { paddingTop: (perLength - 10) / 2 } : {}]}>{yAxis.data[index]}</Text>
                     : <View style={{ width: 10 }} />}
                 {this.lineView}
@@ -263,7 +263,7 @@ export default class VerticalBar extends React.Component {
                                 }}
                                 getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
                             />
-                            : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetHeight }}
+                            : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetLength * 2 }}
                                 option={{
                                     ...this.props
                                 }}

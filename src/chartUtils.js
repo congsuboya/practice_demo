@@ -476,7 +476,7 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     //计算最大最小值
     let { maxNum, negaNumInterval, minNum, maxData, plusNumInterval } = getMaxMinNum(series, intervalNum, valueInterval, option.stack);
     //绘制区域的高度
-    let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 15 - yAxisLength;
+    let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 25 - yAxisLength;
     let perInterLength = barCanvasHeight / (plusNumInterval + negaNumInterval);
     let perRectHeight = perInterLength / maxNum * valueInterval;
 
