@@ -10,18 +10,11 @@ import {
     Platform
 } from 'react-native';
 
-import Svg, {
-    Circle,
-    Path,
-    Rect,
-    Text as SvgText
-} from 'react-native-svg';
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 
 import { DrawXYAxisLine, DrawYXAxisValue, DrawXValueView, dealwithNum } from '../chartUtils';
 import { fromJS, is } from 'immutable';
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
 import NativeBar from './nativeBar';
 
 export default class VerticalBar extends React.Component {
@@ -29,24 +22,30 @@ export default class VerticalBar extends React.Component {
     constructor(props) {
         super(props)
         this.viewAnimatedList = [];
-        this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
-        this.renderSingView = this.renderSingView.bind(this);
-        this.scrollOffY = 0;
+        this.renderPerBarView = this.renderPerBarView.bind(this);
         this.renderItem = this.renderItem.bind(this);
+        this.createXValue = this.createXValue.bind(this);
+        this.createOffsetLineView = this.createOffsetLineView.bind(this);
         this.lineView = null;
         this.yValueTitle = null;
+        this.scrollOffY = 0;
+        this.xValueHeight = 10;
+        this.offsetLineView = null;
     }
 
     componentWillMount() {
-        let { yAxis, xAxis } = this.props;
-        if (yAxis.show) {
+        let { yAxis, xAxis, offsetLength } = this.props;
+        if (yAxis.show && yAxis.name) {
             this.createYValueTitle(this.props);
         }
         if (xAxis.show) {
             this.createXValue(this.props)
         }
         this.createLineView(this.props);
+        if (offsetLength > 0) {
+            this.createOffsetLineView(this.props);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -72,100 +71,69 @@ export default class VerticalBar extends React.Component {
 
     createYValueTitle(props) {
         let { viewHeight, yAxis } = props
-        this.yValueTitle = <Text style={{
-            fontSize: 9,
-            width: 10,
-            height: 100,
-            textAlign: 'center',
-            position: 'absolute',
-            textAlignVertical: 'center',
-            bottom: 5,
-            top: (viewHeight - 130) / 2,
-            left: 5,
-            textAlignVertical: 'center'
-        }}>{yAxis.name}</Text>
+        this.yValueTitle = <Text
+            style={{
+                fontSize: 9,
+                maxWidth: 10,
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                alignSelf: 'center'
+            }}>{yAxis.name}</Text>
     }
 
     createXValue(props) {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis } = props;
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, xAxis, viewWidth, yAxis, plusNumInterval, negaNumInterval } = props;
         let valueList = [];
         let valueNum;
-        for (let i = 0; i <= valueInterval; i++) {
+        for (let i = negaNumInterval; i > 0; i--) {
+            valueNum = -(maxNum * i / valueInterval);
+            valueList.push(<Text key={i + 'negaNum'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: i == negaNumInterval ? 0 : perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{dealwithNum(valueNum.toString())}</Text>)
+        }
+        valueList.push(<Text key={'zeroline'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: negaNumInterval <= 0 ? 0 : perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >0</Text>)
+
+        for (let i = 1; i <= plusNumInterval; i++) {
             valueNum = maxNum * i / valueInterval;
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: i == 0 ? 0 : perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{dealwithNum(valueNum.toString())}</Text>)
+            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginLeft: perInterLength - 30, fontSize: 9, lineHeight: 10, textAlign: 'center' }} >{dealwithNum(valueNum.toString())}</Text>)
+        }
+        let marginLeft = 25
+        if (yAxis.show && yAxis.name) {
+            marginLeft = 35
+        } else if (!yAxis.show) {
+            marginLeft = -5
         }
         this.xValueView = (
-            <View style={{ width: viewWidth, height: 30 }}>
-                <View style={{ height: 30, alignItems: 'flex-start', flexDirection: 'row', marginLeft: yAxis.show ? 35 : -5, paddingTop: 3 }}>
+            <View
+                onLayout={(e) => this.xValueHeight = e.nativeEvent.layout.height}
+                style={{ width: viewWidth, maxHeight: 30, paddingBottom: 5 }}>
+                <View style={{ alignItems: 'flex-start', flexDirection: 'row', marginLeft: marginLeft, paddingTop: 2 }}>
                     {valueList}
                 </View>
                 <Text
                     style={{
                         fontSize: 9,
                         width: 100,
-                        bottom: 3,
                         textAlign: 'center',
-                        position: 'absolute',
-                        left: (viewWidth - 155) / 2 + 40,
+                        marginLeft: (viewWidth - 155) / 2 + 40,
                         textAlignVertical: 'center'
                     }}>{xAxis.name}</Text>
             </View>
         )
     }
 
-    renderBarItem() {
-        let {
-            maxNum, series,
-            intervalNum,
-            rectNum,
-            rectWidth,
-            perRectHeight,
-            barCanvasHeight,
-            horizontal,
-            interWidth,
-            stack,
-            offsetLength
-        } = this.props;
 
-        let barViewList = [];
-        let rectHight;
-        let yNum;
-        let numlength;
-
-        let lastWidth = 0;;
-        let lastHeight = 0;
-        let nowWidth = 0;
-        let nowHeight = 0;
-
-        for (let i = 0; i < intervalNum; i++) {
-            let lastWidth = 0;
-            series.map((mapItem, index) => {
-                rectHight = mapItem.data[i] * perRectHeight;
-                if (rectHight < 20) {
-                    rectHight = 20;
-                }
-                yNum = (i * 2 + 1) * interWidth + i * rectWidth * rectNum;
-                if (!stack) {
-                    yNum = yNum + index * rectWidth;
-                }
-                barViewList.push(
-                    <AnimatedRect
-                        x={2 + lastWidth}
-                        y={yNum + offsetLength}
-                        width={rectHight}
-                        height={rectWidth}
-                        fill={ColorList[index % ColorList.length]}
-                    />
-                );
-                if (stack) {
-                    lastWidth = rectHight + lastWidth;
-                } else {
-                    lastWidth = 0;
-                }
-            })
+    createOffsetLineView(props) {
+        let { perLength, perInterLength, valueInterval, negaNumInterval, offsetLength, plusNumInterval, yAxis } = props;
+        let lineList = [];
+        for (let i = 0; i <= (plusNumInterval + negaNumInterval); i++) {
+            lineList.push(<View key={i + 'line'} style={{ height: offsetLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterLength - 1 }} />)
         }
-        return barViewList;
+        this.offsetLineView = (
+            <View style={{ marginLeft: yAxis.show ? 40 : 10, flexDirection: 'row' }}>
+                {lineList}
+            </View>
+        )
     }
+
 
     clickItemView(i, clickAreHeight, location) {
         let { series, barCanvasHeight } = this.props;
@@ -180,112 +148,133 @@ export default class VerticalBar extends React.Component {
     }
 
     createLineView(props) {
-        let { perLength, perInterLength, valueInterval, yAxis } = props;
+        let { perLength, perInterLength, valueInterval, yAxis, negaNumInterval, plusNumInterval } = props;
         let lineList = [];
-        for (let i = 0; i <= valueInterval; i++) {
+        for (let i = 0; i <= (negaNumInterval + plusNumInterval); i++) {
             lineList.push(<View key={i + 'line'} style={{ height: perLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.lineView = (
-            <View style={{ position: 'absolute', top: 0, right: 10, left: yAxis.show ? 50 : 10, flexDirection: 'row' }}>
+            <View style={{ position: 'absolute', top: 0, right: 10, left: yAxis.show ? 40 : 10, flexDirection: 'row' }}>
                 {lineList}
             </View>
         )
     }
 
 
+
+    renderPerBarView(index, series, perRectHeight, stack, rectWidth, negaNumInterval, perInterLength) {
+        let perBarList = [];
+        let negaNumIntList = [];
+        let mapItem;
+        let barWidth = 0;
+        let marginLef = negaNumInterval * perInterLength;
+        let barView = null;
+        if (stack) {
+            for (let innerIndex = series.length - 1; innerIndex >= 0; innerIndex--) {
+                mapItem = series[innerIndex];
+                barWidth = Math.abs(mapItem.data[index]) * perRectHeight;
+                barView = < View
+                    key={innerIndex + 'listItem'}
+                    pointerEvents='none'
+                    style={{
+                        backgroundColor: ColorList[innerIndex % ColorList.length],
+                        width: barWidth,
+                        height: rectWidth
+                    }} />;
+                if (mapItem.data[index] < 0) {
+                    marginLef = marginLef - barWidth;
+                    negaNumIntList.push(barView)
+                } else {
+                    perBarList.unshift(barView);
+                }
+            }
+            if (marginLef > 0) {
+                negaNumIntList.unshift(< View
+                    key={'emptylistItem'}
+                    pointerEvents='none'
+                    style={{
+                        width: marginLef,
+                        height: rectWidth
+                    }} />)
+            }
+            perBarList = negaNumIntList.concat(perBarList);
+        } else {
+            series.map((mapItem, innerIndex) => {
+                marginLef = negaNumInterval * perInterLength;
+                barWidth = Math.abs(mapItem.data[index]) * perRectHeight
+                if (mapItem.data[index] < 0) {
+                    marginLef = marginLef - barWidth;
+                }
+                perBarList.push(< View
+                    key={innerIndex + 'listItem'}
+                    pointerEvents='none'
+                    style={{
+                        backgroundColor: ColorList[innerIndex % ColorList.length],
+                        width: barWidth,
+                        height: rectWidth,
+                        marginLeft: marginLef
+                    }} />)
+            });
+        }
+        return perBarList;
+    }
+
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength } = this.props;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight,
+            stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength, negaNumInterval } = this.props;
         return (
-            <View style={{ height: perLength, width: viewWidth, backgroundColor: 'white', flexDirection: 'row' }}>
-                {yAxis.show ? <Text numberOfLines={1} style={[{ textAlign: 'right', fontSize: 9, width: 50, height: perLength, textAlignVertical: 'center', paddingRight: 5 }, Platform.OS == 'ios' ? { paddingTop: (perLength - 10) / 2 } : {}]}>{yAxis.data[index]}</Text>
+            <View style={{ flex: 0, height: perLength, flexDirection: 'row', width: viewWidth - 10 }}>
+                {yAxis.show ? <Text numberOfLines={1} style={[{ textAlign: 'right', fontSize: 9, width: 40, height: perLength, textAlignVertical: 'center', paddingRight: 5 }, Platform.OS == 'ios' ? { paddingTop: (perLength - 10) / 2 } : {}]}>{yAxis.data[index]}</Text>
                     : <View style={{ width: 10 }} />}
                 {this.lineView}
                 <TouchableHighlight
                     underlayColor='rgba(34,142,230,0.10)'
                     onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
                     <View style={[{ width: barCanvasHeight, height: perLength, alignItems: 'flex-start', paddingBottom: 10, paddingTop: 10 }, stack ? { flexDirection: 'row' } : {}]}>
-                        {series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex % ColorList.length], width: mapItem.data[index] * perRectHeight, height: rectWidth }} />)}
+                        {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth, negaNumInterval, perInterLength)}
                     </View>
                 </TouchableHighlight>
             </View>
         )
     }
 
-    renderSingView() {
-        let { maxNum, series, xAxis, yAxis, valueInterval, intervalNum,
-            viewWidth, viewHeight, svgHeight, svgWidth, perLength,
-            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
-            offsetLength,
-            } = this.props;
-        return (
-            <View style={{ width: viewWidth, height: svgHeight, flexDirection: 'row', backgroundColor: 'white' }}>
-                <View style={{ width: 48, height: svgHeight }}>
-                    {DrawYXAxisValue(yAxis, false, svgHeight, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
-                </View>
-                <View style={{ flex: 0 }}>
-                    <Svg width={svgWidth} height={svgHeight}>
-                        {DrawXYAxisLine(barCanvasHeight, svgHeight, false, this.props.valueInterval)}
-                        {this.renderBarItem()}
-                    </Svg>
-                </View>
-                <View style={{ width: svgWidth, height: svgHeight, position: 'absolute', top: offsetLength, right: 0 }}>
-                    {this.renderClickItemView()}
-                </View>
-            </View>
-        )
-    }
 
-    renderClickItemView() {
-        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, series } = this.props;
-        let clickViewList = [];
-        let clickAreHeight
-        for (let i = 0; i < intervalNum; i++) {
-            clickAreHeight = (rectWidth * rectNum + interWidth * 2);
-            clickViewList.push(
-                <TouchableHighlight
-                    underlayColor='rgba(34,142,230,0.10)'
-                    onPressIn={(e) => this.clickItemView(i, clickAreHeight, e.nativeEvent)}>
-                    <View style={{ width: svgWidth, height: clickAreHeight }} />
-                </TouchableHighlight>
-            )
-        };
-        return clickViewList;
-    }
 
     render() {
-        let { maxNum, series, xAxis, yAxis, valueInterval, intervalNum,
-            viewWidth, viewHeight, svgHeight, svgWidth, perLength,
-            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth,
-            offsetLength,
-            } = this.props;
-        let offsetHeight = xAxis.show ? 30 : 10;
-        console.log('joijwoiejrowijrwr', series);
+        let { maxNum, series, xAxis, yAxis, valueInterval, intervalNum, viewWidth, viewHeight, perLength,
+            barCanvasHeight, perRectHeight, rectWidth, rectNum, interWidth, offsetLength } = this.props;
+        this.xValueHeight = xAxis.show ? (this.xValueHeight + 25) : 20;
         return (
-            < View style={[{ flexDirection: 'column', backgroundColor: 'white' }, this.props.style]} >
-                {offsetLength > 0 ? this.renderSingView() : <View style={{ height: viewHeight - offsetHeight }}>
-                    {Platform.OS == 'ios' ? <FlatList
-                        data={yAxis.data}
-                        alwaysBounceVertical={false}
-                        horizontal={false}
-                        renderItem={this.renderItem}
-                        keyExtractor={(item, index) => index}
-                        onScroll={(e) => {
-                            this.scrollOffY = e.nativeEvent.contentOffset.y;
-                            this.props.closeToastView();
-                        }}
-                        getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
-                        ItemSeparatorComponent={() => <View />}
-                    /> : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetHeight }}
-                        option={{
-                            ...this.props
-                        }}
-                        rnOnScroll={(e) => {
-                            this.props.closeToastView();
-                        }}
-                        onClickItem={(e) => this.clickNativeItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
-                        />}
-                </View>}
-                {this.yValueTitle}
+            < View style={[{ flexDirection: 'column', backgroundColor: 'white', paddingTop: 10 }, this.props.style]} >
+                <View style={{ flexDirection: 'row', flex: 0 }}>
+                    {this.yValueTitle}
+                    <View style={{ flex: 0, height: viewHeight - this.xValueHeight }}>
+                        {this.offsetLineView}
+                        {true ?
+                            <FlatList
+                                data={yAxis.data}
+                                alwaysBounceVertical={false}
+                                horizontal={false}
+                                renderItem={this.renderItem}
+                                keyExtractor={(item, index) => index}
+                                onScroll={(e) => {
+                                    this.scrollOffY = e.nativeEvent.contentOffset.y;
+                                    this.props.closeToastView();
+                                }}
+                                getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
+                            />
+                            : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetHeight }}
+                                option={{
+                                    ...this.props
+                                }}
+                                rnOnScroll={(e) => {
+                                    this.props.closeToastView();
+                                }}
+                                onClickItem={(e) => this.clickNativeItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
+                            />}
+                        {this.offsetLineView}
+                    </View>
+                </View>
                 {this.xValueView}
             </View >
         )

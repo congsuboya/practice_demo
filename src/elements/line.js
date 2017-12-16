@@ -61,6 +61,7 @@ export default class LineChart extends React.Component {
         this.xValueTitle = null;
         this.offsetLineView = null;
         this.scrollOffX = 0;
+        this.yValueViewWith = 20;
     }
 
 
@@ -126,9 +127,9 @@ export default class LineChart extends React.Component {
         }
     }
     createLineView(props) {
-        let { perLength, perInterLength, valueInterval } = props;
+        let { perLength, perInterLength, valueInterval, negaNumInterval, plusNumInterval } = props;
         let lineList = [];
-        for (let i = 0; i <= valueInterval; i++) {
+        for (let i = 0; i <= (plusNumInterval + negaNumInterval); i++) {
             lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.lineView = (
@@ -139,9 +140,9 @@ export default class LineChart extends React.Component {
     }
 
     createOffsetLineView(props) {
-        let { perLength, perInterLength, valueInterval, offsetLength } = props;
+        let { perLength, perInterLength, valueInterval, offsetLength, plusNumInterval, negaNumInterval } = props;
         let lineList = [];
-        for (let i = 0; i <= valueInterval; i++) {
+        for (let i = 0; i <= (plusNumInterval + negaNumInterval); i++) {
             lineList.push(<View key={i + 'line'} style={{ height: 1, width: offsetLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.offsetLineView = (
@@ -152,29 +153,39 @@ export default class LineChart extends React.Component {
     }
 
     createYValue(props) {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = props;
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis, negaNumInterval, maxData, plusNumInterval } = props;
         let valueList = [];
         let valueNum;
-        for (let i = 0; i <= valueInterval; i++) {
-            valueNum = maxNum - maxNum * i / valueInterval;
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, width: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
+
+        if (plusNumInterval > 0) {
+            for (let i = plusNumInterval; i >= 0; i--) {
+                valueNum = maxNum / valueInterval * i;
+                valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == plusNumInterval ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
+            }
+        } else {
+            valueList.push(<Text key={'zeroyvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: 5, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >0</Text>)
+
+        }
+        for (let i = 1; i <= negaNumInterval; i++) {
+            valueNum = -(maxNum * i / valueInterval);
+            valueList.push(<Text key={i + 'negaNumInterval'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.yValueView = (
-            <View style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row' }}>
+            <View
+                style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row', justifyContent: 'flex-end', backgroundColor: 'white', paddingRight: 2 }}>
                 <Text
                     style={{
                         fontSize: 9,
                         width: 10,
-                        height: 100,
-                        left: 0,
+                        marginBottom: 30,
+                        alignSelf: 'center',
                         textAlign: 'center',
-                        top: (viewHeight - 140) / 2,
                         textAlignVertical: 'center'
                     }}>{yAxis.name}</Text>
-                <View style={{ height: viewHeight, alignItems: 'flex-end', marginLeft: 2, maxWidth: 40, marginRight: 5 }}>
+                <View style={{ height: viewHeight, alignItems: 'flex-end', marginLeft: 2, maxWidth: 30 }}>
                     {valueList}
                 </View>
-            </View>)
+            </View>);
     }
 
     createXValueTitle(props) {
@@ -184,14 +195,14 @@ export default class LineChart extends React.Component {
             width: 100,
             textAlign: 'center',
             position: 'absolute',
-            bottom: 5,
+            bottom: 1,
             left: (viewWidth - 50) / 2,
             textAlignVertical: 'center'
         }}>{xAxis.name}</Text>
     }
 
 
-    renderPerLineView(index, series, perLength, perRectHeight, barCanvasHeight, intervalNum) {
+    renderPerLineView(index, series, perLength, perRectHeight, barCanvasHeight, intervalNum, negaNumInterval, maxNum, valueInterval) {
         let perLineList = [];
         let middleNum;
         let lastNum;
@@ -200,20 +211,30 @@ export default class LineChart extends React.Component {
         let path;
         initX = perLength / 2;
 
+        let offsetNum = negaNumInterval * maxNum / valueInterval;
         series.map((mapItem, innerIndex) => {
             middleNum = mapItem.data[index];
-            lastNum = mapItem.data[index + 1];
-            firstNum = mapItem.data[index - 1];
-            if (!firstNum && !lastNum) {
-                path = new Path().moveTo(initX, barCanvasHeight - middleNum * perRectHeight).arc(0, 3, 1.5).arc(0, -3, 1.5).close();
-            } else if (!firstNum && lastNum) {
-                path = new Path().moveTo(initX, (barCanvasHeight - middleNum * perRectHeight)).lineTo(perLength, (barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight));
-            } else if (firstNum && !lastNum) {
-                path = new Path().moveTo(0, (barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight)).lineTo(initX, (barCanvasHeight - middleNum * perRectHeight));
-            } else {
-                path = new Path().moveTo(0, (barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight)).lineTo(initX, (barCanvasHeight - middleNum * perRectHeight)).lineTo(perLength, (barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight))
+            if (middleNum != undefined) {
+                lastNum = mapItem.data[index + 1];
+                firstNum = mapItem.data[index - 1];
+                middleNum = middleNum + offsetNum;
+                if (lastNum != undefined) {
+                    lastNum = lastNum + offsetNum;
+                }
+                if (firstNum != undefined) {
+                    firstNum = firstNum + offsetNum;
+                }
+                if (firstNum == undefined && lastNum == undefined) {
+                    path = new Path().moveTo(initX, barCanvasHeight - middleNum * perRectHeight).arc(0, 3, 1.5).arc(0, -3, 1.5).close();
+                } else if (firstNum == undefined && lastNum != undefined) {
+                    path = new Path().moveTo(initX, (barCanvasHeight - middleNum * perRectHeight)).lineTo(perLength, (barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight));
+                } else if (firstNum != undefined && lastNum == undefined) {
+                    path = new Path().moveTo(0, (barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight)).lineTo(initX, (barCanvasHeight - middleNum * perRectHeight));
+                } else {
+                    path = new Path().moveTo(0, (barCanvasHeight - (middleNum + firstNum) / 2 * perRectHeight)).lineTo(initX, (barCanvasHeight - middleNum * perRectHeight)).lineTo(perLength, (barCanvasHeight - (middleNum + lastNum) / 2 * perRectHeight))
+                }
+                perLineList.push(<Shape key={perLineList.length + 'line'} d={path} stroke={ColorList[innerIndex]} strokeWidth={1} />);
             }
-            perLineList.push(<Shape key={perLineList.length + 'line'} d={path} stroke={ColorList[innerIndex]} strokeWidth={1} />);
         })
 
         return (
@@ -226,7 +247,14 @@ export default class LineChart extends React.Component {
 
     clickChart(clickItemIndex, clickAreWidth, location) {
         let { series, selectIndex, yAxis, viewHeight, offsetLength } = this.state;
-        if (selectIndex != clickItemIndex) {
+        let showclick = false
+        series.some((seriItem) => {
+            if (seriItem.data[clickItemIndex] != undefined) {
+                showclick = true;
+                return true;
+            }
+        })
+        if (selectIndex != clickItemIndex && showclick) {
             let offsetWidth = yAxis.show ? 40 : 10
             let newLocation = Object.assign(location, { locationX: (clickItemIndex * clickAreWidth - this.scrollOffX + location.locationX + offsetWidth + offsetLength) })
             this.refs.toast.show(clickItemIndex, series, newLocation, viewHeight);
@@ -238,12 +266,15 @@ export default class LineChart extends React.Component {
 
     renderSelectedLineView(show) {
         if (show) {
-            let { perLength, barCanvasHeight, series, selectIndex, perRectHeight } = this.state;
+            let { perLength, barCanvasHeight, series, selectIndex, perRectHeight, negaNumInterval, maxNum, valueInterval } = this.state;
             let circleList = [];
             let pointY;
+            let offsetNum = negaNumInterval * maxNum / valueInterval;
             series.map((mapItem, index) => {
-                pointY = barCanvasHeight - mapItem.data[selectIndex] * perRectHeight
-                circleList.push(<Circle key={index + 'circle'} cx={perLength / 2} cy={pointY} r="2.5" fill={ColorList[index]} />)
+                if (mapItem.data[selectIndex] != undefined) {
+                    pointY = barCanvasHeight - (mapItem.data[selectIndex] + offsetNum) * perRectHeight
+                    circleList.push(<Circle key={index + 'circle'} cx={perLength / 2} cy={pointY} r="2.5" fill={ColorList[index]} />)
+                }
             });
             return (<View style={{ position: 'absolute', top: 0, bottom: 0, right: 0, left: 0 }}>
                 <Svg width={perLength} height={barCanvasHeight}>
@@ -268,18 +299,18 @@ export default class LineChart extends React.Component {
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight, stack, rectNum, rectWidth, intervalNum, selectIndex } = this.state;
+        let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight,
+            stack, rectNum, rectWidth, intervalNum, selectIndex, negaNumInterval, maxNum, valueInterval } = this.state;
         return (
             <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
                 {this.lineView}
-                <TouchableHighlight
-                    underlayColor='rgba(34,142,230,0.10)'
-                    onPressIn={(e) => this.clickChart(index, perLength, e.nativeEvent)}>
+                <TouchableWithoutFeedback
+                    onPress={(e) => this.clickChart(index, perLength, e.nativeEvent)}>
                     <View style={[{ width: perLength, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
-                        {this.renderPerLineView(index, series, perLength, perRectHeight, barCanvasHeight, intervalNum)}
+                        {this.renderPerLineView(index, series, perLength, perRectHeight, barCanvasHeight, intervalNum, negaNumInterval, maxNum, valueInterval)}
                         {this.renderSelectedLineView(selectIndex == index)}
                     </View>
-                </TouchableHighlight>
+                </TouchableWithoutFeedback>
                 {xAxis.show ? <View style={{ width: perLength, height: 30, justifyContent: 'center', alignItems: 'center' }} >
                     <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 8, width: 30, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
                 </View> : null}
@@ -288,12 +319,12 @@ export default class LineChart extends React.Component {
     }
 
     render() {
-        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, svgWidth, offsetLength } = this.state;
-        let offsetWidth = yAxis.show ? 50 : 20;
+        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.state;
+        // alert(this.yValueViewWith)
         return (
-            <View style={[{ flexDirection: 'row', backgroundColor: 'white', paddingLeft: 10 }, this.props.style]}>
+            <View style={[{ flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center' }, this.props.style]}>
                 {this.yValueView}
-                <View style={{ flex: 0, flexDirection: 'row' }}>
+                <View style={{ flex: 0, flexDirection: 'row', width: yAxis.show ? (viewWidth - this.yValueViewWith - 20) : viewWidth - this.yValueViewWith }}>
                     {this.offsetLineView}
                     <FlatList
                         data={xAxis.data}
@@ -320,27 +351,29 @@ LineChart.defaultProps = {
         xAxis: {
             type: 'category',
             // type: 'value',
+            name: 'x轴名称',
             show: true,
-            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsfsdfsdfsf', 'Sun', 'wqe', 'sdr', 'opu'],
         },
         yAxis: {
             // type: 'category',
             type: 'value',
+            name: 'y轴名称',
             show: true,
-            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu'],
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsf', 'Sun', 'wqe', 'sdr', 'opu'],
         },
         series: [
             {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
+                data: [10, 5, 2, 3, 0, 7, 6, 5, 2, 3]
             },
             {
                 name: '非直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+                data: [3, 4, 1, 4, , 8, 3, 3, 10, 7]
             }
         ],
         stack: false

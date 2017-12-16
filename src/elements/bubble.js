@@ -121,7 +121,6 @@ export default class Bubble extends React.Component {
     }
 
     clickPointItem(colorIndex, index, indexItem, cx, cy) {
-
         let { selected, xAxis, yAxis, symbolSize, label, viewHeight } = this.state;
         if (selected != index && indexItem) {
             this.setState({
@@ -138,7 +137,7 @@ export default class Bubble extends React.Component {
                 locationY: cy + 10,
                 locationX: cx + 35
             }
-            this.refs.toast.show(0, series, location, ColorList[colorIndex % ColorList.length], viewHeight);
+            this.refs.toast.show(0, series, location, viewHeight, ColorList[colorIndex % ColorList.length]);
         }
     }
 
@@ -173,6 +172,7 @@ export default class Bubble extends React.Component {
                             {allPointViewList.map((item, index) => {
                                 if (selected > -1 && selected == index && selectedCX & selectedCY) {
                                     return (<G
+                                        key={'point' + index}
                                         opacity='1'
                                         scale={1.1}
                                         origin={`${selectedCX},${selectedCY}`}
@@ -181,6 +181,7 @@ export default class Bubble extends React.Component {
                                     </G>)
                                 } else {
                                     return (<G
+                                        key={'point' + index}
                                         opacity='0.4'
                                     >
                                         {item}
@@ -213,7 +214,7 @@ Bubble.defaultProps = {
             data: [
                 [
                     28604,
-                    77,
+                    -77,
                     17096869,
                     "Australia",
                     1990
@@ -344,21 +345,7 @@ Bubble.defaultProps = {
                     "United States",
                     1990
                 ]
-            ],
-            itemStyle: {
-                normal: {
-                    shadowBlur: 10,
-                    shadowColor: 'rgba(120, 36, 50, 0.5)',
-                    shadowOffsetY: 5,
-                    color: [{
-                        offset: 0,
-                        color: 'rgb(251, 118, 123)'
-                    }, {
-                        offset: 1,
-                        color: 'rgb(204, 46, 72)'
-                    }]
-                }
-            }
+            ]
         }, {
             name: '2015',
             data: [
@@ -495,21 +482,7 @@ Bubble.defaultProps = {
                     "United States",
                     2015
                 ]
-            ],
-            itemStyle: {
-                normal: {
-                    shadowBlur: 10,
-                    shadowColor: 'rgba(25, 100, 150, 0.5)',
-                    shadowOffsetY: 5,
-                    color: [{
-                        offset: 0,
-                        color: 'rgb(129, 227, 238)'
-                    }, {
-                        offset: 1,
-                        color: 'rgb(25, 183, 207)'
-                    }]
-                }
-            }
+            ]
         }]
     },
     valueInterval: 3,

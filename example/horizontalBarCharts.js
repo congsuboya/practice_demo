@@ -59,19 +59,35 @@ export default class HorizontalBarCharts extends React.Component {
 
 HorizontalBarCharts.defaultProps = {
     option: {
-        xAxis:
+        xAxis: {
+            type: 'category',
+            // type: 'value',
+            name: 'x轴名称',
+            show: false,
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsfsdfsdfsf', 'Sun', 'wqe', 'sdr', 'opu'],
+        },
+        yAxis: {
+            // type: 'category',
+            type: 'value',
+            name: 'y轴名称',
+            show: true,
+            data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsf', 'Sun', 'wqe', 'sdr', 'opu'],
+        },
+        series: [
             {
-                type: 'category',
-                title: '客户所有人',
-                data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Sat', 'Sun', 'wqe', 'sdr', 'opu']
+                name: '直接访问',
+                type: 'bar',
+                barWidth: '60%',
+                data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3,]
             },
-        yAxis: { type: 'value', title: '客户名称' },
-        series:
-            [
-                { name: '销售一部', data: [10, 5, 2, 3, 10, 7, 6, 5, 2, 3] },
-                { name: '销售一部', data: [3, -13, 1, 4, 2, 8, 3, 3, 10, 7] }
-            ],
-        stack: true
+            {
+                name: '非直接访问',
+                type: 'bar',
+                barWidth: '60%',
+                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+            }
+        ],
+        stack: false
     },
     valueInterval: 6,
     style: { height: 400, width: window.width },

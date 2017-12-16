@@ -59,22 +59,24 @@ export default class ToastView extends React.Component {
         this.maxWidth = 0;
         let dataNum = 0;
         series.map((item, index) => {
-            let tempWidth = (item.name + item.data[showClickIndex]).toString().length * 10 + 12;
-            if (tempWidth > this.maxWidth) {
-                this.maxWidth = tempWidth;
+            if (item.data[showClickIndex] != undefined) {
+                let tempWidth = (item.name + item.data[showClickIndex]).toString().length * 10 + 12;
+                if (tempWidth > this.maxWidth) {
+                    this.maxWidth = tempWidth;
+                }
+
+                dataNum = this.toThousands(item.data[showClickIndex]);
+                itemList.push(
+                    <View key={'toast' + index} style={{ flex: 0, flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ height: 6, width: 6, marginRight: 2, backgroundColor: showColor ? showColor : ColorList[index % ColorList.length] }} />
+                        <Text style={{ color: 'white', fontSize: 9 }} >{`${item.name}：${dataNum}`}</Text>
+                    </View>
+                )
             }
-            dataNum = this.toThousands(item.data[showClickIndex]);
-            itemList.push(
-                <View key={'toast' + index} style={{ flex: 0, flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ height: 6, width: 6, marginRight: 2, backgroundColor: showColor ? showColor : ColorList[index % ColorList.length] }} />
-                    <Text style={{ color: 'white', fontSize: 9 }} >{`${item.name}：${dataNum}`}</Text>
-                </View>
-            )
         });
         return itemList;
     }
     render() {
-
         if (this.state.show && this.state.series) {
             let viewX = this.state.location.locationX;
             let itemView = this.renderShowItemList();

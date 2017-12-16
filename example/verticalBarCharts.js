@@ -128,6 +128,7 @@ HorizontalBarCharts.defaultProps = {
             // type: 'category',
             type: 'value',
             show: true,
+            name: 'x轴名称',
             data: ["Mon",
                 "Tue",
                 "Wed",
@@ -151,62 +152,22 @@ HorizontalBarCharts.defaultProps = {
         yAxis: {
             type: 'category',
             // type: 'value',
+            name: 'y轴名称',
             show: true,
             data: ["Mon",
-                "Tue",
-                "Wed",
-                "Thusssss",
-                "Fri",
-                "Sat",
-                "Sun",
-                "wqe",
-                "sdr",
-                "opu", "Mon",
-                "Tue",
-                "Wed",
-                "Thusssss",
-                "Fri",
-                "Sat",
-                "Sun",
-                "wqe",
-                "sdr",
-                "opu"],
+                "Tue"],
         },
         series: [
             {
-                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
+                "data": [-10, -5],
                 "name": "直接访问"
             },
             {
-                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
-                "name": "非直接访问"
-            },
-            {
-                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
-                "name": "直接访问"
-            },
-            {
-                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
-                "name": "非直接访问"
-            },
-            {
-                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
-                "name": "直接访问"
-            },
-            {
-                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
-                "name": "非直接访问"
-            },
-            {
-                "data": [10, 5, 2, 3, 10, 7, 6, 5, 2, 3, 10, 5, 2, 3, 10, 7, 6, 5, 2, 3],
-                "name": "直接访问"
-            },
-            {
-                "data": [3, 4, 1, 4, 2, 8, 3, 3, 10, 7, 3, 4, 1, 4, 2, 8, 3, 3, 10, 7],
+                "data": [-3, -4],
                 "name": "非直接访问"
             }
         ],
-        stack: false
+        stack: true
     },
     valueInterval: 3,
     style: { height: 400, width: window.width },

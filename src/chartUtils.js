@@ -143,6 +143,7 @@ export function DrawBubbleXValueView(valueInterval, svgCanvasWidth, viewWidth, m
 
         valueNum = maxNum - maxNum / valueInterval * i + offSetNum;
         valueList.push(<Text
+            key={'text' + i}
             numberOfLines={1}
             style={{
                 marginLeft: i == valueInterval ? 0 : (svgCanvasWidth / valueInterval - 30),
@@ -307,7 +308,7 @@ export function getMaxValue(maxData, valueInterval = 3) {
 
 
 
-function getMaxNum(series, intervalNum, valueInterval, stack = false) {
+function getMaxMinNum(series, intervalNum, valueInterval, stack = false) {
     let tempMaxList = [];
     let tempMinList = [];
     if (stack) {
@@ -315,10 +316,12 @@ function getMaxNum(series, intervalNum, valueInterval, stack = false) {
             let tempNum = 0;
             let tempMinNum = 0;
             series.map((item) => {
-                if (item.data[i] > 0) {
-                    tempNum += item.data[i];
-                } else {
-                    tempMinNum += item.data[i];
+                if (item.data[i]) {
+                    if (item.data[i] > 0) {
+                        tempNum += item.data[i];
+                    } else {
+                        tempMinNum += item.data[i];
+                    }
                 }
             });
             tempMinList.push(tempMinNum);
@@ -326,15 +329,25 @@ function getMaxNum(series, intervalNum, valueInterval, stack = false) {
         }
     } else {
         series.map((item) => {
-            tempMaxList.push(Math.max.apply(null, item.data));
-            tempMinList.push(Math.min.apply(null, item.data));
+            let tempMaxNum = 0;
+            let tempMinNum = 0;
+            item.data.map((innerItem) => {
+                if (innerItem) {
+                    if (innerItem > tempMaxNum) {
+                        tempMaxNum = innerItem;
+                    } else if (innerItem < tempMinNum) {
+                        tempMinNum = innerItem
+                    }
+                }
+            })
+            tempMaxList.push(tempMaxNum);
+            tempMinList.push(tempMinNum);
         });
     }
     let maxData = Math.max.apply(null, tempMaxList);
     let minData = Math.min.apply(null, tempMinList);
 
     let absNum = Math.abs(minData) > maxData ? Math.abs(minData) : maxData;
-
     let numLength = absNum.toString().split('.')[0].length;
     let tenCube = 1;
     if (numLength > 2) {
@@ -344,84 +357,23 @@ function getMaxNum(series, intervalNum, valueInterval, stack = false) {
     let maxValue = Math.ceil(Math.ceil(absNum / tenCube) / valueInterval) * valueInterval * tenCube;
     let perLengthNum = maxValue / valueInterval;
     let negaNumInterval = 0;
+    let plusNumInterval = 0;
     if (minData < 0) {
         let absMinNum = Math.abs(minData);
         negaNumInterval = Math.ceil(absMinNum / perLengthNum);
+    }
+
+    if (maxData > 0) {
+        plusNumInterval = Math.ceil(maxData / perLengthNum);
     }
     return {
         'maxNum': maxValue,
         'negaNumInterval': negaNumInterval,
         'minNum': minData,
+        'maxData': maxData,
+        'plusNumInterval': plusNumInterval
     };
 }
-
-
-
-///--------------------------------/////
-export function dealWithBarOption(chartWidth, chartHeight, option, valueInterval, isLine = false) {
-    let xAxis = Object.assign(initXAxis, option.xAxis);
-    let yAxis = Object.assign(initYAxis, option.yAxis);
-    let series = option.series;
-    let horizontal = true;
-
-    let offsetLength = 0;
-
-    let rectNum = (option.stack || isLine) ? 1 : series.length; //每个item的柱形图个数
-    let intervalNum = series[0].data.length;//间隔
-
-    if (xAxis.type == 'category' && yAxis.type == 'value') {
-        horizontal = true;
-    } else if (xAxis.type == 'value' && yAxis.type == 'category') {
-        horizontal = false;
-    }
-
-    let svgLength = (horizontal ? chartWidth : chartHeight) - 50;
-    let rectWidth = ((svgLength / intervalNum) - 20) / rectNum;//每个柱形图的宽度
-
-    if (rectWidth < 12) {
-        rectWidth = 12;
-    } else if (rectWidth > 48) {
-        rectWidth = 48
-    }
-
-    svgLength = (rectWidth * rectNum + 20) * intervalNum; //柱形图最大长度
-    if (horizontal && svgLength < chartWidth - 50) {
-        offsetLength = (chartWidth - 50 - svgLength) / 2;
-        svgLength = chartWidth - 50;
-    } else if (!horizontal && svgLength < chartHeight - 50) {
-        offsetLength = (chartHeight - 50 - svgLength) / 2;
-        svgLength = chartHeight - 50;
-    }
-    let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
-    let axisHeight = 0;
-    if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
-        axisHeight = 35
-    }
-
-    let svgWidth = horizontal ? svgLength : chartWidth - 50;
-    let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
-
-    let barCanvasHeight = horizontal ? (svgHeight - 12) : (svgWidth - 17);
-    let perRectHeight = barCanvasHeight / maxNum;
-
-    return {
-        xAxis,
-        yAxis,
-        horizontal,
-        series,
-        svgLength,
-        svgWidth,
-        svgHeight,
-        maxNum,
-        intervalNum,
-        rectNum,
-        rectWidth,
-        barCanvasHeight,
-        perRectHeight,
-        offsetLength
-    }
-}
-
 
 function cutApartData(svgLength, intervalNum, horizontal, rectWidth, rectNum) {
     let maxShowLength = showWidth * 3;
@@ -478,15 +430,14 @@ const initYAxis = {
  * @param valueInterval  纵轴横线的数量
  * @param interWidth     每个分组的paddingLeft和paddingRight
  * @param isLine
- * @returns {{xAxis: *, yAxis: *, horizontal: boolean, series: Array, svgLength: number, svgWidth: number, svgHeight: number, maxNum: *, intervalNum, rectNum: *, rectWidth: number, barCanvasHeight: number, perRectHeight: number, offsetLength: number, perLength: number, perInterLength: number}}
+ * @returns {{xAxis: *, yAxis: *, horizontal: boolean, series: Array, svgLength: number, svgWidth: number, maxNum: *, intervalNum, rectNum: *, rectWidth: number, barCanvasHeight: number, perRectHeight: number, offsetLength: number, perLength: number, perInterLength: number}}
  */
 export function dealWithOption(chartWidth, chartHeight, option, valueInterval, interWidth, isLine = false) {
     let xAxis = deepCopy(Object.assign(initXAxis, option.xAxis));
     let yAxis = deepCopy(Object.assign(initYAxis, option.yAxis));
     //x轴的文字描述的空间
-    let xAxisLength = xAxis.show ? 50 : 10;
-    let yAxisLength = yAxis.show ? 50 : 10;
-
+    let xAxisLength = xAxis.show && xAxis.name ? 40 : xAxis.show && !xAxis.name ? 30 : 10;
+    let yAxisLength = yAxis.show && yAxis.name ? 40 : yAxis.show && !yAxis.name ? 30 : 10;
 
     let series = option.series;
     let horizontal = true;
@@ -514,27 +465,20 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     let perLength = interWidth * 2 + rectWidth * rectNum;
 
     //当svgLength小于chartWidth的时候，需要计算svgView在chartview中的margin
-    if (horizontal && svgLength < chartWidth - xAxisLength) {
-        offsetLength = (chartWidth - xAxisLength - svgLength) / 2;
-        svgLength = chartWidth - xAxisLength;
-    } else if (!horizontal && svgLength < chartHeight - yAxisLength) {
-        offsetLength = (chartHeight - yAxisLength - svgLength) / 2;
-        svgLength = chartHeight - yAxisLength;
+    if (horizontal && svgLength < chartWidth - yAxisLength) {
+        offsetLength = (chartWidth - yAxisLength - svgLength) / 2;
+        svgLength = chartWidth - yAxisLength;
+    } else if (!horizontal && svgLength < chartHeight - xAxisLength) {
+        offsetLength = (chartHeight - xAxisLength - svgLength) / 2;
+        svgLength = chartHeight - xAxisLength;
     }
 
-    let maxNum = getMaxNum(series, intervalNum, valueInterval, option.stack);
-    //横轴文字的高度
-    let axisHeight = 0;
-    if ((horizontal && xAxis.show) || (!horizontal && yAxis.show)) {
-        axisHeight = 35
-    }
-
-    let svgWidth = horizontal ? svgLength : chartWidth - xAxisLength;
-    let svgHeight = horizontal ? chartHeight - axisHeight : svgLength;
+    //计算最大最小值
+    let { maxNum, negaNumInterval, minNum, maxData, plusNumInterval } = getMaxMinNum(series, intervalNum, valueInterval, option.stack);
     //绘制区域的高度
     let barCanvasHeight = horizontal ? chartHeight - 10 - xAxisLength : chartWidth - 15 - yAxisLength;
-    let perRectHeight = barCanvasHeight / maxNum;
-    let perInterLength = barCanvasHeight / valueInterval;
+    let perInterLength = barCanvasHeight / (plusNumInterval + negaNumInterval);
+    let perRectHeight = perInterLength / maxNum * valueInterval;
 
     return {
         xAxis,
@@ -542,8 +486,6 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         horizontal,
         series,
         svgLength,
-        svgWidth,
-        svgHeight,
         maxNum,
         intervalNum,
         rectNum,
@@ -552,7 +494,11 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
         perRectHeight,
         offsetLength,
         perLength,
-        perInterLength
+        perInterLength,
+        negaNumInterval,
+        minNum,
+        maxData,
+        plusNumInterval
     }
 }
 

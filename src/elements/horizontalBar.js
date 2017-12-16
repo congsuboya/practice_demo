@@ -9,17 +9,6 @@ import {
     FlatList
 } from 'react-native';
 
-import Svg, {
-    Circle,
-    Path,
-    Rect,
-    G,
-    TSpan,
-    Text as SvgText
-} from 'react-native-svg';
-
-const AnimatedRect = Animated.createAnimatedComponent(Rect);
-
 const window = Dimensions.get('window');
 import ColorList from '../globalVariable';
 import { DrawXYAxisLine, DrawYXAxisValue, DrawYValueView, dealwithNum } from '../chartUtils';
@@ -34,73 +23,21 @@ export default class HorizontalBar extends React.Component {
     constructor(props) {
         super(props)
         this.viewAnimatedList = [];
-        this.renderBarItem = this.renderBarItem.bind(this);
         this.clickItemView = this.clickItemView.bind(this);
-        this.scrollOffX = 0;
         this.renderItem = this.renderItem.bind(this);
         this.createLineView = this.createLineView.bind(this);
         this.createYValue = this.createYValue.bind(this);
         this.createXValueTitle = this.createXValueTitle.bind(this);
-        this.renderSingView = this.renderSingView.bind(this);
-        this.renderClickItemView = this.renderClickItemView.bind(this);
+        this.createOffsetLineView = this.createOffsetLineView.bind(this);
         this.yValueView = null;
         this.xValueTitle = null;
+        this.offsetLineView = null;
         this.yValueViewWisth = 20;
-    }
-
-    renderBarItem(hadedDrawNum) {
-        let {
-            maxNum, series,
-            intervalNum,
-            rectNum,
-            rectWidth,
-            perRectHeight,
-            barCanvasHeight,
-            interWidth,
-            stack,
-            offsetLength
-        } = this.props;
-
-        let barViewList = [];
-        let rectHight;
-        let xNum;
-        let numlength;
-        let textX;
-        let textY;
-        let textColor;
-        let rotateY;
-        let preTextWidth = 3;
-
-        for (let i = 0; i < intervalNum; i++) {
-            let lastHeight = 0;
-            series.some((mapItem, index) => {
-                rectHight = mapItem.data[i] * perRectHeight;
-                if (rectHight < 2) {
-                    rectHight = 2;
-                }
-                xNum = (i * 2 + 1) * interWidth + i * rectWidth * rectNum;
-                if (stack) {
-                    lastHeight = rectHight + lastHeight;
-                } else {
-                    lastHeight = rectHight;
-                    xNum = xNum + index * rectWidth;
-                }
-                barViewList.push(
-                    <Rect
-                        x={xNum + offsetLength}
-                        y={barCanvasHeight + 10 - lastHeight}
-                        width={rectWidth}
-                        height={rectHight}
-                        fill={ColorList[index]}
-                    />
-                );
-            })
-        }
-        return barViewList;
+        this.scrollOffX = 0;
     }
 
     componentWillMount() {
-        let { yAxis, xAxis } = this.props;
+        let { yAxis, xAxis, offsetLength } = this.props;
         if (yAxis.show) {
             this.createYValue(this.props);
         }
@@ -108,6 +45,10 @@ export default class HorizontalBar extends React.Component {
             this.createXValueTitle(this.props);
         }
         this.createLineView(this.props);
+
+        if (offsetLength > 0) {
+            this.createOffsetLineView(this.props);
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -119,7 +60,7 @@ export default class HorizontalBar extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (!is(fromJS(nextProps), fromJS(this.props))) {
-            let { yAxis, xAxis } = this.props;
+            let { yAxis, xAxis, offsetLength } = nextProps;
             if (yAxis.show) {
                 this.createYValue(nextProps);
             }
@@ -127,13 +68,17 @@ export default class HorizontalBar extends React.Component {
                 this.createXValueTitle(nextProps)
             }
             this.createLineView(nextProps);
+
+            if (offsetLength > 0) {
+                this.createOffsetLineView(nextProps);
+            }
         }
     }
 
     createLineView(props) {
-        let { perLength, perInterLength, valueInterval } = props;
+        let { perLength, perInterLength, valueInterval, negaNumInterval, plusNumInterval } = props;
         let lineList = [];
-        for (let i = 0; i <= valueInterval; i++) {
+        for (let i = 0; i <= (plusNumInterval + negaNumInterval); i++) {
             lineList.push(<View key={i + 'line'} style={{ height: 1, width: perLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.lineView = (
@@ -143,18 +88,42 @@ export default class HorizontalBar extends React.Component {
         )
     }
 
+    createOffsetLineView(props) {
+        let { perLength, perInterLength, valueInterval, negaNumInterval, offsetLength, plusNumInterval } = props;
+        let lineList = [];
+        for (let i = 0; i <= (plusNumInterval + negaNumInterval); i++) {
+            lineList.push(<View key={i + 'line'} style={{ height: 1, width: offsetLength, backgroundColor: '#EEEEEE', marginTop: i == 0 ? 0 : perInterLength - 1 }} />)
+        }
+
+        this.offsetLineView = (
+            <View style={{ flex: 0, marginTop: 10 }}>
+                {lineList}
+            </View>
+        )
+    }
+
     createYValue(props) {
-        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis } = props;
+        let { perLength, perInterLength, maxNum, valueInterval, viewHeight, yAxis, negaNumInterval, maxData, plusNumInterval } = props;
         let valueList = [];
         let valueNum;
-        for (let i = 0; i <= valueInterval; i++) {
-            valueNum = maxNum - maxNum * i / valueInterval;
-            valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
+
+        if (plusNumInterval > 0) {
+            for (let i = plusNumInterval; i >= 0; i--) {
+                valueNum = maxNum / valueInterval * i;
+                valueList.push(<Text key={i + 'yvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == plusNumInterval ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
+            }
+        } else {
+            valueList.push(<Text key={'zeroyvalue'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: 5, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >0</Text>)
+
+        }
+        for (let i = 1; i <= negaNumInterval; i++) {
+            valueNum = -(maxNum * i / valueInterval);
+            valueList.push(<Text key={i + 'negaNumInterval'} numberOfLines={1} style={{ height: 10, maxWidth: 30, marginTop: i == 0 ? 5 : perInterLength - 10, fontSize: 9, lineHeight: 10, textAlign: 'right' }} >{dealwithNum(valueNum.toString())}</Text>)
         }
         this.yValueView = (
             <View
                 onLayout={(e) => this.yValueViewWisth = e.nativeEvent.layout.width}
-                style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                style={{ maxWidth: 40, height: viewHeight, flexDirection: 'row', justifyContent: 'flex-end', backgroundColor: 'white', paddingRight: 2 }}>
                 <Text
                     style={{
                         fontSize: 9,
@@ -164,7 +133,7 @@ export default class HorizontalBar extends React.Component {
                         textAlign: 'center',
                         textAlignVertical: 'center'
                     }}>{yAxis.name}</Text>
-                <View style={{ height: viewHeight, alignItems: 'flex-end', marginLeft: 2, maxWidth: 40, marginRight: 5 }}>
+                <View style={{ height: viewHeight, alignItems: 'flex-end', marginLeft: 2, maxWidth: 30 }}>
                     {valueList}
                 </View>
             </View>)
@@ -178,7 +147,7 @@ export default class HorizontalBar extends React.Component {
                 width: 100,
                 textAlign: 'center',
                 position: 'absolute',
-                bottom: 3,
+                bottom: 1,
                 left: (viewWidth - 60 - offsetLength) / 2,
                 textAlignVertical: 'center'
             }}>{xAxis.name}</Text>;
@@ -192,24 +161,66 @@ export default class HorizontalBar extends React.Component {
         this.props.showToastView(i, series, newLocation, barCanvasHeight);
     }
 
-    renderPerBarView(index, series, perRectHeight, stack, rectWidth) {
+    renderPerBarView(index, series, perRectHeight, stack, rectWidth, negaNumInterval, perInterLength) {
         let perBarList = [];
+        let negaNumIntList = [];
         let mapItem;
+        let barHeight = 0;
+        let marginBot = negaNumInterval * perInterLength;
+        let barView = null;
         if (stack) {
             for (let i = series.length - 1; i >= 0; i--) {
                 mapItem = series[i];
-                perBarList.push(
-                    < View key={i + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[i % ColorList.length], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />
-                )
+                barHeight = Math.abs(mapItem.data[index]) * perRectHeight;
+                barView = < View
+                    key={i + 'listItem'}
+                    pointerEvents='none'
+                    style={{
+                        backgroundColor: ColorList[i % ColorList.length],
+                        width: rectWidth,
+                        height: barHeight,
+                    }} />;
+                if (mapItem.data[index] < 0) {
+                    marginBot = marginBot - barHeight;
+                    negaNumIntList.unshift(barView)
+                } else {
+                    perBarList.push(barView);
+                }
             }
+            if (marginBot > 0) {
+                negaNumIntList.push(< View
+                    key={'emptylistItem'}
+                    pointerEvents='none'
+                    style={{
+                        width: rectWidth,
+                        height: marginBot,
+                    }} />)
+            }
+            perBarList = perBarList.concat(negaNumIntList);
         } else {
-            perBarList = series.map((mapItem, innerIndex) => < View key={innerIndex + 'listItem'} pointerEvents='none' style={{ backgroundColor: ColorList[innerIndex % ColorList.length], width: rectWidth, height: mapItem.data[index] * perRectHeight }} />)
+            series.map((mapItem, innerIndex) => {
+                marginBot = negaNumInterval * perInterLength;
+                barHeight = Math.abs(mapItem.data[index]) * perRectHeight;
+                if (mapItem.data[index] < 0) {
+                    marginBot = marginBot - barHeight;
+                }
+                perBarList.push(< View
+                    key={innerIndex + 'listItem'}
+                    pointerEvents='none'
+                    style={{
+                        backgroundColor: ColorList[innerIndex % ColorList.length],
+                        width: rectWidth,
+                        height: barHeight,
+                        marginBottom: marginBot
+                    }} />)
+            })
         }
         return perBarList;
     }
 
     renderItem({ item, index }) {
-        let { viewHeight, series, perRectHeight, perLength, xAxis, barCanvasHeight, stack, rectNum, rectWidth } = this.props;
+        let { viewHeight, series, perRectHeight, perLength, xAxis, barCanvasHeight,
+            stack, rectNum, rectWidth, negaNumInterval, minNum, perInterLength } = this.props;
         return (
             <View style={{ height: viewHeight, width: perLength, backgroundColor: 'white' }}>
                 {this.lineView}
@@ -217,59 +228,26 @@ export default class HorizontalBar extends React.Component {
                     underlayColor='rgba(34,142,230,0.10)'
                     onPressIn={(e) => this.clickItemView(index, perLength, e.nativeEvent)}>
                     <View style={[{ width: perLength, height: barCanvasHeight, alignItems: 'flex-end', paddingLeft: 10, paddingRight: 10, marginTop: 10 }, stack ? itemViewStackStyle : itemViewStyle]}>
-                        {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth)}
+                        {this.renderPerBarView(index, series, perRectHeight, stack, rectWidth, negaNumInterval, perInterLength)}
                     </View>
                 </TouchableHighlight>
                 {xAxis.show ? <View style={{ width: perLength, height: 30, justifyContent: 'center', alignItems: 'center' }} >
-                    <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 9, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
+                    <Text numberOfLines={2} style={{ textAlign: 'center', fontSize: 8, width: 30, transform: [{ rotateZ: '-45deg' }] }}>{xAxis.data[index]}</Text>
                 </View> : null}
             </View>
         )
     }
 
-    renderClickItemView() {
-        let { intervalNum, rectWidth, rectNum, interWidth, svgWidth, svgHeight, series, offsetLength } = this.props;
-        let clickViewList = [];
-        let clickAreWidth = (rectWidth * rectNum + interWidth * 2);
-        for (let i = 0; i < intervalNum; i++) {
-            clickViewList.push(
-                <TouchableHighlight
-                    underlayColor='rgba(34,142,230,0.10)'
-                    onPressIn={(e) => this.clickItemView(i, clickAreWidth, e.nativeEvent)}>
-                    <View style={{ width: clickAreWidth, height: svgHeight - 10 }} />
-                </TouchableHighlight>
-            )
-        };
-        return clickViewList;
-    }
-
-    renderSingView() {
-        let { valueInterval, svgHeight, svgWidth, viewHeight, viewWidth,
-            barCanvasHeight, xAxis, rectWidth, rectNum,
-            interWidth, offsetLength, intervalNum } = this.props;
-        return (
-            <View style={{ flex: 1, backgroundColor: 'white', height: viewHeight, width: svgWidth }}>
-                <View style={{ flex: 0 }}>
-                    < Svg width={svgWidth} height={svgHeight} >
-                        {DrawXYAxisLine(barCanvasHeight, svgWidth, true, valueInterval)}
-                        {this.renderBarItem()}
-                    </Svg>
-                </View>
-                <View style={{ width: svgWidth, height: svgHeight - 20, position: 'absolute', top: 10, left: 0, flexDirection: 'row', paddingLeft: offsetLength }}>
-                    {this.renderClickItemView()}
-                </View>
-                {DrawYXAxisValue(xAxis, true, svgWidth, rectWidth * rectNum + 2 * interWidth, offsetLength, intervalNum)}
-            </View>
-        )
-    }
-
     render() {
-        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength } = this.props;
-        // let offsetWidth = yAxis.show ? 40 : 20;
+        let { series, viewHeight, barCanvasHeight, viewWidth, xAxis, yAxis, offsetLength, plusNumInterval } = this.props;
+        if (yAxis.show) {
+            this.yValueViewWisth = this.yValueViewWisth + 20;
+        }
         return (
-            <View style={[{ flexDirection: 'row', backgroundColor: 'white' }, this.props.style]}>
+            <View style={[{ flexDirection: 'row', backgroundColor: 'white', justifyContent: 'center' }, this.props.style]}>
                 {this.yValueView}
-                {offsetLength > 0 ? this.renderSingView() : <View style={{ flex: 0, width: viewWidth - this.yValueViewWisth - 10, backgroundColor: 'white' }}>
+                <View style={{ flex: 0, flexDirection: 'row', width: viewWidth - this.yValueViewWisth }}>
+                    {this.offsetLineView}
                     <FlatList
                         data={xAxis.data}
                         alwaysBounceHorizontal={false}
@@ -282,7 +260,8 @@ export default class HorizontalBar extends React.Component {
                         }}
                         ItemSeparatorComponent={() => <View />}
                     />
-                </View>}
+                    {this.offsetLineView}
+                </View>
                 {this.xValueTitle}
             </View >
         )
