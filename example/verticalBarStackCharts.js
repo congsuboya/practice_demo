@@ -719,7 +719,7 @@ HorizontalBarCharts.defaultProps = {
         },
         "series": [
             {
-                "name": 1,
+                "name": '1',
                 "data": [
                     33319,
                     67663,

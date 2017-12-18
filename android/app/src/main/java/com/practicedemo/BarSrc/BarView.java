@@ -88,6 +88,8 @@ public class BarView extends LinearLayout {
         myBarParams.perLength = dip2px((float) option.getDouble("perLength"));
         myBarParams.perRectHeight = dip2px((float) option.getDouble("perRectHeight"));
         myBarParams.perInterLength = dip2px((float) option.getDouble("perInterLength"));
+        myBarParams.plusNumInterval = option.getInt("plusNumInterval");
+        myBarParams.negaNumInterval = option.getInt("negaNumInterval");
 
         ReadableArray yAxisData = option.getMap("yAxis").getArray("data");
         for (int i = 0; i < yAxisData.size(); i++) {
