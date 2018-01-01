@@ -448,8 +448,10 @@ export function dealWithOption(chartWidth, chartHeight, option, valueInterval, i
     //value 表示度量，Y轴是度量，表示是横着的，category是分组，还有个维度（比如series就是维度的集合）
     if (xAxis.type == 'category' && yAxis.type == 'value') {
         horizontal = true;
+        intervalNum = xAxis.data.length;
     } else if (xAxis.type == 'value' && yAxis.type == 'category') {
         horizontal = false;
+        intervalNum = yAxis.data.length;
     }
 
     let svgLength = (horizontal ? chartWidth - xAxisLength : chartHeight - yAxisLength);

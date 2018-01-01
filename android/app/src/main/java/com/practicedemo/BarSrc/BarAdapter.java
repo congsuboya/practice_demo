@@ -47,7 +47,11 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
     public void onBindViewHolder(final BarItemVIewHolder holder, int position) {
         holder.xAsixText.setText(mData.get(position));
         addLineView(holder.lineHolder);
-        addBarView(holder.barHolder, position);
+        if (myBarParams.stack) {
+            addStackBarView(holder.barHolder, position);
+        } else {
+            addBarView(holder.barHolder, position);
+        }
     }
 
     public BarAdapter(List<String> mData, Context context, List<JsonSeries> seriesList, JsonBarParams myBarParams) {
@@ -88,12 +92,12 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
     private void addLineView(LinearLayout view) {
         if (view.getChildCount() != (myBarParams.valueInterval + 1)) {
             LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(dip2px(context, 1), (int) myBarParams.perLength);
-            lineParams.setMargins((int) (myBarParams.perInterLength), 0, 0, 0);
+            lineParams.setMargins((int) (myBarParams.perInterLength - dip2px(context, 1)), 0, 0, 0);
 
-            LinearLayout.LayoutParams initLineParams = new LinearLayout.LayoutParams(1, (int) myBarParams.perLength);
+            LinearLayout.LayoutParams initLineParams = new LinearLayout.LayoutParams(dip2px(context, 1), (int) myBarParams.perLength);
             initLineParams.setMargins(0, 0, 0, 0);
 
-            for (int i = 0; i <= myBarParams.valueInterval; i++) {
+            for (int i = 0; i <= (myBarParams.negaNumInterval + myBarParams.plusNumInterval); i++) {
                 View lineItem = new View(context);
                 if (i == 0) {
                     lineItem.setLayoutParams(initLineParams);
@@ -103,6 +107,7 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
                 lineItem.setBackgroundColor(Color.parseColor("#EEEEEE"));
                 view.addView(lineItem);
             }
+
             Log.e("jkiokjoijojoj", view.getChildCount() + "");
         }
     }
@@ -116,15 +121,63 @@ public class BarAdapter extends RecyclerView.Adapter<BarItemVIewHolder> {
      */
     private void addBarView(LinearLayout view, int index) {
         view.removeAllViews();
+        float marginLef;
         for (int i = 0; i < seriesList.size(); i++) {
+            marginLef = myBarParams.negaNumInterval * myBarParams.perInterLength;
             JsonSeries item = seriesList.get(i);
             float dataItem = item.getDataItemByIndex(index);
-            int svgLength = (int) (dataItem * myBarParams.perRectHeight);
-            ViewGroup.LayoutParams barParams = new ViewGroup.LayoutParams(svgLength, (int) myBarParams.rectWidth);
+            int svgLength = (int) Math.abs(dataItem * myBarParams.barCanvasHeight / myBarParams.maxNum);
+            if (svgLength < 2 && svgLength > 0) {
+                svgLength = 2;
+            }
+            if (dataItem < 0) {
+                marginLef = marginLef - svgLength;
+            }
+
+            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(svgLength, (int) myBarParams.rectWidth);
+
             View barView = new View(context);
+            barParams.setMargins((int) marginLef, 0, 0, 0);
             barView.setBackgroundColor(Color.parseColor(ColorList.get(i % ColorList.size())));
             barView.setLayoutParams(barParams);
             view.addView(barView);
+        }
+    }
+
+    /**
+     * 添加bar的view
+     *
+     * @param view
+     * @param index
+     */
+    private void addStackBarView(LinearLayout view, int index) {
+        view.removeAllViews();
+        float marginLef = myBarParams.negaNumInterval * myBarParams.perInterLength;
+        for (int i = 0; i < seriesList.size(); i++) {
+            JsonSeries item = seriesList.get(i);
+            float dataItem = item.getDataItemByIndex(index);
+            float svgLength = Math.abs(dataItem * myBarParams.barCanvasHeight / myBarParams.maxNum);
+            if (svgLength > 0 && svgLength < 2) {
+                svgLength = 2;
+            }
+            if (dataItem < 0) {
+                marginLef = marginLef - svgLength;
+            }
+            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams((int) svgLength, (int) myBarParams.rectWidth);
+            View barView = new View(context);
+            barView.setBackgroundColor(Color.parseColor(ColorList.get(i % ColorList.size())));
+            barView.setLayoutParams(barParams);
+            if (dataItem < 0) {
+                view.addView(barView, 0);
+            } else {
+                view.addView(barView);
+            }
+        }
+        if (marginLef > 0) {
+            LinearLayout.LayoutParams marginBarParams = new LinearLayout.LayoutParams((int) marginLef, (int) myBarParams.rectWidth);
+            View marginLbarView = new View(context);
+            marginLbarView.setLayoutParams(marginBarParams);
+            view.addView(marginLbarView, 0);
         }
     }
 

@@ -78,13 +78,13 @@ HorizontalBarCharts.defaultProps = {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, -10, 7, 6, 5, 2, 3,]
+                data: [-10, -5, -2, -3, -4, -7, -6, -5, -2, -3,]
             },
             {
                 name: '非直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [3, 4, 1, 4, 2, 8, 3, 3, 10, 7]
+                data: [-3, -4, -1, -4, -2, -8, -3, -3, -10, -7]
             }
         ],
         stack: false

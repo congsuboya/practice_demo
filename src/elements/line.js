@@ -367,7 +367,7 @@ LineChart.defaultProps = {
                 name: '直接访问',
                 type: 'bar',
                 barWidth: '60%',
-                data: [10, 5, 2, 3, 0, 7, 6, 5, 2, 3]
+                data: [10, 5, 2, 3, 0, -7, 6, 5, 2, 3]
             },
             {
                 name: '非直接访问',

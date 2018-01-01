@@ -128,7 +128,7 @@ export default class VerticalBar extends React.Component {
             lineList.push(<View key={i + 'line'} style={{ height: offsetLength, width: 1, backgroundColor: '#EEEEEE', marginLeft: i == 0 ? 0 : perInterLength - 1 }} />)
         }
         this.offsetLineView = (
-            <View style={{ marginLeft: yAxis.show ? 40 : 10, flexDirection: 'row' }}>
+            <View style={{ marginLeft: yAxis.show ? 40 : 10, flexDirection: 'row', }}>
                 {lineList}
             </View>
         )
@@ -142,9 +142,9 @@ export default class VerticalBar extends React.Component {
     }
 
     clickNativeItemView(i, clickAreHeight, location) {
-        let { series, viewHeight } = this.props;
+        let { series, viewHeight, yAxis } = this.props;
         let newLocation = Object.assign(location, { locationY: (location.locationY + clickAreHeight / 2) }, { locationX: location.locationX })
-        this.props.showToastView(i, series, newLocation, viewHeight - 50);
+        this.props.showToastView(i, series, newLocation, viewHeight - 50, yAxis.data[i]);
     }
 
     createLineView(props) {
@@ -223,7 +223,7 @@ export default class VerticalBar extends React.Component {
         let { viewHeight, series, perRectHeight, xAxis, perLength, barCanvasHeight,
             stack, rectNum, yAxis, viewWidth, rectWidth, perInterLength, negaNumInterval } = this.props;
         return (
-            <View style={{ flex: 0, height: perLength, flexDirection: 'row', width: viewWidth - 20 }}>
+            <View style={{ flex: 0, height: perLength, flexDirection: 'row', width: viewWidth - 20, backgroundColor: 'white' }}>
                 {yAxis.show ? <Text numberOfLines={1} style={[{ textAlign: 'right', fontSize: 9, width: 40, height: perLength, textAlignVertical: 'center', paddingRight: 5 }, Platform.OS == 'ios' ? { paddingTop: (perLength - 10) / 2 } : {}]}>{yAxis.data[index]}</Text>
                     : <View style={{ width: 10 }} />}
                 {this.lineView}
@@ -250,28 +250,34 @@ export default class VerticalBar extends React.Component {
                     {this.yValueTitle}
                     <View style={{ flex: 0, height: viewHeight - this.xValueHeight }}>
                         {this.offsetLineView}
-                        {true ?
-                            <FlatList
-                                data={yAxis.data}
-                                alwaysBounceVertical={false}
-                                horizontal={false}
-                                renderItem={this.renderItem}
-                                keyExtractor={(item, index) => index}
-                                onScroll={(e) => {
-                                    this.scrollOffY = e.nativeEvent.contentOffset.y;
-                                    this.props.closeToastView();
-                                }}
-                                getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
-                            />
-                            : <NativeBar style={{ marginLeft: 14, height: viewHeight - offsetLength * 2 }}
-                                option={{
-                                    ...this.props
-                                }}
-                                rnOnScroll={(e) => {
-                                    this.props.closeToastView();
-                                }}
-                                onClickItem={(e) => this.clickNativeItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
-                            />}
+                        {Platform.OS == 'ios' || offsetLength > 0 ?
+                            <View style={{ flex: 0 }}>
+                                <FlatList
+                                    data={yAxis.data}
+                                    alwaysBounceVertical={false}
+                                    horizontal={false}
+                                    renderItem={this.renderItem}
+                                    keyExtractor={(item, index) => index}
+                                    onScroll={(e) => {
+                                        this.scrollOffY = e.nativeEvent.contentOffset.y;
+                                        this.props.closeToastView();
+                                    }}
+                                    getItemLayout={(data, index) => ({ length: perLength, offset: perLength * index, index })}
+                                />
+                            </View>
+                            :
+                            <View style={{ height: viewHeight - this.xValueHeight, width: viewWidth }}>
+                                <NativeBar style={{ marginLeft: 5, height: viewHeight - this.xValueHeight }}
+                                    option={{
+                                        ...this.props
+                                    }}
+                                    rnOnScroll={(e) => {
+                                        this.props.closeToastView();
+                                    }}
+                                    onClickItem={(e) => this.clickNativeItemView(e.nativeEvent.position, perLength, e.nativeEvent)}
+                                />
+                            </View>
+                        }
                         {this.offsetLineView}
                     </View>
                 </View>

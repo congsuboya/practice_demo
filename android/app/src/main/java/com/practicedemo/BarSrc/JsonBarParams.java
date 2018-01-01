@@ -18,4 +18,6 @@ public class JsonBarParams {
     public boolean stack;//是否是堆叠图
     public float viewWidth;//视图的宽度
     public float perInterLength;//度量线的宽度
+    public float plusNumInterval;//正数的线个数
+    public float negaNumInterval;//负数的线个数
 }

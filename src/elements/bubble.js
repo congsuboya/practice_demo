@@ -214,7 +214,7 @@ Bubble.defaultProps = {
             data: [
                 [
                     28604,
-                    -77,
+                    77,
                     17096869,
                     "Australia",
                     1990

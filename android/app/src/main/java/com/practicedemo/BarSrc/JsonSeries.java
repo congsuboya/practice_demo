@@ -12,7 +12,7 @@ import java.util.List;
 
 public class JsonSeries {
 
-    private String name;
+    private String name = "";
     private List<Float> data;
 
 
@@ -21,17 +21,31 @@ public class JsonSeries {
     }
 
     public void setReactMap(ReadableMap object) {
-            name = object.getString("name");
-            ReadableArray dataObjArrary = object.getArray("data");
-            data = new ArrayList<>();
-            float dataItem;
+
+        name = object.getString("name");
+        ReadableArray dataObjArrary = object.getArray("data");
+        data = new ArrayList<>();
+        float dataItem;
+        try {
             for (int i = 0; i < dataObjArrary.size(); i++) {
-                dataItem = (float) dataObjArrary.getDouble(i);
+                if (!dataObjArrary.isNull(i)) {
+                    dataItem = (float) dataObjArrary.getDouble(i);
+                } else {
+                    dataItem = 0;
+                }
                 data.add(dataItem);
             }
+        } catch (Exception e) {
+
+        }
+
     }
 
     public float getDataItemByIndex(int index) {
-        return data.get(index);
+        if (data.size() > 0 && data.size() > index) {
+            return data.get(index);
+        } else {
+            return 0;
+        }
     }
 }
