@@ -29,4 +29,6 @@ const App = StackNavigator({
   GaugeDemo: { screen: GaugeDemo },
 });
 
-AppRegistry.registerComponent('PracticeDemo', () => App);
+
+import TestDemo from './testDemo';
+AppRegistry.registerComponent('PracticeDemo', () => TestDemo);
