@@ -1,3 +1,6 @@
+
+import React from 'react';
+
 import { AppRegistry } from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -16,10 +19,15 @@ import PieDemo from './example/pieCharts';
 import BubbleDemo from './example/bubbleCharts';
 import GaugeDemo from './example/gaugeCharts';
 
+import ChartsListScreen from './app/LineChartScreen';
+import ChartsListScreen2 from './app/AxisLineChartScreen';
+
+
+
 const App = StackNavigator({
   Main: { screen: Main },
-  HorizontalBar: { screen: HorizontalBar },
-  HorizontalBarStack: { screen: HorizontalBarStack },
+  HorizontalBar: { screen: ChartsListScreen },
+  HorizontalBarStack: { screen: ChartsListScreen2 },
   VerticalBar: { screen: VerticalBar },
   VerticalBarStack: { screen: VerticalBarStack },
   LineDemo: { screen: LineDemo },
@@ -30,5 +38,7 @@ const App = StackNavigator({
 });
 
 
-import TestDemo from './testDemo';
-AppRegistry.registerComponent('PracticeDemo', () => TestDemo);
+// import TestDemo from './testDemo';
+
+
+AppRegistry.registerComponent('PracticeDemo', () => App);
