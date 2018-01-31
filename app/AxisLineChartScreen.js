@@ -4,93 +4,32 @@ import {
   StyleSheet,
   Text,
   View,
-  processColor
+  processColor,
+  Dimensions
 } from 'react-native';
 import update from 'immutability-helper';
 
 import _ from 'lodash';
 import { LineChart } from 'react-native-charts-wrapper';
 
+const window = Dimensions.get('window');
+
 const COLOR_PURPLE = processColor('#697dfb');
 
-class AxisLineChartScreen extends React.Component {
+class LineChartView extends React.Component {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       data: {},
       xAxis: {},
-      yAxis: {}
+      yAxis: {},
+      ...props.option
     };
   }
 
   componentDidMount() {
-    const valueRange = 100;
-    const size = 30;
-
-    this.setState(
-      update(this.state, {
-        xAxis: {
-          $set: {
-            textColor: processColor('#8FA1B2'),
-            textSize: 16,
-            gridColor: processColor('#8FA1B2'),
-            gridLineWidth: 1,
-            axisLineColor: processColor('#8FA1B2'),
-            axisLineWidth: 1.5,
-            gridDashedLine: {
-              lineLength: 10,
-              spaceLength: 10
-            },
-            avoidFirstLastClipping: true,
-            position: 'BOTTOM'
-          }
-        },
-        yAxis: {
-          $set: {
-            axisLineColor: processColor('#8FA1B2'),
-            left: {
-              drawGridLines: false
-            },
-            right: {
-              enabled: false
-            }
-          }
-        },
-        data: {
-          $set: {
-            dataSets: [{
-              values: this._randomYValues(valueRange, size),
-              label: '',
-              config: {
-                lineWidth: 1,
-                drawCircles: true,
-                drawCubicIntensity: 0.3,
-                drawCubic: true,
-                drawHighlightIndicators: true,
-                color: processColor('#8FA1B2'),
-                drawFilled: true,
-                // fillColor: COLOR_PURPLE,
-                // fillAlpha: 90,
-                highlightColor: processColor('red')
-              }
-            }],
-          }
-        }
-      })
-    );
-  }
-
-  _randomYValues(range: number, size: number) {
-    const nextValueMaxDiff = 0.2;
-    let lastValue = range / 2;
-
-    return _.times(size, () => {
-      let min = lastValue * (1 - nextValueMaxDiff);
-      let max = lastValue * (1 + nextValueMaxDiff);
-      return { y: Math.random() * (max - min) + min };
-    });
   }
 
   handleSelect(event) {
@@ -100,30 +39,33 @@ class AxisLineChartScreen extends React.Component {
     } else {
       this.setState({ ...this.state, selectedEntry: JSON.stringify(entry) })
     }
-
     console.log(event.nativeEvent)
   }
+
+
 
   render() {
     return (
 
       <View style={{ flex: 1 }}>
-
-        <View style={{ height: 80 }}>
-          <Text> selected entry</Text>
-          <Text> {this.state.selectedEntry}</Text>
-        </View>
-
         <View style={styles.container}>
           <LineChart
             style={styles.chart}
             data={this.state.data}
-            chartDescription={{ text: '' }}
+            chartDescription={{ text: 'sdfsfs' }}
             xAxis={this.state.xAxis}
             yAxis={this.state.yAxis}
+            animation={{ durationX: 1500 }}
+            marker={{
+              enabled: true,
+              markerColor: processColor('#0E4068'),
+              textColor: processColor('white'),
+              markerFontSize: 14,
+            }}
             legend={{ enabled: false }}
             onSelect={this.handleSelect.bind(this)}
             onChange={(event) => console.log(event.nativeEvent)}
+            ref="chart"
           />
         </View>
       </View>
@@ -137,8 +79,68 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF'
   },
   chart: {
-    flex: 1
+    width: window.width,
+    height: 230
   }
 });
 
-export default AxisLineChartScreen;
+
+LineChartView.defaultProps = {
+  option: {
+    xAxis: {
+      textColor: processColor('#8FA1B2'),//x轴字体颜色
+      textSize: 10,//字体大小
+      drawGridLines: false,//是否画x轴的竖线
+      axisLineColor: processColor('#8FA1B2'),//x轴线的颜色
+      axisLineWidth: 0.5,//x轴线的宽度
+      avoidFirstLastClipping: true,
+      position: 'BOTTOM',
+      granularityEnabled: true,
+      data: ['Mon', 'Tue', 'Wed', 'Thusssss', 'Fri', 'Satsfsffsfsdfsdfsf', 'Sun', 'wqe', 'sdr', 'opu'],
+    },
+    yAxis: {
+      left: {
+        drawGridLines: true
+      },
+      right: {
+        enabled: false
+      }
+    },
+    data: {
+      dataSets: [{
+        values: [{ y: -90 }, { y: 130 }, { y: -2000, marker: "eat more" }, { y: 9000, marker: "eat less" }
+        ],
+        label: '',
+        config: {
+          lineWidth: 1,
+          drawCircles: true,
+          circleColor: processColor('#8FA1B2'),
+          drawCubicIntensity: 0.3,
+          drawHighlightIndicators: false,
+          color: processColor('#8FA1B2'),
+          drawFilled: false,
+          mode: "CUBIC_BEZIER",
+          highlightColor: processColor('red')
+        }
+      },
+      {
+        values: [{ y: 100 }, { y: 1300 }, { y: -1000, marker: "eat more" }, { y: 8000, marker: "eat less" }],
+        label: '',
+        config: {
+          lineWidth: 1,
+          drawCircles: true,
+          circleColor: processColor('#8FA1B2'),
+          drawCubicIntensity: 0.3,
+          drawHighlightIndicators: false,
+          color: processColor('#8FA1B2'),
+          drawFilled: false,
+          mode: "CUBIC_BEZIER",
+          highlightColor: processColor('red')
+        }
+      }
+      ],
+    }
+  }
+}
+
+export default LineChartView;

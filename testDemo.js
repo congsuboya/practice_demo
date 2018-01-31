@@ -5,7 +5,9 @@ import {
     ART,
     PixelRatio,
     StyleSheet,
-    PanResponder
+    PanResponder,
+    Text,
+    Animated
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -24,6 +26,8 @@ import Svg, {
 const { Surface, Shape, Path, Group } = ART;
 
 const window = Dimensions.get('window');
+
+const AnimatedRect = Animated.createAnimatedComponent(Rect);
 
 export default class Demo extends React.Component {
 
@@ -46,7 +50,8 @@ export default class Demo extends React.Component {
             offsetX: 0,
             offsetY: 0,
             lastX: 0,
-            lastY: 0
+            lastY: 0,
+            index: 0
         }
         this.barListView = [];
     }
@@ -63,6 +68,7 @@ export default class Demo extends React.Component {
             onPanResponderTerminationRequest: evt => true,
             onShouldBlockNativeResponder: evt => false
         });
+
     }
 
 
@@ -117,18 +123,17 @@ export default class Demo extends React.Component {
 
     renderMuchBar() {
         let numRatio = PixelRatio.get();
-        // alert(numRatio);
         let listView = [];
         let path;
         let rectWidth = 1 / numRatio;
-        for (let i = 1; i < 3000; i++) {
+        for (let i = 1; i < 300; i++) {
             if (i == 1) {
                 path = new Path().moveTo(0, this.GetRandomNum(0, 100)).lineTo(i, this.GetRandomNum(0, 100));
             } else {
                 path = path.lineTo(i, this.GetRandomNum(0, 100));
             }
             listView.push(
-                <Rect
+                <AnimatedRect
                     key={i}
                     x={i + rectWidth}
                     y='300'
@@ -138,23 +143,30 @@ export default class Demo extends React.Component {
                 />
             )
         }
-
+        // return <Shape d={path} stroke={'red'} strokeWidth={1} />
         return listView
     }
+
+
     render() {
         return (
             <View style={{ flex: 1, backgroundColor: 'yellow' }}>
+                <Text>{this.state.index}</Text>
                 <View
                     {...this.gestureHandlers.panHandlers}
                     style={[styles.container, this.props.style, {
                         transform: [
                             { scaleX: this.state.scale },
                             { translateX: this.state.offsetX },
+                            {translateY:this.state.offsetY}
                         ]
                     }]}>
-                    <Svg width={window.width} height='500' >
+                    <Svg width={window.width} height='400' >
                         {this.barListView}
                     </Svg>
+                    {/* <Surface width={window.width} height='400'>
+                        {this.renderMuchBar()}
+                    </Surface> */}
                 </View>
 
             </View>

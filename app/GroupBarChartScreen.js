@@ -6,7 +6,7 @@ import {
   View, processColor
 } from 'react-native';
 
-import {BarChart} from 'react-native-charts-wrapper';
+import { BarChart } from 'react-native-charts-wrapper';
 
 class StackedBarChartScreen extends React.Component {
 
@@ -15,17 +15,17 @@ class StackedBarChartScreen extends React.Component {
 
     this.state = {
       legend: {
-        enabled: true,
-        textSize: 14,
-        form: "SQUARE",
-        formSize: 14,
-        xEntrySpace: 10,
-        yEntrySpace: 5,
-        wordWrapEnabled: true
+        // enabled: true,
+        // textSize: 14,
+        // form: "SQUARE",
+        // formSize: 14,
+        // xEntrySpace: 10,
+        // yEntrySpace: 5,
+        // wordWrapEnabled: true
       },
       data: {
         dataSets: [{
-          values: [5, 40, 77, 81, 43],
+          values: [5, 40, -77, 81, 430],
           label: 'Company A',
           config: {
             drawValues: false,
@@ -56,14 +56,24 @@ class StackedBarChartScreen extends React.Component {
         }
       },
       xAxis: {
+        enabled: true,
         valueFormatter: ['1990', '1991', '1992', '1993', '1994'],
-        granularityEnabled: true,
-        granularity: 1,
-        axisMaximum: 5,
-        axisMinimum: 0,
-        centerAxisLabels: true
+        // // granularityEnabled: true,
+        // // granularity: 1,
+        // // axisMaximum: 5,
+        // // axisMinimum: 0,
+        // // centerAxisLabels: true,
+        position: 'BOTTOM'
       },
 
+      yAxis: {
+        left: {
+          drawGridLines: true,
+        },
+        right: {
+          enabled: false
+        }
+      }
 
     };
   }
@@ -71,9 +81,9 @@ class StackedBarChartScreen extends React.Component {
   handleSelect(event) {
     let entry = event.nativeEvent
     if (entry == null) {
-      this.setState({...this.state, selectedEntry: null})
+      this.setState({ ...this.state, selectedEntry: null })
     } else {
-      this.setState({...this.state, selectedEntry: JSON.stringify(entry)})
+      this.setState({ ...this.state, selectedEntry: JSON.stringify(entry) })
     }
 
     console.log(event.nativeEvent)
@@ -81,9 +91,9 @@ class StackedBarChartScreen extends React.Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
 
-        <View style={{height:80}}>
+        <View style={{ height: 80 }}>
           <Text> selected entry</Text>
           <Text> {this.state.selectedEntry}</Text>
         </View>
@@ -92,11 +102,14 @@ class StackedBarChartScreen extends React.Component {
           <BarChart
             style={styles.chart}
             xAxis={this.state.xAxis}
+            yAxis={this.state.yAxis}
+
             data={this.state.data}
             legend={this.state.legend}
             drawValueAboveBar={false}
             onSelect={this.handleSelect.bind(this)}
             onChange={(event) => console.log(event.nativeEvent)}
+            autoScaleMinMaxEnabled={true}
           />
         </View>
 

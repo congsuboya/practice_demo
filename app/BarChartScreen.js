@@ -7,9 +7,9 @@ import {
   processColor
 } from 'react-native';
 
-import {BarChart} from 'react-native-charts-wrapper';
+import { BarChart } from 'react-native-charts-wrapper';
 
-class BarChartScreen extends React.Component {
+class StackedBarChartScreen extends React.Component {
 
   constructor() {
     super();
@@ -18,72 +18,107 @@ class BarChartScreen extends React.Component {
       legend: {
         enabled: true,
         textSize: 14,
-        form: 'SQUARE',
+        form: "SQUARE",
         formSize: 14,
         xEntrySpace: 10,
         yEntrySpace: 5,
-        formToTextSpace: 5,
-        wordWrapEnabled: true,
-        maxSizePercent: 0.5
+        wordWrapEnabled: true
       },
       data: {
         dataSets: [{
-          values: [{y: 100}, {y: 105}, {y: 102}, {y: 110}, {y: 114}, {y: 109}, {y: 105}, {y: 99}, {y: 95}],
-          label: 'Bar dataSet',
+          values: [5, 40, 77, 81, 43],
+          label: 'Company A',
           config: {
-            color: processColor('teal'),
-            barSpacePercent: 40,
-            barShadowColor: processColor('lightgrey'),
-            highlightAlpha: 90,
-            highlightColor: processColor('red'),
+            drawValues: false,
+            colors: [processColor('red')],
+          }
+        }, {
+          values: [40, 5, 50, 23, 79],
+          label: 'Company B',
+          config: {
+            drawValues: false,
+            colors: [processColor('blue')],
+          }
+        }, {
+          values: [10, 55, 35, 90, 82],
+          label: 'Company C',
+          config: {
+            drawValues: false,
+            colors: [processColor('green')],
           }
         }],
+        config: {
+          barWidth: 0.2,
+          group: {
+            fromX: 0,
+            groupSpace: 0.1,
+            barSpace: 0.1,
+          },
+        }
       },
-      highlights: [{x: 3}, {x: 6}],
       xAxis: {
-        valueFormatter: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+        valueFormatter: ['1990', '1991', '1992', '1993', '1994'],
         granularityEnabled: true,
-        granularity : 1,
-      }
+        granularity: 1,
+        axisMaximum: 5,
+        axisMinimum: 0,
+        centerAxisLabels: true
+      },
+
+      marker: {
+        enabled: true,
+        markerColor: processColor('#F0C0FF8C'),
+        textColor: processColor('white'),
+        markerFontSize: 14,
+      },
+
     };
+  }
+
+  componentDidMount() {
+    // in this example, there are line, bar, candle, scatter, bubble in this combined chart.
+    // according to MpAndroidChart, the default data sequence is line, bar, scatter, candle, bubble.
+    // so 4 should be used as dataIndex to highlight bubble data.
+
+    // if there is only bar, bubble in this combined chart.
+    // 1 should be used as dataIndex to highlight bubble data.
+
+    this.setState({ ...this.state, highlights: [{ x: 1, y: 40 }, { x: 2, y: 50 }] })
   }
 
   handleSelect(event) {
     let entry = event.nativeEvent
     if (entry == null) {
-      this.setState({...this.state, selectedEntry: null})
+      this.setState({ ...this.state, selectedEntry: null })
     } else {
-      this.setState({...this.state, selectedEntry: JSON.stringify(entry)})
+      this.setState({ ...this.state, selectedEntry: JSON.stringify(entry) })
     }
 
     console.log(event.nativeEvent)
   }
 
-
   render() {
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
 
-        <View style={{height:80}}>
+        <View style={{ height: 80 }}>
           <Text> selected entry</Text>
           <Text> {this.state.selectedEntry}</Text>
         </View>
 
-
-        <View style={styles.container}>
+        <View style={{
+          flex: 1, height: 400,
+          backgroundColor: '#F5FCFF'
+        }}>
           <BarChart
             style={styles.chart}
-            data={this.state.data}
             xAxis={this.state.xAxis}
-            animation={{durationX: 2000}}
+            data={this.state.data}
             legend={this.state.legend}
-            gridBackgroundColor={processColor('#ffffff')}
-            drawBarShadow={false}
-            drawValueAboveBar={true}
-            drawHighlightArrow={true}
-            onSelect={this.handleSelect.bind(this)}
-            highlights={this.state.highlights}
+            drawValueAboveBar={false}
             onChange={(event) => console.log(event.nativeEvent)}
+            highlights={this.state.highlights}
+            marker={this.state.marker}
           />
         </View>
       </View>
@@ -101,4 +136,5 @@ const styles = StyleSheet.create({
   }
 });
 
-export default BarChartScreen;
+
+export default StackedBarChartScreen;

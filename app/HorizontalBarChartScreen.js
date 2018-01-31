@@ -7,7 +7,7 @@ import {
   processColor
 } from 'react-native';
 
-import {HorizontalBarChart} from 'react-native-charts-wrapper';
+import { HorizontalBarChart } from 'react-native-charts-wrapper';
 
 class HorizontalBarChartScreen extends React.Component {
 
@@ -28,7 +28,7 @@ class HorizontalBarChartScreen extends React.Component {
       },
       data: {
         dataSets: [{
-          values: [{y: 100}, {y: 105}, {y: 102}, {y: 110}, {y: 114}, {y: 109}, {y: 105}, {y: 99}, {y: 95}],
+          values: [{ y: 100 }, { y: -105 }, { y: 102 }, { y: 110 }, { y: 114 }, { y: 109 }, { y: 105 }, { y: 99 }, { y: 95 }],
           label: 'Bar dataSet',
           config: {
             color: processColor('teal'),
@@ -45,17 +45,25 @@ class HorizontalBarChartScreen extends React.Component {
         granularityEnabled: true,
         granularity: 1,
         labelCount: 10,
+        drawGridLines: false
       },
-      yAxis: {left:{axisMinimum: 0}}
+      yAxis: {
+        left: {
+          enabled: false
+        },
+        right: {
+          drawGridLines: true
+        }
+      }
     };
   }
 
   handleSelect(event) {
     let entry = event.nativeEvent
     if (entry == null) {
-      this.setState({...this.state, selectedEntry: null})
+      this.setState({ ...this.state, selectedEntry: null })
     } else {
-      this.setState({...this.state, selectedEntry: JSON.stringify(entry)})
+      this.setState({ ...this.state, selectedEntry: JSON.stringify(entry) })
     }
 
     console.log(event.nativeEvent)
@@ -64,13 +72,7 @@ class HorizontalBarChartScreen extends React.Component {
 
   render() {
     return (
-      <View style={{flex: 1}}>
-
-        <View style={{height:80}}>
-          <Text> selected entry</Text>
-          <Text> {this.state.selectedEntry}</Text>
-        </View>
-
+      <View style={{ flex: 1 }}>
 
         <View style={styles.container}>
           <HorizontalBarChart
@@ -78,7 +80,7 @@ class HorizontalBarChartScreen extends React.Component {
             data={this.state.data}
             xAxis={this.state.xAxis}
             yAxis={this.state.yAxis}
-            animation={{durationX: 2000}}
+            animation={{ durationY: 2000 }}
             legend={this.state.legend}
             gridBackgroundColor={processColor('#ffffff')}
             drawBarShadow={false}

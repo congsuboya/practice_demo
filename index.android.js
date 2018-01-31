@@ -19,18 +19,25 @@ import PieDemo from './example/pieCharts';
 import BubbleDemo from './example/bubbleCharts';
 import GaugeDemo from './example/gaugeCharts';
 
-import ChartsListScreen from './app/LineChartScreen';
+import ChartsListScreen from './app/GroupBarChartScreen';
 import ChartsListScreen2 from './app/AxisLineChartScreen';
+import ChartsListScreen3 from './app/BubbleChartScreen';
+import ChartsListScreen4 from './app/HorizontalBarChartScreen';
+import ChartsListScreen5 from './app/BarChartScreen';
+
+
+import LineChartView from './baseChartView/LineChartView';
+import BarChartView from './baseChartView/BarChartView';
 
 
 
 const App = StackNavigator({
   Main: { screen: Main },
   HorizontalBar: { screen: ChartsListScreen },
-  HorizontalBarStack: { screen: ChartsListScreen2 },
-  VerticalBar: { screen: VerticalBar },
-  VerticalBarStack: { screen: VerticalBarStack },
-  LineDemo: { screen: LineDemo },
+  HorizontalBarStack: { screen: BarChartView },
+  VerticalBar: { screen: ChartsListScreen3 },
+  VerticalBarStack: { screen: ChartsListScreen4 },
+  LineDemo: { screen: LineChartView },
   FunnelDemo: { screen: FunnelDemo },
   PieDemo: { screen: PieDemo },
   BubbleDemo: { screen: BubbleDemo },
@@ -38,7 +45,7 @@ const App = StackNavigator({
 });
 
 
-// import TestDemo from './testDemo';
+import TestDemo from './testDemo';
 
 
-AppRegistry.registerComponent('PracticeDemo', () => App);
+AppRegistry.registerComponent('PracticeDemo', () => TestDemo);
