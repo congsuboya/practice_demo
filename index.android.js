@@ -48,4 +48,4 @@ const App = StackNavigator({
 import TestDemo from './testDemo';
 
 
-AppRegistry.registerComponent('PracticeDemo', () => TestDemo);
+AppRegistry.registerComponent('PracticeDemo', () => App);
