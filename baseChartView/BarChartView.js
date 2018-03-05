@@ -81,7 +81,7 @@ BarChartView.defaultProps = {
         stack: true,
         stackNum: 3,
         dataMap: [{
-            data: [{ y: [40, 30, -90], marker: ["row1", "row2", "row3"] }, { y: [10, 20, 10], marker: "second" }, { y: [30, 20, 50], marker: ["hello", "world", "third"], llll: { name: 'haha', value: 121 } }, { y: [30, 50, 10], marker: "fourth" }],
+            data: [{ y: [40], marker: ["row1", "row2", "row3"] }, { y: [10], marker: "second" }, { y: [30], marker: ["hello", "world", "third"], llll: { name: 'haha', value: 121 } }, { y: [30], marker: "fourth" }],
             label: '第一个'
         }]
     }

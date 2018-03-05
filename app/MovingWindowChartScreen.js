@@ -45,7 +45,6 @@ class MovingWindowChartScreen extends React.Component {
             style={styles.chart}
             data={this.state.data}
             xAxis={this.state.xAxis}
-
             touchEnabled={true}
             dragEnabled={true}
             scaleEnabled={true}
