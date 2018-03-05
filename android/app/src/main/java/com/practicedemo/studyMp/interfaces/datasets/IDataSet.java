@@ -1,12 +1,21 @@
 package com.practicedemo.studyMp.interfaces.datasets;
 
+import android.graphics.DashPathEffect;
+import android.graphics.Typeface;
+
 import com.github.mikephil.charting.data.DataSet;
+import com.practicedemo.studyMp.components.Legend;
+import com.practicedemo.studyMp.components.YAxis;
 import com.practicedemo.studyMp.data.Entry;
+import com.practicedemo.studyMp.formatter.IValueFormatter;
+import com.practicedemo.studyMp.utils.MPPointF;
 
 import java.util.List;
 
 /**
  * Created by liuchao on 2018/3/3.
+ *
+ * @param <T>
  */
 
 public interface IDataSet<T extends Entry> {
@@ -64,7 +73,8 @@ public interface IDataSet<T extends Entry> {
 
 
     /**
-     * 计算从最接近给定fromX的数据Item到距离给定toX值最近的数据Item的最小和最大y值。这仅适用于autoScaleMinMax功能。
+     * 计算从最接近给定fromX的数据Item到距离给定toX值最近的数据Item的最小和最大y值。
+     * 这仅适用于autoScaleMinMax功能。
      *
      * @return
      */
@@ -180,7 +190,6 @@ public interface IDataSet<T extends Entry> {
     boolean removeLast();
 
 
-
     /**
      * 从DataSets数组中删除传入的DataSet。
      * 这也将重新计算DataSet的当前最小值和最大值以及总和值。
@@ -227,7 +236,6 @@ public interface IDataSet<T extends Entry> {
     String getLabel();
 
 
-
     /**
      * 设置描述DataSet的标签字符串。
      *
@@ -235,6 +243,233 @@ public interface IDataSet<T extends Entry> {
      */
     void setLabel(String label);
 
+    /**
+     * 返回这个DataSet应该被绘制的轴。
+     *
+     * @return
+     */
+    YAxis.AxisDependency getAxisDependency();
+
+    /**
+     * 设置这个DataSet应绘制的Y轴（LEFT或RIGHT）。
+     * 默认值：LEFT
+     *
+     * @param dependency
+     */
+    void setAxisDependency(YAxis.AxisDependency dependency);
+
+    /**
+     * 返回为此DataSet设置的所有颜色
+     *
+     * @return
+     */
+    List<Integer> getColors();
+
+    /**
+     * 返回此DataSet包含的colors-array的第一个颜色（索引0）。
+     * 仅当颜色数组中只有一种颜色时（大小== 1），才会出于性能原因使用此功能。
+     *
+     * @return
+     */
+    int getColor();
+
+    /**
+     * 返回DataSet的颜色数组的给定索引处的颜色。
+     * 按模量执行IndexOutOfBounds检查。
+     *
+     * @param index
+     * @return
+     */
+    int getColor(int index);
+
+    /**
+     * 如果启用了高亮值，则返回true，否则返回false
+     *
+     * @return
+     */
+    boolean isHighlightEnabled();
+
+    /**
+     * 如果设置为true，则启用值高亮显示，这意味着可以以编程方式或通过触摸手势突出显示值。
+     *
+     * @param enabled
+     */
+    void setHighlightEnabled(boolean enabled);
+
+    /**
+     * 设置用于在图表内绘制值的格式器。
+     * 如果未设置格式化程序，图表将自动确定图表内绘制的所有值的合理格式（涉及小数）。
+     * 使用chart.getDefaultValueFormatter（）来使用图表计算的格式化程序。
+     *
+     * @param f
+     */
+    void setValueFormatter(IValueFormatter f);
+
+    /**
+     * 返回用于在图表内绘制值的格式器。
+     *
+     * @return
+     */
+    IValueFormatter getValueFormatter();
+
+    /**
+     * 如果此DataSet的valueFormatter对象为null，则返回true。
+     *
+     * @return
+     */
+    boolean needsFormatter();
+
+    /**
+     * 设置此DataSet的值标签应具有的颜色。
+     *
+     * @param color
+     */
+    void setValueTextColor(int color);
+
+    /**
+     * 设置要用作绘制值颜色的颜色列表。
+     *
+     * @param colors
+     */
+    void setValueTextColors(List<Integer> colors);
+
+    /**
+     * 设置标签label的文本样式
+     *
+     * @param tf
+     */
+    void setValutTypeface(Typeface tf);
+
+    /**
+     * 设置此DataSet的值标签的文本大(dp)。
+     *
+     * @param size
+     */
+    void setValueTextSize(float size);
+
+    /**
+     * 仅返回设置为用于值的所有颜色的第一种颜色。
+     *
+     * @return
+     */
+    int getValueTextColor();
+
+    /**
+     * 返回用于在图表内绘制值的指定索引处的颜色。
+     * 内部使用模数。
+     *
+     * @param index
+     * @return
+     */
+    int getValueTextColor(int index);
+
+    /**
+     * 返回用于在图表内绘制值的字体
+     *
+     * @return
+     */
+    Typeface getValueTypeface();
+
+    /**
+     * 返回用于在图表内绘制值的文本大小
+     *
+     * @return
+     */
+    float getValueTextSize();
+
+    /**
+     * 在图例中为此数据集绘制的表单。
+     * <p/>
+     * 返回`DEFAULT`使用默认的图例形式。
+     */
+    Legend.LegendFrom getFrom();
+
+    /**
+     * 在图例中为此数据集绘制的表单大小。
+     * <p/>
+     * 返回`Float.NaN`使用默认的图例表单大小。
+     */
+    float getFormSize();
+
+    /**
+     * 用于在图例中绘制此数据集窗体的线宽
+     * <p/>
+     * 返回`Float.NaN`使用默认的图例表格线宽。
+     */
+    float getFromLineWidth();
+
+    /**
+     * 用于包含线条的形状的线条虚线路径效果。
+     * <p/>
+     * 返回`null`使用默认的图例表单行破折号效果
+     */
+    DashPathEffect getFromLineDashEffect();
+
+    /**
+     * 将此设置为true以在图表上绘制y值。
+     * <p>
+     * 注意（对于条形图和折线图）：如果达到了`maxVisibleCount`，即使启用了该值，也不会绘制任何值
+     *
+     * @param enabled
+     */
+    void setDrawValues(boolean enabled);
+
+    /**
+     * 如果启用了y值绘图，则返回true;否则返回false
+     *
+     * @return
+     */
+    boolean isDrawValuesEnabled();
+
+    /**
+     * 将其设置为true以在图表上绘制y图标。
+     * <p>
+     * 注意（对于条形图和折线图）：如果达到了`maxVisibleCount`，即使启用了该图标也不会绘制图标
+     *
+     * @param enabled
+     */
+    void setDrawIcons(boolean enabled);
+
+    /**
+     * 如果启用了y-icon绘图，则返回true;否则返回false
+     *
+     * @return
+     */
+    boolean isDrawIconsEnabled();
+
+    /**
+     * 在图表上绘制的图标的偏移量。
+     * <p>
+     * 对于除Pie和Radar之外的所有图表，它将是普通的（x偏移，y偏移）。
+     * <p>
+     * 对于馅饼和雷达图，它将是（y偏移量，距中心偏移距离）;
+     * 所以如果你希望图标被渲染到值的下方，你应该增加CGPoint的X分量，
+     * 并且如果你想把图标渲染到最接近中心的位置，你应该减少CGPoint的高度分量。
+     *
+     * @param offset
+     */
+    void setIconsOffset(MPPointF offset);
+
+    /**
+     * 获取绘图图标的偏移量。
+     */
+    MPPointF getIconsOffset();
+
+    /**
+     * 设置此DataSet的可见性。
+     * 如果不可见，DataSet将不会被刷新到图表上。
+     *
+     * @param visible
+     */
+    void setVisible(boolean visible);
+
+    /**
+     * 如果此DataSet在图表内可见，则返回true;
+     * 如果此数据集当前处于隐藏状态，则返回false。
+     *
+     * @return
+     */
+    boolean isVisible();
 
 
 }

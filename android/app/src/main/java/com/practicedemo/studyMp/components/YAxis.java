@@ -1,6 +1,9 @@
 package com.practicedemo.studyMp.components;
 
 import android.graphics.Color;
+import android.graphics.Paint;
+
+import com.practicedemo.studyMp.utils.Utils;
 
 /**
  * 表示y轴标签设置及其条目的类。
@@ -243,7 +246,95 @@ public class YAxis extends AxisBase {
         return mZeroLineColor;
     }
 
-    public void setZeroLineColor(float color){
+    public void setZeroLineColor(int color) {
+        mZeroLineColor = color;
+    }
 
+    public float getZeroLineWidth() {
+        return mZeroLineWidth;
+    }
+
+    public void setZeroLineWidth(float width) {
+        this.mZeroLineWidth = Utils.convertDpToPixel(width);
+    }
+
+    /**
+     * 这是针对正常（非水平）图表的水平间距。
+     *
+     * @param p
+     * @return
+     */
+    public float getRequiredWidthSpace(Paint p) {
+        p.setTextSize(mTextSize);
+
+        String label = getLongestLabel();
+        float width = Utils.calcTextWidth(p, label) + getXOffset() * 2f;
+        float minWidth = getMinWidth();
+        float maxWidth = getMaxWidth();
+
+        if (minWidth > 0.f)
+            minWidth = Utils.convertDpToPixel(minWidth);
+
+        if (maxWidth > 0.f && maxWidth != Float.POSITIVE_INFINITY)
+            maxWidth = Utils.convertDpToPixel(maxWidth);
+
+        width = Math.max(minWidth, Math.min(width, maxWidth > 0.0 ? maxWidth : width));
+
+        return width;
+    }
+
+    /**
+     * 这是用于HorizontalBarChart垂直间距。
+     *
+     * @param p
+     * @return
+     */
+    public float getRequiredHeightSpace(Paint p) {
+        p.setTextSize(mTextSize);
+
+        String label = getLongestLabel();
+        return (float) Utils.calcTextWidth(p, label) + getYOffset() * 2f;
+    }
+
+    /**
+     * 如果此轴需要水平偏移量，则返回true;如果不需要偏移量，则返回false。
+     *
+     * @return
+     */
+    public boolean needsOffset() {
+        if (isEnabled() && isDrawLabelsEnabled() && getLabelPosition() == YAxisLabelPosition.OUTSIDE_CHART)
+            return true;
+        else
+            return false;
+    }
+
+    @Override
+    public void calculate(float dataMin, float dataMax) {
+        float min = mCustomAxisMin ? mAxisMinimum : dataMin;
+        float max = mCustomAxisMax ? mAxisMaximum : dataMax;
+
+        //临时范围（计算前）
+        float range = Math.abs(max - min);
+
+        //万一所有的值都相等
+        if (range == 0f) {
+            max = max + 1f;
+            min = min - 1f;
+        }
+
+        // 底部空间只影响非自定义的最小值
+        if (!mCustomAxisMin) {
+            float bottomSpace = range / 100f * getSpaceBottom();
+            this.mAxisMinimum = (min - bottomSpace);
+        }
+
+        //顶层空间仅影响非自定义最大值
+        if (!mCustomAxisMin) {
+            float topSpace = range / 100f * getSpaceTop();
+            this.mAxisMaximum = (max + topSpace);
+        }
+
+        //计算实际范围
+        this.mAxisRange = Math.abs(this.mAxisMaximum - this.mAxisMinimum);
     }
 }

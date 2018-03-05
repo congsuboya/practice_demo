@@ -2,6 +2,7 @@ package com.practicedemo.studyMp.utils;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ViewConfiguration;
@@ -54,4 +55,17 @@ public abstract class Utils {
 
         return dp * mMetrics.density;
     }
+
+    /**
+     * 根据演示文本计算文本的大致宽度，避免重复调用（例如，内部绘图方法）
+     *
+     * @param paint
+     * @param demoText
+     * @return
+     */
+    public static int calcTextWidth(Paint paint, String demoText) {
+        return (int) paint.measureText(demoText);
+    }
+
+
 }

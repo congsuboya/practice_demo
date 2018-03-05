@@ -10,7 +10,7 @@ import com.practicedemo.studyMp.interfaces.ChartInterface;
  * Created by chaoye on 2018/1/31.
  */
 
-public abstract class Chart<T>  extends ViewGroup implements ChartInterface {
+public abstract class Chart<T extends >  extends ViewGroup implements ChartInterface {
 
 
     /**
