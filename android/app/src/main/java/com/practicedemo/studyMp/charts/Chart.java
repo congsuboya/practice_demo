@@ -10,7 +10,7 @@ import com.practicedemo.studyMp.interfaces.ChartInterface;
  * Created by chaoye on 2018/1/31.
  */
 
-public abstract class Chart  extends ViewGroup implements ChartInterface {
+public abstract class Chart<T>  extends ViewGroup implements ChartInterface {
 
 
     /**
@@ -23,6 +23,9 @@ public abstract class Chart  extends ViewGroup implements ChartInterface {
      * flag的开关
      */
     protected boolean mLogEnable = false;
+
+
+    protected T mData = null;
 
 
     public Chart(Context context) {
