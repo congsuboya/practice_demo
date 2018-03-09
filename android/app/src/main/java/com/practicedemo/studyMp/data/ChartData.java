@@ -1,5 +1,6 @@
 package com.practicedemo.studyMp.data;
 
+import com.practicedemo.studyMp.components.YAxis;
 import com.practicedemo.studyMp.interfaces.datasets.IDataSet;
 
 import java.util.ArrayList;
@@ -124,13 +125,39 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
         mRightAxisMax = -Float.MAX_VALUE;
         mRightAxisMin = Float.MAX_VALUE;
 
-        T firstLeft = getFirstLeft()
+        T firstLeft = getFirstLeft(mDataSets);
+
+        if (firstLeft != null) {
+            mLeftAxisMax = firstLeft.getXMax();
+            mLeftAxisMin = firstLeft.getXMin();
+
+            for (T dataSet : mDataSets) {
+                if (dataSet.getAxisDependency() == YAxis.AxisDependency.LEFT) {
+
+                    if (dataSet.getYMin()<mLeftAxisMin)
+                        mLeftAxisMin = dataSet.getYMin();
+
+                    if (dataSet.getYMax() > mLeftAxisMax)
+                        mLeftAxisMax = dataSet.getYMax();
+                }
+            }
+        }
+
+        T firstRight = getFirstRight()
     }
 
-    protected T getFirstLeft(List<T> sets){
-        for (T dataSet :sets){
+    protected T getFirstLeft(List<T> sets) {
+        for (T dataSet : sets) {
             if (dataSet.)
         }
+    }
+
+    public  T getFirstRight(List<T> sets){
+        for (T dataSet: sets){
+            if (dataSet.getAxisDependency() == YAxis.AxisDependency.RIGHT)
+                return dataSet;
+        }
+        return null;
     }
 
     protected void calcMinMax(T d) {
