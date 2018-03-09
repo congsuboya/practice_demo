@@ -143,7 +143,7 @@ public abstract class ChartData<T extends IDataSet<? extends Entry>> {
             }
         }
 
-        T firstRight = getFirstRight()
+        T firstRight = getFirstRight(mDataSets);
     }
 
     protected T getFirstLeft(List<T> sets) {
