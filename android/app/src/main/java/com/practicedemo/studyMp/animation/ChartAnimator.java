@@ -120,7 +120,13 @@ public class ChartAnimator {
     /** METHODS FOR PREDEFINED EASING */
 
 
-    public void 
+    public void animateXY(int durationMillisX,int durationMillisY,Easing.EasingOption easingX,Easing.EasingOption easingY){
+        if (Build.VERSION.SDK_INT<11)
+            return;
+
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this,"phaseY",0f,1f);
+        animatorY.setInterpolator(Easing.getEas);
+    }
 
     /**
      * 这会得到用于动画值的y相。
