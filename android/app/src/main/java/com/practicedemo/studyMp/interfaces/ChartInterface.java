@@ -1,5 +1,11 @@
 package com.practicedemo.studyMp.interfaces;
 
+import android.graphics.RectF;
+
+import com.practicedemo.studyMp.data.ChartData;
+import com.practicedemo.studyMp.formatter.IValueFormatter;
+import com.practicedemo.studyMp.utils.MPPointF;
+
 /**
  * Created by chaoye on 2018/1/31.
  */
@@ -74,6 +80,18 @@ public interface ChartInterface {
      * @return
      */
     int getHeight();
+
+    MPPointF getCenterOfView();
+
+    MPPointF getCenterOffsets();
+
+    RectF getContentRect();
+
+    IValueFormatter getDefaultValueFormatter();
+
+    ChartData getData();
+
+    int getMaxVisibleCount();
 
 
 }

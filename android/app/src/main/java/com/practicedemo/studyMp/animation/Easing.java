@@ -1,7 +1,5 @@
 package com.practicedemo.studyMp.animation;
 
-import com.github.mikephil.charting.animation.*;
-
 /**
  * Created by chaoye on 2018/3/13.
  */
@@ -39,65 +37,65 @@ public class Easing {
         EaseInOutBounce,
     }
 
-    public static com.github.mikephil.charting.animation.EasingFunction getEasingFunctionFromOption(com.github.mikephil.charting.animation.Easing.EasingOption easing) {
+    public static EasingFunction getEasingFunctionFromOption(Easing.EasingOption easing) {
         switch (easing) {
             default:
             case Linear:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.Linear;
+                return Easing.EasingFunctions.Linear;
             case EaseInQuad:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInQuad;
+                return EasingFunctions.EaseInQuad;
             case EaseOutQuad:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutQuad;
+                return EasingFunctions.EaseOutQuad;
             case EaseInOutQuad:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutQuad;
+                return EasingFunctions.EaseInOutQuad;
             case EaseInCubic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInCubic;
+                return EasingFunctions.EaseInCubic;
             case EaseOutCubic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutCubic;
+                return EasingFunctions.EaseOutCubic;
             case EaseInOutCubic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutCubic;
+                return EasingFunctions.EaseInOutCubic;
             case EaseInQuart:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInQuart;
+                return EasingFunctions.EaseInQuart;
             case EaseOutQuart:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutQuart;
+                return EasingFunctions.EaseOutQuart;
             case EaseInOutQuart:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutQuart;
+                return EasingFunctions.EaseInOutQuart;
             case EaseInSine:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInSine;
+                return EasingFunctions.EaseInSine;
             case EaseOutSine:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutSine;
+                return EasingFunctions.EaseOutSine;
             case EaseInOutSine:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutSine;
+                return EasingFunctions.EaseInOutSine;
             case EaseInExpo:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInExpo;
+                return EasingFunctions.EaseInExpo;
             case EaseOutExpo:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutExpo;
+                return EasingFunctions.EaseOutExpo;
             case EaseInOutExpo:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutExpo;
+                return EasingFunctions.EaseInOutExpo;
             case EaseInCirc:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInCirc;
+                return EasingFunctions.EaseInCirc;
             case EaseOutCirc:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutCirc;
+                return EasingFunctions.EaseOutCirc;
             case EaseInOutCirc:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutCirc;
+                return EasingFunctions.EaseInOutCirc;
             case EaseInElastic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInElastic;
+                return EasingFunctions.EaseInElastic;
             case EaseOutElastic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutElastic;
+                return EasingFunctions.EaseOutElastic;
             case EaseInOutElastic:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutElastic;
+                return EasingFunctions.EaseInOutElastic;
             case EaseInBack:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInBack;
+                return EasingFunctions.EaseInBack;
             case EaseOutBack:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutBack;
+                return EasingFunctions.EaseOutBack;
             case EaseInOutBack:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutBack;
+                return EasingFunctions.EaseInOutBack;
             case EaseInBounce:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInBounce;
+                return EasingFunctions.EaseInBounce;
             case EaseOutBounce:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseOutBounce;
+                return EasingFunctions.EaseOutBounce;
             case EaseInOutBounce:
-                return com.github.mikephil.charting.animation.Easing.EasingFunctions.EaseInOutBounce;
+                return EasingFunctions.EaseInOutBounce;
         }
     }
 
@@ -108,7 +106,7 @@ public class Easing {
          * PREDEFINED EASING FUNCTIONS BELOW THIS
          */
 
-        public static final com.github.mikephil.charting.animation.EasingFunction Linear = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction Linear = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // return elapsed / (float) duration;
@@ -120,7 +118,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInQuad = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInQuad = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -133,7 +131,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutQuad = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutQuad = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -146,7 +144,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutQuad = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutQuad = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (duration / 2.f);
@@ -170,7 +168,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInCubic = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInCubic = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -183,8 +181,8 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutCubic = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutCubic = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // float position = elapsed / (float) duration;
@@ -199,8 +197,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutCubic = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutCubic = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // float position = elapsed / (duration / 2.f);
@@ -224,14 +222,14 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInQuart = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInQuart = new EasingFunction() {
 
             public float getInterpolation(float input) {
                 return input * input * input * input;
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutQuart = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutQuart = new EasingFunction() {
 
             public float getInterpolation(float input) {
                 input--;
@@ -239,8 +237,8 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutQuart = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutQuart = new
+                EasingFunction() {
                     @Override
                     public float getInterpolation(float input) {
                         float position = input / 0.5f;
@@ -252,7 +250,7 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInSine = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInSine = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -264,7 +262,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutSine = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutSine = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -276,7 +274,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutSine = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutSine = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -289,7 +287,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInExpo = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInExpo = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // return (elapsed == 0) ? 0.f : (float) Math.pow(2.f, 10.f * (elapsed
@@ -301,7 +299,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutExpo = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutExpo = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // return (elapsed == duration) ? 1.f : (-(float) Math.pow(2.f, -10.f *
@@ -315,8 +313,8 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutExpo = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutExpo = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // if (elapsed == 0)
@@ -357,7 +355,7 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInCirc = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInCirc = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -370,7 +368,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutCirc = new com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutCirc = new EasingFunction() {
             // @Override
             // public float ease(long elapsed, long duration) {
             // float position = elapsed / (float) duration;
@@ -384,8 +382,8 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutCirc = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutCirc = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // float position = elapsed / (duration / 2.f);
@@ -411,8 +409,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInElastic = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInElastic = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // if (elapsed == 0)
@@ -456,8 +454,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutElastic = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutElastic = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // if (elapsed == 0)
@@ -500,8 +498,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutElastic = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutElastic = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // if (elapsed == 0)
@@ -560,7 +558,7 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInBack = new com.github.mikephil.charting.animation.EasingFunction()
+        public static final EasingFunction EaseInBack = new EasingFunction()
         {
             // @Override
             // public float ease(long elapsed, long duration) {
@@ -577,7 +575,7 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutBack = new com.github.mikephil.charting.animation.EasingFunction()
+        public static final EasingFunction EaseOutBack = new EasingFunction()
         {
             // @Override
             // public float ease(long elapsed, long duration) {
@@ -596,8 +594,8 @@ public class Easing {
             }
         };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutBack = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutBack = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // float s = 1.70158f;
@@ -626,8 +624,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInBounce = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInBounce = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // return 1.f - EaseOutBounce.ease(duration - elapsed,
@@ -640,8 +638,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseOutBounce = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseOutBounce = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // float position = elapsed / (float) duration;
@@ -689,8 +687,8 @@ public class Easing {
                     }
                 };
 
-        public static final com.github.mikephil.charting.animation.EasingFunction EaseInOutBounce = new
-                com.github.mikephil.charting.animation.EasingFunction() {
+        public static final EasingFunction EaseInOutBounce = new
+                EasingFunction() {
                     // @Override
                     // public float ease(long elapsed, long duration) {
                     // if (elapsed < duration / 2.f)

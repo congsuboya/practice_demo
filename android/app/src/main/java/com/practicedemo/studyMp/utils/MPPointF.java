@@ -71,7 +71,7 @@ public class MPPointF extends ObjectPool.Poolable {
         public MPPointF createFromParcel(Parcel in) {
             MPPointF r = new MPPointF(0, 0);
             r.my_readFromParcel(in);
-            return null;
+            return r;
         }
 
         /**

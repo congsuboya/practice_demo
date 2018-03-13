@@ -117,15 +117,139 @@ public class ChartAnimator {
     /**
      * ################ ################ ################ ################
      */
-    /** METHODS FOR PREDEFINED EASING */
+    /*** METHODS FOR PREDEFINED EASING****/
 
-
-    public void animateXY(int durationMillisX,int durationMillisY,Easing.EasingOption easingX,Easing.EasingOption easingY){
-        if (Build.VERSION.SDK_INT<11)
+    /**
+     * 使用指定的动画时间在x轴和y轴上动画绘制/渲染图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param durationMillisX
+     * @param durationMillisY
+     * @param easingX
+     * @param easingY
+     */
+    public void animateXY(int durationMillisX, int durationMillisY, Easing.EasingOption easingX, Easing.EasingOption easingY) {
+        if (Build.VERSION.SDK_INT < 11)
             return;
 
-        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this,"phaseY",0f,1f);
-        animatorY.setInterpolator(Easing.getEas);
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this, "phaseY", 0f, 1f);
+        animatorY.setInterpolator(Easing.getEasingFunctionFromOption(easingY));
+        animatorY.setDuration(durationMillisY);
+
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(this, "phaseX", 0f, 1f);
+        animatorX.setInterpolator(Easing.getEasingFunctionFromOption(easingX));
+        animatorX.setDuration(durationMillisX);
+
+        if (durationMillisX > durationMillisY) {
+            animatorX.addUpdateListener(mListener);
+        } else {
+            animatorY.addUpdateListener(mListener);
+        }
+
+        animatorX.start();
+        animatorY.start();
+    }
+
+    /**
+     * 使用指定的动画时间在x轴上动画显示图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param durationMillis
+     * @param easing
+     */
+    public void animateX(int durationMillis, Easing.EasingOption easing) {
+        if (Build.VERSION.SDK_INT < 11)
+            return;
+
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(this, "phaseX", 0f, 1f);
+        animatorX.setInterpolator(Easing.getEasingFunctionFromOption(easing));
+        animatorX.setDuration(durationMillis);
+        animatorX.addUpdateListener(mListener);
+        animatorX.start();
+    }
+
+    /**
+     * 使用指定的动画时间在y轴上动画显示图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param durationMillis
+     * @param easing
+     */
+    public void animateY(int durationMillis, Easing.EasingOption easing) {
+        if (Build.VERSION.SDK_INT < 11)
+            return;
+
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this, "phaseY", 0f, 1f);
+        animatorY.setInterpolator(Easing.getEasingFunctionFromOption(easing));
+        animatorY.setDuration(durationMillis);
+        animatorY.addUpdateListener(mListener);
+        animatorY.start();
+    }
+
+    /**
+     * ################ ################ ################ ################
+     */
+    /** METHODS FOR ANIMATION WITHOUT EASING */
+
+    /**
+     * 使用指定的动画时间在x轴和y轴上动画绘制/渲染图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param durationMillisX
+     * @param durationMillisY
+     */
+
+    public void animateXY(int durationMillisX, int durationMillisY) {
+        if (Build.VERSION.SDK_INT < 11)
+            return;
+
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this, "phaseY", 0f, 1f);
+        animatorY.setDuration(durationMillisY);
+
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(this, "phaseX", 0f, 1f);
+        animatorX.setDuration(durationMillisX);
+
+        if (durationMillisX > durationMillisY) {
+            animatorX.addUpdateListener(mListener);
+        } else {
+            animatorY.addUpdateListener(mListener);
+        }
+
+        animatorX.start();
+        animatorY.start();
+
+    }
+
+    /**
+     * 使用指定的动画时间在x轴上动画显示图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param durationMillis
+     */
+    public void animateX(int durationMillis) {
+        if (Build.VERSION.SDK_INT < 11)
+            return;
+
+        ObjectAnimator animatorX = ObjectAnimator.ofFloat(this, "phaseX", 0f, 1f);
+        animatorX.setDuration(durationMillis);
+        animatorX.addUpdateListener(mListener);
+        animatorX.start();
+    }
+
+    /**
+     * 使用指定的动画时间在y轴上动画显示图表。
+     * 如果调用animate（...），则不必再调用invalidate（）来刷新图表。
+     *
+     * @param duratiomMillis
+     */
+    public void animateY(int duratiomMillis) {
+        if (Build.VERSION.SDK_INT < 11)
+            return;
+
+        ObjectAnimator animatorY = ObjectAnimator.ofFloat(this, "phaseY", 0f, 1f);
+        animatorY.setDuration(duratiomMillis);
+        animatorY.addUpdateListener(mListener);
+        animatorY.start();
     }
 
     /**
